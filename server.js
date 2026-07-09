@@ -6,7 +6,7 @@ app.use(express.json());
 const {
   WHATSAPP_TOKEN,
   PHONE_NUMBER_ID,
-  CLAUDE_API_KEY,
+  GEMINI_API_KEY,
   VERIFY_TOKEN
 } = process.env;
 
@@ -15,9 +15,7 @@ app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
-
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-    console.log('Webhook verified!');
     res.status(200).send(challenge);
   } else {
     res.sendStatus(403);
@@ -30,38 +28,24 @@ app.post('/webhook', async (req, res) => {
     const entry = req.body.entry?.[0];
     const changes = entry?.changes?.[0];
     const message = changes?.value?.messages?.[0];
-
-    if (!message || message.type !== 'text') {
-      return res.sendStatus(200);
-    }
+    if (!message || message.type !== 'text') return res.sendStatus(200);
 
     const customerMessage = message.text.body;
     const customerPhone = message.from;
 
-    console.log(`Message from ${customerPhone}: ${customerMessage}`);
-
-    // Send to Claude
-    const claudeResponse = await axios.post(
-      'https://api.anthropic.com/v1/messages',
+    // Send to Gemini
+    const geminiResponse = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        system: 'You are a helpful assistant for Gogadafi, a fashion ecommerce business in India selling clothing, apparel and accessories. Reply helpfully and concisely in the same language the customer uses.',
-        messages: [
-          { role: 'user', content: customerMessage }
-        ]
-      },
-      {
-        headers: {
-          'x-api-key': CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json'
-        }
+        contents: [{
+          parts: [{
+            text: `You are a helpful assistant for Gogadafi, a fashion ecommerce business in India selling clothing, apparel and accessories. Reply helpfully and concisely in the same language the customer uses.\n\nCustomer: ${customerMessage}`
+          }]
+        }]
       }
     );
 
-    const reply = claudeResponse.data.content[0].text;
-    console.log(`Claude reply: ${reply}`);
+    const reply = geminiResponse.data.candidates[0].content.parts[0].text;
 
     // Send reply via WhatsApp
     await axios.post(
@@ -80,9 +64,7 @@ app.post('/webhook', async (req, res) => {
       }
     );
 
-    console.log('Reply sent!');
     res.sendStatus(200);
-
   } catch (error) {
     console.error('Error:', error.response?.data || error.message);
     res.sendStatus(500);
