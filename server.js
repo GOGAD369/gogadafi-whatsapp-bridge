@@ -15,6 +15,7 @@ app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
+
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
     res.status(200).send(challenge);
   } else {
@@ -28,6 +29,7 @@ app.post('/webhook', async (req, res) => {
     const entry = req.body.entry?.[0];
     const changes = entry?.changes?.[0];
     const message = changes?.value?.messages?.[0];
+
     if (!message || message.type !== 'text') return res.sendStatus(200);
 
     const customerMessage = message.text.body;
@@ -35,7 +37,7 @@ app.post('/webhook', async (req, res) => {
 
     // Send to Gemini
     const geminiResponse = await axios.post(
-      https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [{
           parts: [{
@@ -65,6 +67,7 @@ app.post('/webhook', async (req, res) => {
     );
 
     res.sendStatus(200);
+
   } catch (error) {
     console.error('Error:', error.response?.data || error.message);
     res.sendStatus(500);
