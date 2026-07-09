@@ -6,7 +6,7 @@ app.use(express.json());
 const {
   WHATSAPP_TOKEN,
   PHONE_NUMBER_ID,
-  GEMINI_API_KEY,
+  GROQ_API_KEY,
   VERIFY_TOKEN
 } = process.env;
 
@@ -35,19 +35,31 @@ app.post('/webhook', async (req, res) => {
     const customerMessage = message.text.body;
     const customerPhone = message.from;
 
-    // Send to Gemini
-    const geminiResponse = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    // Send to Groq
+    const groqResponse = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
       {
-        contents: [{
-          parts: [{
-            text: `You are a helpful assistant for Gogadafi, a fashion ecommerce business in India selling clothing, apparel and accessories. Reply helpfully and concisely in the same language the customer uses.\n\nCustomer: ${customerMessage}`
-          }]
-        }]
+        model: 'llama-3.1-8b-instant',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant for Gogadafi, a fashion ecommerce business in India selling clothing, apparel and accessories. Reply helpfully and concisely in the same language the customer uses.'
+          },
+          {
+            role: 'user',
+            content: customerMessage
+          }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
       }
     );
 
-    const reply = geminiResponse.data.candidates[0].content.parts[0].text;
+    const reply = groqResponse.data.choices[0].message.content;
 
     // Send reply via WhatsApp
     await axios.post(
