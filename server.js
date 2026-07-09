@@ -10,6 +10,9 @@ const {
   VERIFY_TOKEN
 } = process.env;
 
+// Track processed messages
+const processedMessages = new Set();
+
 // Webhook verification
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
@@ -31,6 +34,14 @@ app.post('/webhook', async (req, res) => {
     const message = changes?.value?.messages?.[0];
 
     if (!message || message.type !== 'text') return res.sendStatus(200);
+
+    // Duplicate check
+    const messageId = message.id;
+    if (processedMessages.has(messageId)) return res.sendStatus(200);
+    processedMessages.add(messageId);
+
+    // Clean old IDs (keep set small)
+    if (processedMessages.size > 100) processedMessages.clear();
 
     const customerMessage = message.text.body;
     const customerPhone = message.from;
