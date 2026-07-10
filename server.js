@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const { MongoClient } = require('mongodb');
 const app = express();
 app.use(express.json());
 
@@ -7,14 +8,93 @@ const {
   WHATSAPP_TOKEN,
   PHONE_NUMBER_ID,
   GROQ_API_KEY,
-  VERIFY_TOKEN
+  VERIFY_TOKEN,
+  MONGODB_URI
 } = process.env;
 
-// Track processed messages
-const processedMessages = new Set();
-// Track first time customers
-const firstTimeCustomers = new Set();
+// ---------- MongoDB setup ----------
+let db = null;
+let messagesCol = null;
+let customersCol = null;
 
+async function connectDB() {
+  if (!MONGODB_URI) {
+    console.warn('⚠️  MONGODB_URI not set — running without DB');
+    return;
+  }
+  try {
+    const client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    db = client.db('gogadafi');
+    messagesCol = db.collection('messages');
+    customersCol = db.collection('customers');
+    // Index for faster conversation lookups
+    await messagesCol.createIndex({ customerPhone: 1, timestamp: 1 });
+    console.log('✅ MongoDB connected');
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err.message);
+  }
+}
+connectDB();
+
+// Save one message (incoming or outgoing)
+async function saveMessage({ customerPhone, customerName, text, direction, messageId }) {
+  if (!messagesCol) return;
+  try {
+    await messagesCol.insertOne({
+      customerPhone,
+      customerName,
+      text,
+      direction,          // 'incoming' or 'outgoing'
+      messageId: messageId || null,
+      timestamp: new Date()
+    });
+  } catch (err) {
+    console.error('DB save error:', err.message);
+  }
+}
+
+// Get last N messages for a customer (for Groq context)
+async function getHistory(customerPhone, limit = 10) {
+  if (!messagesCol) return [];
+  try {
+    const docs = await messagesCol
+      .find({ customerPhone })
+      .sort({ timestamp: -1 })
+      .limit(limit)
+      .toArray();
+    return docs.reverse().map(d => ({
+      role: d.direction === 'incoming' ? 'user' : 'assistant',
+      content: d.text
+    }));
+  } catch (err) {
+    console.error('DB history error:', err.message);
+    return [];
+  }
+}
+
+// Check + mark first-time customer (persistent)
+async function checkFirstTime(customerPhone, customerName) {
+  if (!customersCol) return true; // no DB → treat as first time
+  try {
+    const existing = await customersCol.findOne({ customerPhone });
+    if (existing) return false;
+    await customersCol.insertOne({
+      customerPhone,
+      customerName,
+      firstSeen: new Date()
+    });
+    return true;
+  } catch (err) {
+    console.error('DB customer error:', err.message);
+    return true;
+  }
+}
+
+// ---------- Duplicate tracking (in-memory) ----------
+const processedMessages = new Set();
+
+// ---------- Webhook verify ----------
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -27,6 +107,7 @@ app.get('/webhook', (req, res) => {
   }
 });
 
+// ---------- Webhook receive ----------
 app.post('/webhook', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
@@ -45,9 +126,17 @@ app.post('/webhook', async (req, res) => {
     const customerPhone = message.from;
     const customerName = changes?.value?.contacts?.[0]?.profile?.name || 'there';
 
-    // First time customer check
-    const isFirstTime = !firstTimeCustomers.has(customerPhone);
-    if (isFirstTime) firstTimeCustomers.add(customerPhone);
+    // First time check (persistent via DB)
+    const isFirstTime = await checkFirstTime(customerPhone, customerName);
+
+    // Save incoming message
+    await saveMessage({
+      customerPhone,
+      customerName,
+      text: customerMessage,
+      direction: 'incoming',
+      messageId
+    });
 
     // Build system prompt
     const systemPrompt = `You are Aafia, GoGadAFI's WhatsApp assistant.
@@ -81,12 +170,16 @@ STRICT RULES:
 - Keep replies short, 1-2 lines maximum
 ${isFirstTime ? `- This is the customer's first message. Start your reply with exactly:\n"Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm Aafia, your WhatsApp assistant. How can I help you today?"` : '- This is a returning customer, do NOT send welcome message, just answer their question directly'}`;
 
+    // Get recent history for context (excludes the just-saved incoming msg on old DBs; fine either way)
+    const history = await getHistory(customerPhone, 10);
+
     const groqResponse = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
         model: 'llama-3.1-8b-instant',
         messages: [
           { role: 'system', content: systemPrompt },
+          ...history,
           { role: 'user', content: customerMessage }
         ]
       },
@@ -99,6 +192,14 @@ ${isFirstTime ? `- This is the customer's first message. Start your reply with e
     );
 
     const reply = groqResponse.data.choices[0].message.content;
+
+    // Save outgoing message
+    await saveMessage({
+      customerPhone,
+      customerName,
+      text: reply,
+      direction: 'outgoing'
+    });
 
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
