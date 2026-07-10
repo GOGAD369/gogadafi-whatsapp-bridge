@@ -1,15 +1,18 @@
 const express = require('express');
 const axios = require('axios');
 const { MongoClient } = require('mongodb');
+const path = require('path');
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 const {
   WHATSAPP_TOKEN,
   PHONE_NUMBER_ID,
   GROQ_API_KEY,
   VERIFY_TOKEN,
-  MONGODB_URI
+  MONGODB_URI,
+  DASHBOARD_PASSWORD
 } = process.env;
 
 // ---------- MongoDB setup ----------
@@ -28,7 +31,6 @@ async function connectDB() {
     db = client.db('gogadafi');
     messagesCol = db.collection('messages');
     customersCol = db.collection('customers');
-    // Index for faster conversation lookups
     await messagesCol.createIndex({ customerPhone: 1, timestamp: 1 });
     console.log('✅ MongoDB connected');
   } catch (err) {
@@ -37,16 +39,12 @@ async function connectDB() {
 }
 connectDB();
 
-// Save one message (incoming or outgoing)
 async function saveMessage({ customerPhone, customerName, text, direction, messageId }) {
   if (!messagesCol) return;
   try {
     await messagesCol.insertOne({
-      customerPhone,
-      customerName,
-      text,
-      direction,          // 'incoming' or 'outgoing'
-      messageId: messageId || null,
+      customerPhone, customerName, text,
+      direction, messageId: messageId || null,
       timestamp: new Date()
     });
   } catch (err) {
@@ -54,7 +52,6 @@ async function saveMessage({ customerPhone, customerName, text, direction, messa
   }
 }
 
-// Get last N messages for a customer (for Groq context)
 async function getHistory(customerPhone, limit = 10) {
   if (!messagesCol) return [];
   try {
@@ -73,16 +70,13 @@ async function getHistory(customerPhone, limit = 10) {
   }
 }
 
-// Check + mark first-time customer (persistent)
 async function checkFirstTime(customerPhone, customerName) {
-  if (!customersCol) return true; // no DB → treat as first time
+  if (!customersCol) return true;
   try {
     const existing = await customersCol.findOne({ customerPhone });
     if (existing) return false;
     await customersCol.insertOne({
-      customerPhone,
-      customerName,
-      firstSeen: new Date()
+      customerPhone, customerName, firstSeen: new Date()
     });
     return true;
   } catch (err) {
@@ -91,15 +85,104 @@ async function checkFirstTime(customerPhone, customerName) {
   }
 }
 
-// ---------- Duplicate tracking (in-memory) ----------
-const processedMessages = new Set();
+// ---------- Auth middleware ----------
+function authCheck(req, res, next) {
+  const token = req.headers['x-dashboard-token'];
+  const pwd = DASHBOARD_PASSWORD || 'gogadafi2026';
+  if (token !== pwd) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+// ---------- Dashboard HTML ----------
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// ---------- API: conversations list ----------
+app.get('/api/conversations', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json([]);
+  try {
+    const conversations = await messagesCol.aggregate([
+      { $sort: { timestamp: -1 } },
+      {
+        $group: {
+          _id: '$customerPhone',
+          customerName: { $first: '$customerName' },
+          lastMessage: { $first: '$text' },
+          lastDirection: { $first: '$direction' },
+          lastTime: { $first: '$timestamp' },
+          totalMessages: { $sum: 1 }
+        }
+      },
+      {
+        $addFields: {
+          unread: {
+            $cond: [{ $eq: ['$lastDirection', 'incoming'] }, 1, 0]
+          }
+        }
+      },
+      { $sort: { lastTime: -1 } }
+    ]).toArray();
+    res.json(conversations);
+  } catch (err) {
+    console.error('Conversations error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- API: messages for one customer ----------
+app.get('/api/messages/:phone', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json([]);
+  try {
+    const messages = await messagesCol
+      .find({ customerPhone: req.params.phone })
+      .sort({ timestamp: 1 })
+      .toArray();
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- API: send manual reply ----------
+app.post('/api/send', authCheck, async (req, res) => {
+  const { phone, message, customerName } = req.body;
+  if (!phone || !message) return res.status(400).json({ error: 'phone and message required' });
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        to: phone,
+        type: 'text',
+        text: { body: message }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    await saveMessage({
+      customerPhone: phone,
+      customerName: customerName || 'Unknown',
+      text: message,
+      direction: 'outgoing',
+      messageId: null
+    });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Send error:', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ---------- Webhook verify ----------
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
-
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
     res.status(200).send(challenge);
   } else {
@@ -113,10 +196,8 @@ app.post('/webhook', async (req, res) => {
     const entry = req.body.entry?.[0];
     const changes = entry?.changes?.[0];
     const message = changes?.value?.messages?.[0];
-
     if (!message || message.type !== 'text') return res.sendStatus(200);
 
-    // Duplicate check
     const messageId = message.id;
     if (processedMessages.has(messageId)) return res.sendStatus(200);
     processedMessages.add(messageId);
@@ -126,19 +207,15 @@ app.post('/webhook', async (req, res) => {
     const customerPhone = message.from;
     const customerName = changes?.value?.contacts?.[0]?.profile?.name || 'there';
 
-    // First time check (persistent via DB)
     const isFirstTime = await checkFirstTime(customerPhone, customerName);
 
-    // Save incoming message
     await saveMessage({
-      customerPhone,
-      customerName,
+      customerPhone, customerName,
       text: customerMessage,
       direction: 'incoming',
       messageId
     });
 
-    // Build system prompt
     const systemPrompt = `You are Aafia, GoGadAFI's WhatsApp assistant.
 
 ABOUT GoGadAFI:
@@ -170,7 +247,6 @@ STRICT RULES:
 - Keep replies short, 1-2 lines maximum
 ${isFirstTime ? `- This is the customer's first message. Start your reply with exactly:\n"Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm Aafia, your WhatsApp assistant. How can I help you today?"` : '- This is a returning customer, do NOT send welcome message, just answer their question directly'}`;
 
-    // Get recent history for context (excludes the just-saved incoming msg on old DBs; fine either way)
     const history = await getHistory(customerPhone, 10);
 
     const groqResponse = await axios.post(
@@ -193,10 +269,8 @@ ${isFirstTime ? `- This is the customer's first message. Start your reply with e
 
     const reply = groqResponse.data.choices[0].message.content;
 
-    // Save outgoing message
     await saveMessage({
-      customerPhone,
-      customerName,
+      customerPhone, customerName,
       text: reply,
       direction: 'outgoing'
     });
@@ -224,5 +298,6 @@ ${isFirstTime ? `- This is the customer's first message. Start your reply with e
   }
 });
 
+const processedMessages = new Set();
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
