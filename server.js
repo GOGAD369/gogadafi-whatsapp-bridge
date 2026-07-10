@@ -297,7 +297,52 @@ ${isFirstTime ? `- This is the customer's first message. Start your reply with e
     res.sendStatus(500);
   }
 });
+// All messages endpoint
+app.get('/api/messages/all-recent', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json([]);
+  try {
+    const messages = await messagesCol
+      .find({})
+      .sort({ timestamp: -1 })
+      .limit(500)
+      .toArray();
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
+// Mark as read
+app.post('/api/mark-read/:phone', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json({ success: true });
+  try {
+    await messagesCol.updateMany(
+      { customerPhone: req.params.phone, direction: 'incoming', read: { $ne: true } },
+      { $set: { read: true } }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stats endpoint
+app.get('/api/stats', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json({});
+  try {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const [total, todayIn, todayOut, customers] = await Promise.all([
+      messagesCol.countDocuments({}),
+      messagesCol.countDocuments({ direction:'incoming', timestamp:{ $gte: today } }),
+      messagesCol.countDocuments({ direction:'outgoing', timestamp:{ $gte: today } }),
+      customersCol.countDocuments({})
+    ]);
+    res.json({ total, todayIn, todayOut, customers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 const processedMessages = new Set();
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
