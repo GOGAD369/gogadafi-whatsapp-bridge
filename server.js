@@ -12,8 +12,9 @@ const {
 
 // Track processed messages
 const processedMessages = new Set();
+// Track first time customers
+const firstTimeCustomers = new Set();
 
-// Webhook verification
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -26,7 +27,6 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-// Receive messages
 app.post('/webhook', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
@@ -39,21 +39,18 @@ app.post('/webhook', async (req, res) => {
     const messageId = message.id;
     if (processedMessages.has(messageId)) return res.sendStatus(200);
     processedMessages.add(messageId);
-
     if (processedMessages.size > 100) processedMessages.clear();
 
     const customerMessage = message.text.body;
     const customerPhone = message.from;
+    const customerName = changes?.value?.contacts?.[0]?.profile?.name || 'there';
 
-    // Send to Groq
-    const groqResponse = await axios.post(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        model: 'llama-3.1-8b-instant',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a customer support assistant exclusively for GoGadAFI, a premium mens fashion brand in India.
+    // First time customer check
+    const isFirstTime = !firstTimeCustomers.has(customerPhone);
+    if (isFirstTime) firstTimeCustomers.add(customerPhone);
+
+    // Build system prompt
+    const systemPrompt = `You are Aafia, GoGadAFI's WhatsApp assistant.
 
 ABOUT GoGadAFI:
 - Brand Name: GoGadAFI (always use this exact format)
@@ -76,16 +73,21 @@ HOW TO ORDER:
 - Email: gogadafiofficial@gmail.com
 
 STRICT RULES:
+- Your name is Aafia
 - Always refer to brand as "GoGadAFI" - never any other format
 - ONLY answer questions related to GoGadAFI business
-- If asked anything unrelated, reply: "Sorry, I don't have knowledge about it. I'm exclusively created for GoGadAFI 👑"
+- If asked anything unrelated, reply: "Sorry, I don't have knowledge about it. I'm exclusively created for GoGadAFI"
 - Reply in the same language the customer uses
-- Keep replies short, helpful and professional`
-          },
-          {
-            role: 'user',
-            content: customerMessage
-          }
+- Keep replies short, 1-2 lines maximum
+${isFirstTime ? `- This is the customer's first message. Start your reply with exactly:\n"Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm Aafia, your WhatsApp assistant. How can I help you today?"` : '- This is a returning customer, do NOT send welcome message, just answer their question directly'}`;
+
+    const groqResponse = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.1-8b-instant',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: customerMessage }
         ]
       },
       {
@@ -98,7 +100,6 @@ STRICT RULES:
 
     const reply = groqResponse.data.choices[0].message.content;
 
-    // Send reply via WhatsApp
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
       {
