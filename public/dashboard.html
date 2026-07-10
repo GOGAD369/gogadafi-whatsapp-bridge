@@ -2,406 +2,2152 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>GoGadAFI — Inbox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GoGadAFI — WhatsApp Dashboard</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
-body { background:#0a0a0a; color:#fff; height:100vh; overflow:hidden; }
+:root {
+  --bg-primary: #042717;
+  --bg-secondary: #063320;
+  --bg-card: #0a3d26;
+  --bg-hover: #0d4a2e;
+  --bg-active: #0f5533;
+  --bg-dark: #021a0f;
+  --bg-page: #f0f4f2;
+  --accent: #25D366;
+  --accent-dark: #1aad52;
+  --accent-light: #4ade80;
+  --text-primary: #ffffff;
+  --text-secondary: #a3c4b0;
+  --text-muted: #6b9e80;
+  --text-dark: #1a2e22;
+  --border: #0d4a2e;
+  --border-light: #e2ede8;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --sidebar-w: 220px;
+  --topbar-h: 56px;
+}
 
-/* LOGIN */
-#loginPage { display:flex; align-items:center; justify-content:center; height:100vh; }
-.loginBox { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:40px; width:340px; text-align:center; }
-.loginBox h2 { color:#fff; font-size:22px; margin-bottom:6px; }
-.loginBox p { color:#888; font-size:13px; margin-bottom:24px; }
-.loginBox input { width:100%; padding:12px 16px; border-radius:10px; border:1px solid #333; background:#111; color:#fff; font-size:14px; margin-bottom:14px; outline:none; }
-.loginBox input:focus { border-color:#25D366; }
-.loginBox button { width:100%; padding:13px; background:#25D366; color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; }
-.loginBox button:hover { background:#1db954; }
-.loginError { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
-.logo-icon { width:64px; height:64px; background:linear-gradient(135deg,#25D366,#128C7E); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background:var(--bg-page); color:var(--text-dark); height:100vh; overflow:hidden; }
 
-/* APP */
-#app { display:none; height:100vh; overflow:hidden; position:fixed; width:100%; top:0; left:0; }
+/* ===================== LOGIN ===================== */
+#loginPage {
+  display:flex; align-items:center; justify-content:center;
+  height:100vh; background:linear-gradient(135deg, #021a0f 0%, #042717 50%, #063320 100%);
+}
+.login-box {
+  background:rgba(255,255,255,0.05); backdrop-filter:blur(20px);
+  border:1px solid rgba(37,211,102,0.2); border-radius:20px;
+  padding:48px 40px; width:380px; text-align:center;
+}
+.login-logo {
+  width:72px; height:72px; background:linear-gradient(135deg,#25D366,#1aad52);
+  border-radius:18px; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px; font-size:32px; box-shadow:0 8px 32px rgba(37,211,102,0.3);
+}
+.login-box h2 { color:#fff; font-size:24px; font-weight:700; margin-bottom:6px; }
+.login-box p { color:var(--text-muted); font-size:14px; margin-bottom:32px; }
+.login-box input {
+  width:100%; padding:14px 16px; border-radius:12px;
+  border:1px solid rgba(37,211,102,0.3); background:rgba(255,255,255,0.08);
+  color:#fff; font-size:14px; margin-bottom:14px; outline:none; transition:0.2s;
+}
+.login-box input:focus { border-color:var(--accent); background:rgba(255,255,255,0.12); }
+.login-box input::placeholder { color:rgba(255,255,255,0.3); }
+.login-btn {
+  width:100%; padding:14px; background:linear-gradient(135deg,#25D366,#1aad52);
+  color:#fff; border:none; border-radius:12px; font-size:15px;
+  font-weight:600; cursor:pointer; transition:0.2s;
+  box-shadow:0 4px 16px rgba(37,211,102,0.3);
+}
+.login-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,0.4); }
+.login-error { color:#ff6b6b; font-size:13px; margin-top:10px; display:none; }
 
-/* DESKTOP LAYOUT */
-.layout { display:flex; height:100vh; overflow:hidden; }
+/* ===================== APP SHELL ===================== */
+#app { display:none; height:100vh; overflow:hidden; }
+.app-layout { display:flex; height:100vh; overflow:hidden; }
 
-/* SIDEBAR */
-.sidebar { width:200px; background:#0d0d0d; border-right:1px solid #1e1e1e; display:flex; flex-direction:column; flex-shrink:0; }
-.sidebar-logo { padding:16px; border-bottom:1px solid #1e1e1e; display:flex; align-items:center; gap:10px; }
-.sidebar-logo .icon { width:36px; height:36px; background:linear-gradient(135deg,#25D366,#128C7E); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.sidebar-logo span { font-size:14px; font-weight:700; color:#25D366; }
-.sidebar-logo small { display:block; font-size:10px; color:#666; }
-.sidebar-section { padding:14px 16px 6px; font-size:10px; color:#555; text-transform:uppercase; letter-spacing:1px; }
-.sidebar-item { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; cursor:pointer; border-radius:8px; margin:2px 8px; font-size:13px; color:#aaa; transition:0.15s; }
-.sidebar-item:hover,.sidebar-item.active { background:#1a1a1a; color:#fff; }
-.sidebar-item.active { color:#25D366; }
-.sidebar-item .left { display:flex; align-items:center; gap:8px; }
-.badge { background:#25D366; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; font-weight:600; min-width:20px; text-align:center; }
-.badge.grey { background:#333; color:#aaa; }
-.bot-status { margin:auto 10px 14px; padding:10px 12px; background:#1a1a1a; border-radius:10px; font-size:12px; }
-.dot { width:7px; height:7px; background:#25D366; border-radius:50%; display:inline-block; margin-right:5px; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  width:var(--sidebar-w); background:var(--bg-primary);
+  display:flex; flex-direction:column; height:100vh;
+  overflow-y:auto; overflow-x:hidden; flex-shrink:0;
+  transition:width 0.3s; position:relative; z-index:50;
+}
+.sidebar::-webkit-scrollbar { width:0; }
+.sidebar-logo {
+  padding:16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.logo-icon {
+  width:38px; height:38px; background:linear-gradient(135deg,#25D366,#1aad52);
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0;
+}
+.logo-text { overflow:hidden; }
+.logo-text span { display:block; font-size:14px; font-weight:700; color:#fff; }
+.logo-text small { font-size:10px; color:var(--text-muted); }
 
-/* CHAT LIST */
-.chatList { width:280px; background:#141414; border-right:1px solid #1e1e1e; display:flex; flex-direction:column; flex-shrink:0; }
-.chatList-header { padding:14px 16px; border-bottom:1px solid #1e1e1e; display:flex; align-items:center; justify-content:space-between; }
-.chatList-header h3 { font-size:15px; font-weight:600; }
-.refresh-btn { background:none; border:none; color:#25D366; cursor:pointer; font-size:18px; padding:4px 6px; border-radius:6px; }
-.refresh-btn:hover { background:#1e1e1e; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.refresh-btn.spinning { animation:spin 1s linear infinite; }
-.search-box { padding:10px 14px; border-bottom:1px solid #1e1e1e; }
-.search-box input { width:100%; padding:8px 12px; background:#1e1e1e; border:1px solid #2a2a2a; border-radius:8px; color:#fff; font-size:13px; outline:none; }
-.search-box input:focus { border-color:#25D366; }
-.chatList-items { overflow-y:auto; flex:1; }
-.chatItem { display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; border-bottom:1px solid #1a1a1a; transition:0.15s; }
-.chatItem:hover { background:#1a1a1a; }
-.chatItem.active { background:#1e2d1e; border-left:3px solid #25D366; }
-.avatar { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#25D366,#128C7E); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; flex-shrink:0; }
-.chatItem-info { flex:1; min-width:0; }
-.chatItem-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
-.chatItem-name { font-size:13px; font-weight:600; color:#fff; }
-.chatItem-time { font-size:11px; color:#666; flex-shrink:0; }
-.chatItem-preview { font-size:12px; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.unread-dot { width:8px; height:8px; background:#25D366; border-radius:50%; flex-shrink:0; }
-.empty-state { text-align:center; padding:40px 20px; color:#555; font-size:13px; }
+.sidebar-section {
+  padding:16px 12px 6px; font-size:10px; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:1.2px; font-weight:600; flex-shrink:0;
+}
+
+.nav-item {
+  display:flex; align-items:center; gap:10px; padding:9px 12px;
+  cursor:pointer; border-radius:8px; margin:1px 6px;
+  font-size:13px; color:var(--text-secondary); transition:0.15s;
+  position:relative; user-select:none;
+}
+.nav-item:hover { background:var(--bg-hover); color:#fff; }
+.nav-item.active { background:var(--bg-active); color:var(--accent); }
+.nav-item .nav-icon { font-size:15px; flex-shrink:0; width:20px; text-align:center; }
+.nav-item .nav-label { flex:1; white-space:nowrap; overflow:hidden; }
+.nav-item .nav-badge {
+  font-size:10px; padding:1px 6px; border-radius:10px;
+  font-weight:600; flex-shrink:0;
+}
+.nav-badge.green { background:var(--accent); color:#fff; }
+.nav-badge.grey { background:rgba(255,255,255,0.1); color:var(--text-muted); }
+.nav-badge.red { background:var(--red); color:#fff; }
+.nav-item .lock-icon { font-size:11px; color:var(--text-muted); flex-shrink:0; }
+.nav-item.locked { opacity:0.6; cursor:not-allowed; }
+.nav-item.locked:hover { background:transparent; color:var(--text-secondary); }
+
+.sub-nav { padding-left:8px; }
+.sub-nav .nav-item { padding:7px 12px; font-size:12px; }
+
+.nav-expand { font-size:10px; color:var(--text-muted); transition:0.2s; }
+.nav-item.open .nav-expand { transform:rotate(90deg); }
+
+.sidebar-footer {
+  margin-top:auto; padding:12px; border-top:1px solid var(--border); flex-shrink:0;
+}
+.bot-status-card {
+  background:var(--bg-card); border-radius:10px; padding:10px 12px;
+}
+.bot-status-card .status-row { display:flex; align-items:center; gap:6px; }
+.pulse-dot {
+  width:7px; height:7px; background:var(--accent); border-radius:50%;
+  animation:pulse 2s infinite; flex-shrink:0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+.bot-status-card .status-label { font-size:12px; color:var(--text-secondary); }
+.bot-status-card .status-label strong { color:var(--accent); }
+.bot-status-card .status-sub { font-size:10px; color:var(--text-muted); margin-top:3px; }
+
+/* ===================== MAIN CONTENT ===================== */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* ===================== TOPBAR ===================== */
+.topbar {
+  height:var(--topbar-h); background:#fff; border-bottom:1px solid var(--border-light);
+  display:flex; align-items:center; padding:0 20px; gap:16px; flex-shrink:0;
+}
+.topbar-title { font-size:16px; font-weight:700; color:var(--text-dark); flex:1; }
+.topbar-actions { display:flex; align-items:center; gap:8px; }
+.topbar-btn {
+  padding:7px 14px; border-radius:8px; font-size:13px; font-weight:500;
+  cursor:pointer; border:none; transition:0.15s;
+}
+.topbar-btn.primary { background:var(--accent); color:#fff; }
+.topbar-btn.primary:hover { background:var(--accent-dark); }
+.topbar-btn.secondary { background:#f0f4f2; color:var(--text-dark); border:1px solid var(--border-light); }
+.topbar-btn.secondary:hover { background:#e5ede9; }
+.mobile-menu-btn {
+  display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-dark);
+}
+
+/* ===================== PAGE CONTENT ===================== */
+.page-content { flex:1; overflow-y:auto; background:var(--bg-page); }
+.page { display:none; }
+.page.active { display:block; }
+
+/* ===================== DASHBOARD PAGE ===================== */
+.dash-wrap { padding:24px; }
+.dash-greeting { margin-bottom:24px; }
+.dash-greeting h2 { font-size:22px; font-weight:700; color:var(--text-dark); }
+.dash-greeting p { font-size:14px; color:#6b7280; margin-top:4px; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.stat-card {
+  background:#fff; border-radius:14px; padding:20px;
+  border:1px solid var(--border-light); transition:0.2s;
+}
+.stat-card:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+.stat-card .stat-icon {
+  width:44px; height:44px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px;
+}
+.stat-card .stat-icon.green { background:#dcfce7; }
+.stat-card .stat-icon.blue { background:#dbeafe; }
+.stat-card .stat-icon.yellow { background:#fef3c7; }
+.stat-card .stat-icon.purple { background:#ede9fe; }
+.stat-card .stat-num { font-size:28px; font-weight:800; color:var(--text-dark); }
+.stat-card .stat-label { font-size:13px; color:#6b7280; margin-top:4px; }
+.stat-card .stat-change { font-size:12px; margin-top:8px; }
+.stat-card .stat-change.up { color:#16a34a; }
+.stat-card .stat-change.down { color:var(--red); }
+
+.chart-section { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:24px; }
+.chart-card {
+  background:#fff; border-radius:14px; padding:20px;
+  border:1px solid var(--border-light);
+}
+.chart-card h3 { font-size:15px; font-weight:700; margin-bottom:16px; color:var(--text-dark); }
+.chart-bars { display:flex; align-items:flex-end; gap:6px; height:140px; }
+.chart-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.chart-bar {
+  width:100%; border-radius:6px 6px 0 0; transition:0.3s;
+  min-height:4px; cursor:pointer;
+}
+.chart-bar.incoming { background:linear-gradient(180deg,#25D366,#1aad52); }
+.chart-bar.outgoing { background:linear-gradient(180deg,#3b82f6,#1d4ed8); }
+.chart-bar:hover { opacity:0.8; }
+.chart-label { font-size:10px; color:#6b7280; }
+.chart-legend { display:flex; gap:16px; margin-top:12px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#6b7280; }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+
+.recent-section { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.recent-card {
+  background:#fff; border-radius:14px; padding:20px;
+  border:1px solid var(--border-light);
+}
+.recent-card h3 { font-size:15px; font-weight:700; margin-bottom:16px; color:var(--text-dark); }
+.recent-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px solid #f3f4f6;
+}
+.recent-item:last-child { border-bottom:none; }
+.r-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.r-info { flex:1; min-width:0; }
+.r-name { font-size:13px; font-weight:600; color:var(--text-dark); }
+.r-msg { font-size:12px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.r-time { font-size:11px; color:#9ca3af; flex-shrink:0; }
+
+/* ===================== INBOX PAGE ===================== */
+.inbox-layout { display:flex; height:calc(100vh - var(--topbar-h)); overflow:hidden; }
+
+.chat-list-panel {
+  width:300px; background:#fff; border-right:1px solid var(--border-light);
+  display:flex; flex-direction:column; flex-shrink:0;
+}
+.chat-list-header { padding:14px 16px; border-bottom:1px solid var(--border-light); }
+.chat-list-header h3 { font-size:15px; font-weight:700; margin-bottom:10px; }
+.filter-tabs { display:flex; gap:4px; flex-wrap:wrap; }
+.filter-tab {
+  padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border-light); background:#f9fafb;
+  color:#6b7280; transition:0.15s; white-space:nowrap;
+}
+.filter-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.filter-tab .tab-count {
+  display:inline-block; background:rgba(0,0,0,0.15); border-radius:8px;
+  padding:0 4px; margin-left:3px; font-size:10px;
+}
+.chat-search { padding:10px 14px; border-bottom:1px solid var(--border-light); }
+.chat-search input {
+  width:100%; padding:8px 12px 8px 32px; border-radius:8px;
+  border:1px solid var(--border-light); font-size:13px; outline:none;
+  background:#f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") 10px center no-repeat;
+  transition:0.2s;
+}
+.chat-search input:focus { border-color:var(--accent); background-color:#fff; }
+.chat-items { overflow-y:auto; flex:1; }
+.chat-item {
+  display:flex; align-items:center; gap:10px; padding:12px 14px;
+  cursor:pointer; border-bottom:1px solid #f9fafb; transition:0.15s;
+}
+.chat-item:hover { background:#f9fafb; }
+.chat-item.active { background:#f0fdf4; border-left:3px solid var(--accent); }
+.ci-avatar {
+  width:42px; height:42px; border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.ci-info { flex:1; min-width:0; }
+.ci-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+.ci-name { font-size:13px; font-weight:600; color:var(--text-dark); }
+.ci-time { font-size:11px; color:#9ca3af; flex-shrink:0; }
+.ci-preview { font-size:12px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ci-unread { width:8px; height:8px; background:var(--accent); border-radius:50%; flex-shrink:0; }
+.ci-tag {
+  display:inline-block; font-size:10px; padding:1px 6px; border-radius:4px;
+  font-weight:600; margin-top:3px;
+}
+.ci-tag.hot { background:#fef3c7; color:#92400e; }
+.ci-tag.order { background:#dbeafe; color:#1e40af; }
+.ci-tag.new { background:#dcfce7; color:#166534; }
 
 /* CHAT WINDOW */
-.chatWindow { flex:1; display:flex; flex-direction:column; min-width:0; background:#111; }
-.chat-header { padding:12px 18px; border-bottom:1px solid #1e1e1e; display:flex; align-items:center; justify-content:space-between; background:#141414; flex-shrink:0; }
-.chat-header .left { display:flex; align-items:center; gap:10px; }
-.chat-header .name { font-size:15px; font-weight:600; }
-.chat-header .phone { font-size:12px; color:#888; }
-.status-badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#1a2e1a; color:#25D366; border:1px solid #25D366; }
-.chatMessages { flex:1; overflow-y:auto; padding:16px; background:#0d0d0d; }
-.date-divider { text-align:center; margin:12px 0; font-size:11px; color:#555; }
-.msg { display:flex; margin-bottom:10px; }
-.msg.incoming { justify-content:flex-start; }
-.msg.outgoing { justify-content:flex-end; }
-.msg-bubble { max-width:68%; padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.5; }
-.incoming .msg-bubble { background:#1e1e1e; color:#e0e0e0; border-bottom-left-radius:3px; }
-.outgoing .msg-bubble { background:#1a3a1a; color:#e0e0e0; border-bottom-right-radius:3px; border:1px solid #25D36633; }
-.msg-sender { font-size:10px; color:#25D366; margin-bottom:3px; font-weight:600; }
-.msg-time { font-size:10px; color:#666; margin-top:3px; text-align:right; }
-.no-chat { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; color:#444; }
-
-/* REPLY BOX */
-.replyBox { padding:12px 16px; border-top:1px solid #1e1e1e; background:#141414; flex-shrink:0; }
-.replyBox-inner { display:flex; align-items:flex-end; gap:10px; background:#1e1e1e; border:1px solid #2a2a2a; border-radius:12px; padding:8px 12px; }
-.replyBox-inner:focus-within { border-color:#25D366; }
-.replyBox textarea { flex:1; background:none; border:none; color:#fff; font-size:14px; outline:none; resize:none; max-height:80px; min-height:22px; font-family:inherit; line-height:1.5; }
-.replyBox textarea::placeholder { color:#555; }
-.send-btn { width:38px; height:38px; background:#25D366; border:none; border-radius:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:15px; color:#fff; transition:0.2s; }
-.send-btn:hover { background:#1db954; }
-.send-btn:disabled { background:#333; cursor:not-allowed; }
-.replyBox-note { font-size:11px; color:#555; margin-top:6px; text-align:center; }
-
-/* DETAILS */
-.detailsPanel { width:240px; background:#141414; border-left:1px solid #1e1e1e; padding:16px; overflow-y:auto; flex-shrink:0; }
-.detailsPanel h4 { font-size:11px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px; }
-.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
-.stat-card { background:#1a1a1a; border-radius:10px; padding:10px; text-align:center; }
-.stat-card .num { font-size:20px; font-weight:700; color:#25D366; }
-.stat-card .lbl { font-size:10px; color:#666; margin-top:2px; }
-.detail-field { margin-bottom:14px; }
-.detail-field label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:5px; }
-.detail-field .value { font-size:12px; color:#ddd; background:#1a1a1a; padding:7px 10px; border-radius:7px; word-break:break-all; }
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .sidebar { display:none; }
-  .detailsPanel { display:none; }
-  .chatList { width:100%; border-right:none; }
-  .chatWindow { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100; background:#111; flex-direction:column; }
-  .chatWindow.mobile-open { display:flex; }
-  .mobile-back { display:flex !important; }
+.chat-window { flex:1; display:flex; flex-direction:column; min-width:0; background:#f9fafb; }
+.chat-window-header {
+  padding:12px 18px; background:#fff; border-bottom:1px solid var(--border-light);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
 }
-.mobile-back { display:none; background:none; border:none; color:#25D366; font-size:22px; cursor:pointer; padding:0 8px 0 0; }
+.cwh-left { display:flex; align-items:center; gap:10px; }
+.cwh-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:#fff;
+}
+.cwh-name { font-size:14px; font-weight:700; color:var(--text-dark); }
+.cwh-phone { font-size:12px; color:#6b7280; }
+.cwh-actions { display:flex; gap:6px; }
+.cwh-btn {
+  padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; border:none; transition:0.15s;
+}
+.cwh-btn.open-tag { background:#dcfce7; color:#166534; }
+.cwh-btn.close-tag { background:#fee2e2; color:#991b1b; }
+.cwh-btn.wa-btn { background:#f0fdf4; color:var(--accent); border:1px solid #bbf7d0; }
+.mobile-back-btn { display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-dark); margin-right:4px; }
 
-/* SCROLLBAR */
-::-webkit-scrollbar { width:3px; }
+.chat-messages {
+  flex:1; overflow-y:auto; padding:16px;
+  background:linear-gradient(180deg,#f0fdf4 0%,#f9fafb 100%);
+}
+.date-sep { text-align:center; margin:12px 0; }
+.date-sep span {
+  background:rgba(0,0,0,0.06); color:#6b7280; font-size:11px;
+  padding:3px 10px; border-radius:10px;
+}
+.msg-row { display:flex; margin-bottom:10px; }
+.msg-row.in { justify-content:flex-start; }
+.msg-row.out { justify-content:flex-end; }
+.msg-bubble {
+  max-width:65%; padding:9px 13px; border-radius:14px; font-size:13px; line-height:1.5;
+}
+.msg-row.in .msg-bubble { background:#fff; color:var(--text-dark); border-bottom-left-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.msg-row.out .msg-bubble { background:linear-gradient(135deg,#dcfce7,#bbf7d0); color:#14532d; border-bottom-right-radius:4px; }
+.msg-sender { font-size:10px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+.msg-time { font-size:10px; color:#9ca3af; margin-top:4px; text-align:right; }
+.no-chat-selected {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; color:#9ca3af;
+}
+.no-chat-icon { font-size:56px; opacity:0.4; }
+
+.reply-box { padding:12px 16px; background:#fff; border-top:1px solid var(--border-light); flex-shrink:0; }
+.reply-inner {
+  display:flex; align-items:flex-end; gap:10px; background:#f9fafb;
+  border:1.5px solid var(--border-light); border-radius:12px; padding:8px 12px; transition:0.2s;
+}
+.reply-inner:focus-within { border-color:var(--accent); background:#fff; }
+.reply-textarea {
+  flex:1; background:none; border:none; outline:none; resize:none;
+  font-size:14px; color:var(--text-dark); max-height:80px; min-height:22px;
+  font-family:inherit; line-height:1.5;
+}
+.reply-textarea::placeholder { color:#9ca3af; }
+.reply-send-btn {
+  width:38px; height:38px; background:linear-gradient(135deg,#25D366,#1aad52);
+  border:none; border-radius:10px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; font-size:16px; color:#fff;
+  flex-shrink:0; transition:0.2s;
+}
+.reply-send-btn:hover { transform:scale(1.05); }
+.reply-send-btn:disabled { background:#e5e7eb; cursor:not-allowed; transform:none; }
+.reply-note { font-size:11px; color:#9ca3af; text-align:center; margin-top:6px; }
+
+/* CUSTOMER DETAILS */
+.customer-details {
+  width:250px; background:#fff; border-left:1px solid var(--border-light);
+  overflow-y:auto; flex-shrink:0; padding:16px;
+}
+.cd-header { font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px; }
+.cd-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.cd-stat { background:#f9fafb; border-radius:10px; padding:10px; text-align:center; }
+.cd-stat .num { font-size:20px; font-weight:800; color:var(--accent); }
+.cd-stat .lbl { font-size:10px; color:#6b7280; margin-top:2px; }
+.cd-field { margin-bottom:14px; }
+.cd-field label { font-size:10px; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:5px; }
+.cd-field .val { font-size:13px; color:var(--text-dark); background:#f9fafb; padding:7px 10px; border-radius:8px; word-break:break-all; }
+.cd-field a { color:var(--accent); text-decoration:none; font-size:13px; }
+.cd-field a:hover { text-decoration:underline; }
+.cd-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+.cd-tag {
+  padding:3px 8px; border-radius:6px; font-size:11px; font-weight:600;
+  cursor:pointer; transition:0.15s;
+}
+.cd-tag.hot { background:#fef3c7; color:#92400e; }
+.cd-tag.order { background:#dbeafe; color:#1e40af; }
+.cd-tag.new { background:#dcfce7; color:#166534; }
+.cd-tag.add { background:#f3f4f6; color:#6b7280; border:1px dashed #d1d5db; }
+.cd-tag.add:hover { background:#e5e7eb; }
+
+/* ===================== CONTACTS PAGE ===================== */
+.contacts-wrap { padding:24px; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.page-header h2 { font-size:20px; font-weight:700; }
+.page-header-actions { display:flex; gap:8px; }
+.btn {
+  padding:8px 16px; border-radius:9px; font-size:13px; font-weight:600;
+  cursor:pointer; border:none; transition:0.2s; display:inline-flex; align-items:center; gap:6px;
+}
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:var(--accent-dark); }
+.btn-secondary { background:#fff; color:var(--text-dark); border:1px solid var(--border-light); }
+.btn-secondary:hover { background:#f9fafb; }
+.btn-danger { background:#fee2e2; color:#991b1b; }
+.btn-danger:hover { background:#fecaca; }
+
+.search-filter-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.search-input-wrap { position:relative; flex:1; min-width:200px; }
+.search-input-wrap input {
+  width:100%; padding:9px 12px 9px 34px; border-radius:9px;
+  border:1px solid var(--border-light); font-size:13px; outline:none; background:#fff; transition:0.2s;
+}
+.search-input-wrap input:focus { border-color:var(--accent); }
+.search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:14px; }
+.filter-select {
+  padding:9px 12px; border-radius:9px; border:1px solid var(--border-light);
+  font-size:13px; background:#fff; outline:none; cursor:pointer; color:var(--text-dark);
+}
+
+.contacts-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; }
+.table-header {
+  display:grid; grid-template-columns:40px 2fr 1.5fr 1fr 1fr 1fr;
+  padding:12px 16px; background:#f9fafb; border-bottom:1px solid var(--border-light);
+  font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;
+}
+.table-row {
+  display:grid; grid-template-columns:40px 2fr 1.5fr 1fr 1fr 1fr;
+  padding:12px 16px; border-bottom:1px solid #f9fafb;
+  align-items:center; transition:0.15s;
+}
+.table-row:hover { background:#f9fafb; }
+.table-row:last-child { border-bottom:none; }
+.contact-name { display:flex; align-items:center; gap:10px; }
+.contact-avatar {
+  width:32px; height:32px; border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.tag-pill {
+  display:inline-block; padding:2px 8px; border-radius:6px;
+  font-size:11px; font-weight:600;
+}
+.tag-pill.hot { background:#fef3c7; color:#92400e; }
+.tag-pill.order { background:#dbeafe; color:#1e40af; }
+.tag-pill.new { background:#dcfce7; color:#166534; }
+.tag-pill.none { background:#f3f4f6; color:#9ca3af; }
+.action-btn { background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:4px; transition:0.15s; border-radius:4px; }
+.action-btn:hover { color:var(--accent); background:#f0fdf4; }
+.checkbox { width:16px; height:16px; cursor:pointer; accent-color:var(--accent); }
+
+/* ===================== MESSAGE LOGS ===================== */
+.logs-wrap { padding:24px; }
+.logs-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; }
+.log-header {
+  display:grid; grid-template-columns:1.5fr 2fr 80px 100px 100px;
+  padding:12px 16px; background:#f9fafb; border-bottom:1px solid var(--border-light);
+  font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase;
+}
+.log-row {
+  display:grid; grid-template-columns:1.5fr 2fr 80px 100px 100px;
+  padding:11px 16px; border-bottom:1px solid #f9fafb; align-items:center;
+  transition:0.15s; font-size:13px;
+}
+.log-row:hover { background:#f9fafb; }
+.log-row:last-child { border-bottom:none; }
+.dir-badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:600; }
+.dir-badge.in { background:#dbeafe; color:#1e40af; }
+.dir-badge.out { background:#dcfce7; color:#166534; }
+.log-msg { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#6b7280; font-size:12px; }
+
+/* ===================== QR PAGE ===================== */
+.qr-wrap { padding:40px 24px; display:flex; flex-direction:column; align-items:center; }
+.qr-card { background:#fff; border-radius:20px; padding:40px; text-align:center; border:1px solid var(--border-light); max-width:420px; width:100%; }
+.qr-card h2 { font-size:20px; font-weight:700; margin-bottom:8px; }
+.qr-card p { color:#6b7280; font-size:14px; margin-bottom:28px; }
+.qr-box {
+  width:220px; height:220px; margin:0 auto 24px;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:3px solid var(--accent); border-radius:16px;
+  display:flex; align-items:center; justify-content:center; font-size:80px;
+}
+.qr-link { display:flex; gap:8px; margin-bottom:16px; }
+.qr-link input {
+  flex:1; padding:9px 12px; border-radius:9px;
+  border:1px solid var(--border-light); font-size:13px; outline:none;
+  background:#f9fafb; color:var(--text-dark);
+}
+.wa-link { margin-top:8px; }
+.wa-link a {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 20px; background:#25D366; color:#fff;
+  border-radius:10px; text-decoration:none; font-size:14px; font-weight:600;
+  transition:0.2s;
+}
+.wa-link a:hover { background:#1aad52; }
+
+/* ===================== SCHEDULER PAGE ===================== */
+.scheduler-wrap { padding:24px; }
+.scheduler-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
+.scheduler-card h3 { font-size:16px; font-weight:700; margin-bottom:16px; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-field { display:flex; flex-direction:column; gap:6px; }
+.form-field label { font-size:12px; font-weight:600; color:#6b7280; }
+.form-field input, .form-field select, .form-field textarea {
+  padding:9px 12px; border-radius:9px; border:1px solid var(--border-light);
+  font-size:13px; outline:none; font-family:inherit; transition:0.2s;
+  color:var(--text-dark); background:#fff;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color:var(--accent); }
+.form-field textarea { resize:vertical; min-height:80px; }
+.form-field.full { grid-column:1/-1; }
+.scheduled-list { margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+.scheduled-item {
+  display:flex; align-items:center; gap:12px; padding:12px 16px;
+  background:#f9fafb; border-radius:10px; border:1px solid var(--border-light);
+}
+.sch-icon { font-size:20px; }
+.sch-info { flex:1; }
+.sch-title { font-size:13px; font-weight:600; }
+.sch-sub { font-size:12px; color:#6b7280; margin-top:2px; }
+.sch-status { font-size:11px; padding:3px 8px; border-radius:6px; font-weight:600; }
+.sch-status.pending { background:#fef3c7; color:#92400e; }
+.sch-status.sent { background:#dcfce7; color:#166534; }
+
+/* ===================== OUTBOUND PAGE ===================== */
+.outbound-wrap { padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.outbound-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); }
+.outbound-card h3 { font-size:16px; font-weight:700; margin-bottom:6px; }
+.outbound-card p { font-size:13px; color:#6b7280; margin-bottom:20px; }
+.template-picker { display:grid; gap:10px; margin-bottom:16px; }
+.template-option {
+  padding:12px 14px; border-radius:10px; border:1.5px solid var(--border-light);
+  cursor:pointer; transition:0.15s;
+}
+.template-option:hover { border-color:var(--accent); background:#f0fdf4; }
+.template-option.selected { border-color:var(--accent); background:#f0fdf4; }
+.template-option .t-name { font-size:13px; font-weight:600; margin-bottom:4px; }
+.template-option .t-preview { font-size:12px; color:#6b7280; }
+.send-preview {
+  background:#f0fdf4; border-radius:12px; padding:14px;
+  border:1px solid #bbf7d0; font-size:13px; color:#14532d; margin-bottom:14px;
+}
+
+/* ===================== CHATBOT PAGE ===================== */
+.chatbot-wrap { padding:24px; }
+.chatbot-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.chatbot-card { background:#fff; border-radius:14px; padding:20px; border:1px solid var(--border-light); }
+.chatbot-card h3 { font-size:15px; font-weight:700; margin-bottom:14px; }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f9fafb; }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-label { font-size:13px; color:var(--text-dark); }
+.toggle-sub { font-size:11px; color:#6b7280; margin-top:2px; }
+.toggle-switch { position:relative; width:44px; height:24px; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
+  background:#e5e7eb; border-radius:24px; transition:0.3s;
+}
+.toggle-slider:before {
+  position:absolute; content:''; height:18px; width:18px;
+  left:3px; bottom:3px; background:#fff; border-radius:50%; transition:0.3s;
+}
+.toggle-switch input:checked + .toggle-slider { background:var(--accent); }
+.toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
+
+/* ===================== TEMPLATES PAGE ===================== */
+.templates-wrap { padding:24px; }
+.template-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+.template-card {
+  background:#fff; border-radius:14px; padding:18px;
+  border:1.5px solid var(--border-light); transition:0.2s; cursor:pointer;
+}
+.template-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+.template-card.new-card { border-style:dashed; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:160px; }
+.template-card.new-card .plus { font-size:32px; color:#9ca3af; margin-bottom:8px; }
+.template-card.new-card span { font-size:14px; color:#6b7280; font-weight:600; }
+.tc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.tc-name { font-size:14px; font-weight:700; }
+.tc-cat { font-size:11px; padding:2px 8px; border-radius:6px; font-weight:600; background:#f3f4f6; color:#6b7280; }
+.tc-body { font-size:13px; color:#6b7280; line-height:1.5; margin-bottom:12px; border-left:3px solid var(--accent); padding-left:10px; }
+.tc-footer { display:flex; gap:6px; }
+
+/* ===================== LOCKED PAGE ===================== */
+.locked-wrap {
+  padding:60px 24px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+}
+.locked-icon { font-size:64px; margin-bottom:20px; opacity:0.6; }
+.locked-title { font-size:22px; font-weight:700; margin-bottom:8px; }
+.locked-sub { font-size:14px; color:#6b7280; margin-bottom:24px; max-width:400px; }
+.locked-features { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:24px; }
+.locked-feat { background:#fff; border-radius:10px; padding:8px 14px; font-size:13px; color:#6b7280; border:1px solid var(--border-light); }
+
+/* ===================== INSTRUCTIONS PAGE ===================== */
+.instructions-wrap { padding:24px; max-width:800px; }
+.inst-section { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
+.inst-section h3 { font-size:16px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.inst-step {
+  display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #f9fafb;
+}
+.inst-step:last-child { border-bottom:none; }
+.inst-num {
+  width:28px; height:28px; background:linear-gradient(135deg,#25D366,#1aad52);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.inst-text .inst-title { font-size:13px; font-weight:600; margin-bottom:3px; }
+.inst-text .inst-desc { font-size:12px; color:#6b7280; }
+.code-box {
+  background:#1e1e1e; border-radius:10px; padding:14px 16px;
+  font-family:monospace; font-size:12px; color:#a3e635; overflow-x:auto; margin-top:10px;
+}
+
+/* ===================== MY PLAN PAGE ===================== */
+.plan-wrap { padding:24px; }
+.plan-card { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; max-width:600px; }
+.plan-header { background:linear-gradient(135deg,var(--bg-primary),var(--bg-secondary)); padding:24px; color:#fff; }
+.plan-header h3 { font-size:20px; font-weight:700; }
+.plan-header .plan-type { font-size:13px; color:var(--accent); font-weight:600; margin-top:4px; }
+.plan-body { padding:24px; }
+.plan-feature { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #f9fafb; font-size:13px; }
+.plan-feature:last-child { border-bottom:none; }
+.plan-feature .check { color:var(--accent); font-size:16px; }
+.plan-feature .lock { color:#9ca3af; font-size:14px; }
+
+/* ===================== API INTEGRATION PAGE ===================== */
+.api-wrap { padding:24px; max-width:700px; }
+.api-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
+.api-card h3 { font-size:16px; font-weight:700; margin-bottom:14px; }
+.api-endpoint {
+  display:flex; align-items:center; gap:10px; padding:10px 14px;
+  background:#f9fafb; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px;
+}
+.method-badge { padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; }
+.method-badge.get { background:#dbeafe; color:#1e40af; }
+.method-badge.post { background:#dcfce7; color:#166534; }
+.endpoint-url { font-family:monospace; font-size:12px; color:var(--text-dark); flex:1; }
+.copy-btn { background:none; border:1px solid var(--border-light); border-radius:6px; padding:4px 8px; font-size:11px; cursor:pointer; color:#6b7280; transition:0.15s; }
+.copy-btn:hover { background:#f0fdf4; color:var(--accent); border-color:var(--accent); }
+
+/* ===================== SETUP PAGE ===================== */
+.setup-wrap { padding:24px; max-width:700px; }
+.setup-step-card {
+  background:#fff; border-radius:14px; padding:20px; border:1px solid var(--border-light);
+  margin-bottom:14px; display:flex; gap:16px;
+}
+.step-indicator {
+  width:36px; height:36px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700;
+}
+.step-indicator.done { background:#dcfce7; color:#166534; }
+.step-indicator.pending { background:#f3f4f6; color:#9ca3af; }
+.setup-step-info h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
+.setup-step-info p { font-size:13px; color:#6b7280; }
+.setup-step-info .step-action { margin-top:10px; }
+
+/* ===================== MOBILE OVERLAY ===================== */
+.sidebar-overlay {
+  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5); z-index:40;
+}
+
+/* ===================== SCROLLBAR ===================== */
+::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
+::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:#9ca3af; }
+
+/* ===================== TOAST ===================== */
+.toast {
+  position:fixed; bottom:20px; right:20px; background:#1e1e1e; color:#fff;
+  padding:12px 20px; border-radius:10px; font-size:13px; z-index:9999;
+  transform:translateY(100px); transition:0.3s; opacity:0;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-left:4px solid var(--accent); }
+.toast.error { border-left:4px solid var(--red); }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .chart-section { grid-template-columns:1fr; }
+  .recent-section { grid-template-columns:1fr; }
+  .chatbot-grid { grid-template-columns:1fr; }
+  .outbound-wrap { grid-template-columns:1fr; }
+}
+
+@media (max-width: 768px) {
+  :root { --sidebar-w: 240px; }
+  .sidebar {
+    position:fixed; top:0; left:0; height:100vh; z-index:50;
+    transform:translateX(-100%); transition:transform 0.3s;
+  }
+  .sidebar.mobile-open { transform:translateX(0); }
+  .sidebar-overlay.show { display:block; }
+  .mobile-menu-btn { display:block; }
+  .customer-details { display:none; }
+  .mobile-back-btn { display:block; }
+  .chat-window { position:fixed; top:0; left:0; width:100%; height:100%; z-index:30; display:none; }
+  .chat-window.mobile-open { display:flex; flex-direction:column; }
+  .chat-list-panel { width:100%; }
+  .form-grid { grid-template-columns:1fr; }
+  .table-header, .table-row { grid-template-columns:2fr 1.5fr 1fr; }
+  .table-header > *:nth-child(1), .table-row > *:nth-child(1),
+  .table-header > *:nth-child(5), .table-row > *:nth-child(5),
+  .table-header > *:nth-child(6), .table-row > *:nth-child(6) { display:none; }
+  .log-header, .log-row { grid-template-columns:1.5fr 2fr 80px; }
+  .log-header > *:nth-child(4), .log-row > *:nth-child(4),
+  .log-header > *:nth-child(5), .log-row > *:nth-child(5) { display:none; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .dash-wrap, .contacts-wrap, .logs-wrap, .qr-wrap, .scheduler-wrap,
+  .chatbot-wrap, .templates-wrap, .instructions-wrap, .plan-wrap,
+  .api-wrap, .setup-wrap, .outbound-wrap { padding:14px; }
+  .filter-tabs { overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; }
+  .outbound-wrap { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="loginPage">
-  <div class="loginBox">
-    <div class="logo-icon">🛍️</div>
+  <div class="login-box">
+    <div class="login-logo">🛍️</div>
     <h2>GoGadAFI Inbox</h2>
-    <p>Sign in to access your dashboard</p>
+    <p>Sign in to access your WhatsApp dashboard</p>
     <input type="password" id="pwdInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button onclick="doLogin()">Sign In →</button>
-    <div class="loginError" id="loginError">❌ Incorrect password</div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError">❌ Incorrect password. Try again.</div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <div class="layout">
+  <div class="app-layout">
+
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="sidebar-logo">
-        <div class="icon">🛍️</div>
-        <div><span>GoGadAFI</span><small>Inbox Dashboard</small></div>
+        <div class="logo-icon">🛍️</div>
+        <div class="logo-text">
+          <span>GoGadAFI</span>
+          <small>WhatsApp Dashboard</small>
+        </div>
       </div>
-      <div class="sidebar-section">Inbox</div>
-      <div class="sidebar-item active" onclick="filterChats('all',this)">
-        <div class="left">💬 All Chats</div>
-        <span class="badge" id="badge-all">0</span>
+
+      <div class="sidebar-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+        <span class="nav-badge green">✓</span>
       </div>
-      <div class="sidebar-item" onclick="filterChats('unread',this)">
-        <div class="left">🔵 Unread</div>
-        <span class="badge" id="badge-unread">0</span>
+      <div class="nav-item" onclick="showPage('inbox',this)">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">All Chats</span>
+        <span class="nav-badge green" id="inboxBadge">0</span>
       </div>
-      <div class="sidebar-item" onclick="filterChats('awaiting',this)">
-        <div class="left">⏳ Awaiting Reply</div>
-        <span class="badge grey" id="badge-awaiting">0</span>
+      <div class="nav-item" onclick="showPage('logs',this)">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Message Logs</span>
+        <span class="nav-badge grey">✓</span>
       </div>
-      <div class="sidebar-section">Bot</div>
-      <div class="bot-status">
-        <span class="dot"></span>
-        <span style="font-size:12px;color:#aaa;">Aafia is <strong style="color:#25D366">Active</strong></span>
-        <div style="font-size:11px;color:#555;margin-top:3px;">Auto-replies enabled</div>
+
+      <div class="sidebar-section">Contacts</div>
+      <div class="nav-item" onclick="showPage('contacts',this)">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">All Contacts</span>
+        <span class="nav-badge grey" id="contactsBadge">0</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Contact Groups','Organize contacts into groups for targeted messaging')">
+        <span class="nav-icon">🗂️</span>
+        <span class="nav-label">Contact Groups</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Add Input','Capture leads with custom input forms')">
+        <span class="nav-icon">➕</span>
+        <span class="nav-label">Add Input</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Invoices','Create and send invoices via WhatsApp')">
+        <span class="nav-icon">🧾</span>
+        <span class="nav-label">Invoices</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+
+      <div class="sidebar-section">Messaging</div>
+      <div class="nav-item" onclick="showPage('templates',this)">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Templates</span>
+        <span class="nav-badge grey">3</span>
+      </div>
+      <div class="nav-item" onclick="showPage('outbound',this)">
+        <span class="nav-icon">📤</span>
+        <span class="nav-label">Outbound</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Campaigns','Send bulk messages to thousands of contacts')">
+        <span class="nav-icon">📣</span>
+        <span class="nav-label">Campaigns</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Flows','Build no-code automation flows')">
+        <span class="nav-icon">⚡</span>
+        <span class="nav-label">Flows</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item" onclick="showPage('scheduler',this)">
+        <span class="nav-icon">🗓️</span>
+        <span class="nav-label">Scheduler</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+
+      <div class="sidebar-section">E-commerce</div>
+      <div class="nav-item locked" onclick="showLocked('WhatsApp Orders','Manage orders placed via WhatsApp')">
+        <span class="nav-icon">🛒</span>
+        <span class="nav-label">WA Orders</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Shopify Integration','Sync your Shopify store with WhatsApp')">
+        <span class="nav-icon">🏪</span>
+        <span class="nav-label">Shopify</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('WooCommerce','Connect your WooCommerce store')">
+        <span class="nav-icon">🛍️</span>
+        <span class="nav-label">WooCommerce</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+
+      <div class="sidebar-section">Automation</div>
+      <div class="nav-item" onclick="showPage('chatbot',this)">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">Chatbot</span>
+        <span class="nav-badge green">ON</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('Agents','Manage human agents and assignments')">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Agents</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+
+      <div class="sidebar-section">Settings</div>
+      <div class="nav-item" onclick="showPage('integrations',this)">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-label">Integrations</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+      <div class="nav-item" onclick="showPage('qrcode',this)">
+        <span class="nav-icon">📲</span>
+        <span class="nav-label">QR Code</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+      <div class="nav-item" onclick="showPage('setup',this)">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Setup</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+      <div class="nav-item" onclick="showPage('instructions',this)">
+        <span class="nav-icon">📖</span>
+        <span class="nav-label">Instructions</span>
+        <span class="nav-badge grey">✓</span>
+      </div>
+      <div class="nav-item locked" onclick="showLocked('My Plan','Upgrade to unlock premium features')">
+        <span class="nav-icon">💎</span>
+        <span class="nav-label">My Plan</span>
+        <span class="lock-icon">🔒</span>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="bot-status-card">
+          <div class="status-row">
+            <div class="pulse-dot"></div>
+            <span class="status-label">Aafia is <strong>Active</strong></span>
+          </div>
+          <div class="status-sub">Auto-replies enabled • 24/7</div>
+        </div>
       </div>
     </div>
 
-    <!-- CHAT LIST -->
-    <div class="chatList">
-      <div class="chatList-header">
-        <h3>All Chats</h3>
-        <button class="refresh-btn" onclick="loadConversations()" title="Refresh">↻</button>
-      </div>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Search customers..." oninput="searchChats(this.value)">
-      </div>
-      <div class="chatList-items" id="chatListItems">
-        <div class="empty-state">Loading...</div>
-      </div>
-    </div>
+    <!-- MAIN -->
+    <div class="main">
 
-    <!-- CHAT WINDOW -->
-    <div class="chatWindow" id="chatWindow">
-      <div class="no-chat" id="noChatSelected">
-        <div style="font-size:48px;">💬</div>
-        <div style="font-size:15px;font-weight:600;color:#555;">Select a conversation</div>
-        <div style="font-size:12px;color:#444;">Choose a chat from the list</div>
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <button class="mobile-menu-btn" onclick="openSidebar()">☰</button>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-actions" id="topbarActions">
+          <button class="topbar-btn secondary" onclick="doExport()">⬇️ Export</button>
+          <button class="topbar-btn primary" onclick="showPage('outbound',null)">✉️ New Message</button>
+        </div>
       </div>
-      <div id="activeChatView" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-        <div class="chat-header">
-          <div class="left">
-            <button class="mobile-back" onclick="closeMobileChat()">←</button>
-            <div class="avatar" id="activeAvatar">?</div>
-            <div>
-              <div class="name" id="activeName">—</div>
-              <div class="phone" id="activePhone">—</div>
+
+      <!-- PAGES -->
+      <div class="page-content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="dash-wrap">
+            <div class="dash-greeting">
+              <h2 id="greetingText">Good morning, Neelakandan 👋</h2>
+              <p id="greetingDate">Loading today's overview...</p>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon green">💬</div>
+                <div class="stat-num" id="statTotal">—</div>
+                <div class="stat-label">Total Messages</div>
+                <div class="stat-change up" id="statTotalChange">Loading...</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon blue">📥</div>
+                <div class="stat-num" id="statIncoming">—</div>
+                <div class="stat-label">Received Today</div>
+                <div class="stat-change up" id="statInChange">↑ from customers</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon yellow">📤</div>
+                <div class="stat-num" id="statOutgoing">—</div>
+                <div class="stat-label">Sent Today</div>
+                <div class="stat-change up" id="statOutChange">↑ bot replies</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon purple">👥</div>
+                <div class="stat-num" id="statContacts">—</div>
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-change up" id="statContactChange">Loading...</div>
+              </div>
+            </div>
+            <div class="chart-section">
+              <div class="chart-card">
+                <h3>Message Activity (Last 7 Days)</h3>
+                <div class="chart-bars" id="chartBars">
+                  <div style="color:#9ca3af;font-size:13px;align-self:center;">Loading chart...</div>
+                </div>
+                <div class="chart-legend">
+                  <div class="legend-item"><div class="legend-dot" style="background:#25D366"></div>Incoming</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Outgoing</div>
+                </div>
+              </div>
+              <div class="chart-card">
+                <h3>Quick Stats</h3>
+                <div id="quickStats">Loading...</div>
+              </div>
+            </div>
+            <div class="recent-section">
+              <div class="recent-card">
+                <h3>Recent Conversations</h3>
+                <div id="recentConvs">Loading...</div>
+              </div>
+              <div class="recent-card">
+                <h3>Latest Messages</h3>
+                <div id="recentMsgs">Loading...</div>
+              </div>
             </div>
           </div>
-          <span class="status-badge">Active</span>
         </div>
-        <div class="chatMessages" id="chatMessages"></div>
-        <div class="replyBox">
-          <div class="replyBox-inner">
-            <textarea id="replyText" placeholder="Type a message to send..." rows="1"
-              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply()}"
-              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
-            <button class="send-btn" onclick="sendReply()" id="sendBtn">➤</button>
+
+        <!-- INBOX -->
+        <div class="page" id="page-inbox">
+          <div class="inbox-layout">
+            <div class="chat-list-panel">
+              <div class="chat-list-header">
+                <h3>All Chats</h3>
+                <div class="filter-tabs">
+                  <div class="filter-tab active" onclick="setFilter('all',this)">All <span class="tab-count" id="fc-all">0</span></div>
+                  <div class="filter-tab" onclick="setFilter('unread',this)">Unread <span class="tab-count" id="fc-unread">0</span></div>
+                  <div class="filter-tab" onclick="setFilter('awaiting',this)">Awaiting <span class="tab-count" id="fc-awaiting">0</span></div>
+                  <div class="filter-tab" onclick="setFilter('open',this)">Open <span class="tab-count" id="fc-open">0</span></div>
+                  <div class="filter-tab" onclick="setFilter('closed',this)">Closed <span class="tab-count" id="fc-closed">0</span></div>
+                </div>
+              </div>
+              <div class="chat-search">
+                <input type="text" placeholder="Search customers..." id="chatSearchInput" oninput="searchChats(this.value)">
+              </div>
+              <div class="chat-items" id="chatItems">
+                <div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">Loading chats...</div>
+              </div>
+            </div>
+            <div class="chat-window" id="chatWindow">
+              <div class="no-chat-selected" id="noChatSel">
+                <div class="no-chat-icon">💬</div>
+                <div style="font-size:16px;font-weight:700;color:#6b7280;">Select a conversation</div>
+                <div style="font-size:13px;color:#9ca3af;margin-top:4px;">Choose a chat from the list to start</div>
+              </div>
+              <div id="activeChatView" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+                <div class="chat-window-header">
+                  <div class="cwh-left">
+                    <button class="mobile-back-btn" onclick="closeMobileChat()">←</button>
+                    <div class="cwh-avatar" id="cwAvatar">?</div>
+                    <div>
+                      <div class="cwh-name" id="cwName">—</div>
+                      <div class="cwh-phone" id="cwPhone">—</div>
+                    </div>
+                  </div>
+                  <div class="cwh-actions">
+                    <button class="cwh-btn open-tag">● Open</button>
+                    <button class="cwh-btn wa-btn" id="cwWaBtn" onclick="openWhatsApp()">Open in WA ↗</button>
+                  </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                  <div style="text-align:center;color:#9ca3af;padding:20px;font-size:13px;">Loading messages...</div>
+                </div>
+                <div class="reply-box">
+                  <div class="reply-inner">
+                    <textarea class="reply-textarea" id="replyText" placeholder="Type a message to send..."
+                      rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply()}"
+                      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+                    <button class="reply-send-btn" id="sendBtn" onclick="sendReply()">➤</button>
+                  </div>
+                  <div class="reply-note">⚡ Manual reply — Aafia bot will continue after this</div>
+                </div>
+              </div>
+            </div>
+            <div class="customer-details" id="customerDetails">
+              <div class="cd-header">Customer Details</div>
+              <div id="cdContent" style="color:#9ca3af;font-size:13px;text-align:center;margin-top:30px;">Select a chat to view details</div>
+            </div>
           </div>
-          <div class="replyBox-note">⚡ Manual reply — bot will continue after this</div>
         </div>
-      </div>
-    </div>
 
-    <!-- DETAILS -->
-    <div class="detailsPanel" id="detailsPanel">
-      <h4>Customer Details</h4>
-      <div id="detailsContent" style="color:#555;font-size:13px;text-align:center;margin-top:30px;">Select a chat</div>
-    </div>
+        <!-- MESSAGE LOGS -->
+        <div class="page" id="page-logs">
+          <div class="logs-wrap">
+            <div class="page-header">
+              <h2>📋 Message Logs</h2>
+              <div class="page-header-actions">
+                <button class="btn btn-secondary" onclick="doExportLogs()">⬇️ Export CSV</button>
+              </div>
+            </div>
+            <div class="search-filter-bar">
+              <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search messages..." oninput="filterLogs(this.value)" id="logSearch">
+              </div>
+              <select class="filter-select" onchange="filterLogDir(this.value)">
+                <option value="all">All Direction</option>
+                <option value="incoming">Incoming</option>
+                <option value="outgoing">Outgoing</option>
+              </select>
+            </div>
+            <div class="logs-table">
+              <div class="log-header">
+                <div>Customer</div>
+                <div>Message</div>
+                <div>Direction</div>
+                <div>Time</div>
+                <div>Date</div>
+              </div>
+              <div id="logsBody">
+                <div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">Loading logs...</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  </div>
-</div>
+        <!-- CONTACTS -->
+        <div class="page" id="page-contacts">
+          <div class="contacts-wrap">
+            <div class="page-header">
+              <h2>👥 All Contacts</h2>
+              <div class="page-header-actions">
+                <button class="btn btn-secondary" onclick="doExportContacts()">⬇️ Export</button>
+                <button class="btn btn-primary" onclick="showPage('outbound',null)">✉️ Message</button>
+              </div>
+            </div>
+            <div class="search-filter-bar">
+              <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search contacts..." oninput="searchContacts(this.value)" id="contactSearch">
+              </div>
+              <select class="filter-select" onchange="filterContactTag(this.value)">
+                <option value="all">All Tags</option>
+                <option value="hot">Hot Lead</option>
+                <option value="order">Order Placed</option>
+                <option value="new">New Customer</option>
+              </select>
+            </div>
+            <div class="contacts-table">
+              <div class="table-header">
+                <div></div>
+                <div>Name</div>
+                <div>Phone</div>
+                <div>Tag</div>
+                <div>Messages</div>
+                <div>Actions</div>
+              </div>
+              <div id="contactsBody">
+                <div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">Loading contacts...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEMPLATES -->
+        <div class="page" id="page-templates">
+          <div class="templates-wrap">
+            <div class="page-header">
+              <h2>📝 Message Templates</h2>
+              <button class="btn btn-primary">+ New Template</button>
+            </div>
+            <div class="template-grid" id="templatesGrid">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- OUTBOUND -->
+        <div class="page" id="page-outbound">
+          <div class="outbound-wrap">
+            <div class="outbound-card">
+              <h3>📤 Send Outbound Message</h3>
+              <p>Send a message to a new or existing contact</p>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Recipient Phone Number</label>
+                  <input type="tel" id="outPhone" placeholder="91XXXXXXXXXX (with country code)">
+                </div>
+                <div class="form-field">
+                  <label>Recipient Name</label>
+                  <input type="text" id="outName" placeholder="Customer name">
+                </div>
+                <div class="form-field full">
+                  <label>Message</label>
+                  <textarea id="outMessage" placeholder="Type your message here..." rows="4"></textarea>
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <button class="btn btn-primary" onclick="sendOutbound()">➤ Send Message</button>
+              </div>
+            </div>
+            <div class="outbound-card">
+              <h3>📋 Quick Templates</h3>
+              <p>Pick a template to auto-fill the message</p>
+              <div class="template-picker" id="outboundTemplates">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHATBOT -->
+        <div class="page" id="page-chatbot">
+          <div class="chatbot-wrap">
+            <div class="page-header">
+              <h2>🤖 Chatbot Settings</h2>
+            </div>
+            <div class="chatbot-grid">
+              <div class="chatbot-card">
+                <h3>Bot Status</h3>
+                <div class="toggle-row">
+                  <div><div class="toggle-label">Aafia Bot Active</div><div class="toggle-sub">Auto-reply to all messages</div></div>
+                  <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><div class="toggle-label">Welcome Message</div><div class="toggle-sub">Send greeting to new customers</div></div>
+                  <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><div class="toggle-label">Language Detection</div><div class="toggle-sub">Reply in customer's language</div></div>
+                  <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><div class="toggle-label">Duplicate Prevention</div><div class="toggle-sub">Ignore repeated messages</div></div>
+                  <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+              <div class="chatbot-card">
+                <h3>Bot Identity</h3>
+                <div class="form-field" style="margin-bottom:12px;">
+                  <label>Bot Name</label>
+                  <input type="text" value="Aafia" readonly style="background:#f9fafb;">
+                </div>
+                <div class="form-field" style="margin-bottom:12px;">
+                  <label>AI Model</label>
+                  <input type="text" value="Groq Llama 3.1 8b Instant" readonly style="background:#f9fafb;">
+                </div>
+                <div class="form-field" style="margin-bottom:12px;">
+                  <label>Brand Name</label>
+                  <input type="text" value="GoGadAFI" readonly style="background:#f9fafb;">
+                </div>
+                <div class="form-field">
+                  <label>Response Style</label>
+                  <select><option>Short (1-2 lines)</option><option>Medium (3-5 lines)</option></select>
+                </div>
+              </div>
+              <div class="chatbot-card">
+                <h3>Working Hours</h3>
+                <div class="toggle-row">
+                  <div><div class="toggle-label">24/7 Mode</div><div class="toggle-sub">Bot active all the time</div></div>
+                  <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="form-grid" style="margin-top:12px;">
+                  <div class="form-field">
+                    <label>Start Time</label>
+                    <input type="time" value="09:00">
+                  </div>
+                  <div class="form-field">
+                    <label>End Time</label>
+                    <input type="time" value="21:00">
+                  </div>
+                </div>
+              </div>
+              <div class="chatbot-card">
+                <h3>Bot Performance</h3>
+                <div id="botStats" style="color:#9ca3af;font-size:13px;">Loading stats...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR CODE -->
+        <div class="page" id="page-qrcode">
+          <div class="qr-wrap">
+            <div class="qr-card">
+              <h2>📲 WhatsApp QR Code</h2>
+              <p>Scan this QR code to start a chat with GoGadAFI on WhatsApp</p>
+              <div class="qr-box">📱</div>
+              <div class="qr-link">
+                <input type="text" id="waLinkInput" value="https://wa.me/917639917149" readonly>
+                <button class="btn btn-primary" onclick="copyWaLink()">Copy</button>
+              </div>
+              <div class="wa-link">
+                <a href="https://wa.me/917639917149" target="_blank">
+                  💬 Open WhatsApp Chat
+                </a>
+              </div>
+              <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6;">
+                <p style="font-size:13px;color:#6b7280;margin-bottom:12px;">Share your chat link on social media or your website</p>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                  <button class="btn btn-secondary" onclick="copyWaLink()">📋 Copy Link</button>
+                  <button class="btn btn-secondary" onclick="window.print()">🖨️ Print QR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCHEDULER -->
+        <div class="page" id="page-scheduler">
+          <div class="scheduler-wrap">
+            <div class="page-header">
+              <h2>🗓️ Message Scheduler</h2>
+            </div>
+            <div class="scheduler-card">
+              <h3>Schedule a New Message</h3>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Recipient Phone</label>
+                  <input type="tel" placeholder="91XXXXXXXXXX">
+                </div>
+                <div class="form-field">
+                  <label>Recipient Name</label>
+                  <input type="text" placeholder="Customer name">
+                </div>
+                <div class="form-field">
+                  <label>Date</label>
+                  <input type="date" id="schedDate">
+                </div>
+                <div class="form-field">
+                  <label>Time</label>
+                  <input type="time" id="schedTime">
+                </div>
+                <div class="form-field full">
+                  <label>Message</label>
+                  <textarea placeholder="Type your scheduled message..."></textarea>
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <button class="btn btn-primary" onclick="addScheduled()">📅 Schedule Message</button>
+              </div>
+            </div>
+            <div class="scheduler-card">
+              <h3>Scheduled Messages</h3>
+              <div class="scheduled-list" id="scheduledList">
+                <div style="text-align:center;color:#9ca3af;font-size:13px;padding:20px;">No scheduled messages yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INTEGRATIONS -->
+        <div class="page" id="page-integrations">
+          <div class="api-wrap">
+            <div class="page-header">
+              <h2>🔗 Integrations</h2>
+            </div>
+            <div class="api-card">
+              <h3>Connected Services</h3>
+              <div class="api-endpoint">
+                <span class="method-badge get">META</span>
+                <span class="endpoint-url">WhatsApp Business API — Connected ✅</span>
+              </div>
+              <div class="api-endpoint">
+                <span class="method-badge post">GROQ</span>
+                <span class="endpoint-url">Llama 3.1 AI — Active ✅</span>
+              </div>
+              <div class="api-endpoint">
+                <span class="method-badge get">MONGO</span>
+                <span class="endpoint-url">MongoDB Atlas — Connected ✅</span>
+              </div>
+            </div>
+            <div class="api-card">
+              <h3>🔒 Coming Soon</h3>
+              <div class="locked-features" style="margin:0;padding:0;">
+                <div class="locked-feat">Google Sheets</div>
+                <div class="locked-feat">Shopify</div>
+                <div class="locked-feat">HubSpot</div>
+                <div class="locked-feat">Zapier</div>
+                <div class="locked-feat">WooCommerce</div>
+              </div>
+            </div>
+            <div class="api-card">
+              <h3>📡 API Integration</h3>
+              <div class="api-endpoint">
+                <span class="method-badge get">GET</span>
+                <span class="endpoint-url">/api/conversations</span>
+                <button class="copy-btn" onclick="copyText('/api/conversations')">Copy</button>
+              </div>
+              <div class="api-endpoint">
+                <span class="method-badge get">GET</span>
+                <span class="endpoint-url">/api/messages/:phone</span>
+                <button class="copy-btn" onclick="copyText('/api/messages/:phone')">Copy</button>
+              </div>
+              <div class="api-endpoint">
+                <span class="method-badge post">POST</span>
+                <span class="endpoint-url">/api/send</span>
+                <button class="copy-btn" onclick="copyText('/api/send')">Copy</button>
+              </div>
+              <div class="code-box">{
+  "phone": "919XXXXXXXXX",
+  "message": "Your message here",
+  "customerName": "Name"
+}
+Header: x-dashboard-token: [your-password]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETUP -->
+        <div class="page" id="page-setup">
+          <div class="setup-wrap">
+            <div class="page-header">
+              <h2>⚙️ Setup Guide</h2>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator done">✓</div>
+              <div class="setup-step-info">
+                <h4>Meta Developer App Created</h4>
+                <p>App ID: 176910030774239 — Business verified ✅</p>
+              </div>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator done">✓</div>
+              <div class="setup-step-info">
+                <h4>WhatsApp Business Account Connected</h4>
+                <p>Phone: +91 76399 17149 (ID: 1189126250953189)</p>
+              </div>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator done">✓</div>
+              <div class="setup-step-info">
+                <h4>Railway Server Deployed</h4>
+                <p>URL: gogadafi-whatsapp-bridge-production.up.railway.app</p>
+              </div>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator done">✓</div>
+              <div class="setup-step-info">
+                <h4>MongoDB Atlas Connected</h4>
+                <p>Cluster0 — Mumbai region — Messages saving ✅</p>
+              </div>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator done">✓</div>
+              <div class="setup-step-info">
+                <h4>Aafia Bot Active</h4>
+                <p>Groq Llama 3.1 — Tamil/English — Welcome message ✅</p>
+              </div>
+            </div>
+            <div class="setup-step-card">
+              <div class="step-indicator pending">⋯</div>
+              <div class="setup-step-info">
+                <h4>WhatsApp Profile Picture</h4>
+                <p>Set GoGadAFI logo as profile picture</p>
+                <div class="step-action">
+                  <a href="https://business.facebook.com" target="_blank" class="btn btn-secondary" style="font-size:12px;padding:6px 12px;">Set in Meta Business →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSTRUCTIONS -->
+        <div class="page" id="page-instructions">
+          <div class="instructions-wrap">
+            <div class="page-header">
+              <h2>📖 Instructions</h2>
+            </div>
+            <div class="inst-section">
+              <h3>🚀 How This Dashboard Works</h3>
+              <div class="inst-step">
+                <div class="inst-num">1</div>
+                <div class="inst-text">
+                  <div class="inst-title">All Chats — View Conversations</div>
+                  <div class="inst-desc">Click "All Chats" in sidebar to see all customer conversations. Click any customer to view their chat history.</div>
+                </div>
+              </div>
+              <div class="inst-step">
+                <div class="inst-num">2</div>
+                <div class="inst-text">
+                  <div class="inst-title">Manual Reply — Override Bot</div>
+                  <div class="inst-desc">Open a chat → type in the reply box → press Enter or click Send. Your reply goes directly to the customer via WhatsApp. Bot continues after your reply.</div>
+                </div>
+              </div>
+              <div class="inst-step">
+                <div class="inst-num">3</div>
+                <div class="inst-text">
+                  <div class="inst-title">Outbound Message — Contact New Customers</div>
+                  <div class="inst-desc">Click "Outbound" in sidebar → enter phone number + message → send. Use this to proactively contact customers.</div>
+                </div>
+              </div>
+              <div class="inst-step">
+                <div class="inst-num">4</div>
+                <div class="inst-text">
+                  <div class="inst-title">Contact Tags — Label Customers</div>
+                  <div class="inst-desc">In the Contacts page, you can add tags like "Hot Lead", "Order Placed", "New Customer" to organize your contacts.</div>
+                </div>
+              </div>
+              <div class="inst-step">
+                <div class="inst-num">5</div>
+                <div class="inst-text">
+                  <div class="inst-title">Export Data</div>
+                  <div class="inst-desc">Use the Export button in Contacts or Message Logs to download data as CSV. Open in Excel for analysis.</div>
+                </div>
+              </div>
+            </div>
+            <div class="inst-section">
+              <h3>🔧 Changing Dashboard Password</h3>
+              <div class="inst-step">
+                <div class="inst-num">1</div>
+                <div class="inst-text">
+                  <div class="inst-title">Go to Railway</div>
+                  <div class="inst-desc">railway.app → your project → Variables</div>
+                </div>
+              </div>
+              <div class="inst-step">
+                <div class="inst-num">2</div>
+                <div class="inst-text">
+                  <div class="inst-title">Edit DASHBOARD_PASSWORD</div>
+                  <div class="inst-desc">Change the value to your new password → Update Variables → auto-redeploy</div>
+                </div>
+              </div>
+              <div class="code-box">DASHBOARD_PASSWORD="your-new-password"</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOCKED PAGE -->
+        <div class="page" id="page-locked">
+          <div class="locked-wrap">
+            <div class="locked-icon" id="lockedIcon">🔒</div>
+            <div class="locked-title" id="lockedTitle">Feature Locked</div>
+            <div class="locked-sub" id="lockedSub">This feature is coming soon</div>
+            <div class="locked-features">
+              <div class="locked-feat">✅ All Chats — Available</div>
+              <div class="locked-feat">✅ Contacts — Available</div>
+              <div class="locked-feat">✅ Message Logs — Available</div>
+              <div class="locked-feat">✅ Outbound — Available</div>
+            </div>
+            <button class="btn btn-primary" onclick="showPage('dashboard',null)">← Back to Dashboard</button>
+          </div>
+        </div>
+
+      </div><!-- end page-content -->
+    </div><!-- end main -->
+  </div><!-- end app-layout -->
+</div><!-- end app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-let AUTH_TOKEN = '';
-let conversations = [];
+// ===================== STATE =====================
+let AUTH = '';
+let convs = [];
+let allMsgs = [];
+let allContacts = [];
 let activePhone = null;
-let activeCustomerName = '';
+let activeName = '';
+let currentFilter = 'all';
+let closedChats = new Set();
+let contactTags = {};
+let scheduledMsgs = [];
+let refreshTimer = null;
 
+const TEMPLATES = [
+  { name:'Welcome', cat:'Greeting', body:'Hi {name}! Welcome to GoGadAFI 🛍️ I am Aafia, your WhatsApp assistant. How can I help you today?' },
+  { name:'Order Confirmation', cat:'Order', body:'Thank you for your order {name}! 🎉 Your order has been placed successfully. We will share tracking details soon. Visit us: https://gogad369.github.io/GOGADAFI' },
+  { name:'Follow Up', cat:'Sales', body:'Hi {name}! Just checking in from GoGadAFI 👋 Did you get a chance to browse our collection? Let me know if you need any help!' },
+  { name:'Offer', cat:'Marketing', body:'🎉 Special offer for you {name}! GoGadAFI is having a sale on men\'s fashion. Visit us at https://gogad369.github.io/GOGADAFI' },
+];
+
+// ===================== LOGIN =====================
 function doLogin() {
   const pwd = document.getElementById('pwdInput').value.trim();
   if (!pwd) return;
-  AUTH_TOKEN = pwd;
-  fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH_TOKEN } })
+  AUTH = pwd;
+  fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } })
     .then(r => {
       if (r.status === 401) {
         document.getElementById('loginError').style.display = 'block';
-        AUTH_TOKEN = '';
+        AUTH = '';
       } else {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        loadConversations();
-        setInterval(async () => {
-          await loadConversations();
-          if (activePhone) await loadMessages(activePhone);
-        }, 10000);
+        initApp();
       }
+    }).catch(() => {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('loginError').textContent = '❌ Connection error. Check server.';
+      AUTH = '';
     });
 }
 
-async function loadConversations() {
-  const btn = document.querySelector('.refresh-btn');
-  if (btn) btn.classList.add('spinning');
+// ===================== INIT =====================
+async function initApp() {
+  setGreeting();
+  await loadAll();
+  renderTemplates();
+  renderOutboundTemplates();
+  setupScheduler();
+  startSilentRefresh();
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greetingText').textContent = `${g}, Neelakandan 👋`;
+  document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+async function loadAll() {
   try {
-    const r = await fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH_TOKEN } });
-    conversations = await r.json();
-    renderChatList(conversations);
-    updateBadges(conversations);
-  } catch(e) {}
-  if (btn) btn.classList.remove('spinning');
+    const [cR, mR] = await Promise.all([
+      fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } }),
+      fetch('/api/messages/all-recent', { headers: { 'x-dashboard-token': AUTH } }).catch(() => null)
+    ]);
+    convs = await cR.json();
+    if (mR && mR.ok) allMsgs = await mR.json();
+    else await loadAllMsgs();
+    buildContacts();
+    updateAll();
+  } catch(e) { console.error(e); }
 }
 
-function updateBadges(convs) {
-  const unread = convs.filter(c => c.lastDirection === 'incoming').length;
-  document.getElementById('badge-all').textContent = convs.length;
-  document.getElementById('badge-unread').textContent = unread;
-  document.getElementById('badge-awaiting').textContent = unread;
+async function loadAllMsgs() {
+  allMsgs = [];
+  for (const c of convs.slice(0, 50)) {
+    try {
+      const r = await fetch(`/api/messages/${c._id}`, { headers: { 'x-dashboard-token': AUTH } });
+      const msgs = await r.json();
+      allMsgs.push(...msgs);
+    } catch(e) {}
+  }
 }
 
-function renderChatList(convs) {
-  const el = document.getElementById('chatListItems');
-  if (!convs.length) { el.innerHTML = '<div class="empty-state">📭 No conversations yet</div>'; return; }
-  el.innerHTML = convs.map(c => {
-    const init = (c.customerName||'?').charAt(0).toUpperCase();
-    const time = formatTime(c.lastTime);
-    const preview = (c.lastMessage||'').substring(0,45);
-    const isUnread = c.lastDirection === 'incoming';
-    const isActive = c._id === activePhone;
-    return `<div class="chatItem ${isActive?'active':''}" onclick="openChat('${c._id}','${esc(c.customerName||'Unknown')}')">
-      <div class="avatar">${init}</div>
-      <div class="chatItem-info">
-        <div class="chatItem-top">
-          <span class="chatItem-name">${esc(c.customerName||'Unknown')}</span>
-          <span class="chatItem-time">${time}</span>
-        </div>
-        <div class="chatItem-preview">${isUnread?'📩 ':''}${esc(preview)}</div>
+function buildContacts() {
+  allContacts = convs.map(c => ({
+    phone: c._id,
+    name: c.customerName || 'Unknown',
+    lastTime: c.lastTime,
+    totalMessages: c.totalMessages || 0,
+    tag: contactTags[c._id] || 'new'
+  }));
+  document.getElementById('contactsBadge').textContent = allContacts.length;
+  document.getElementById('inboxBadge').textContent = convs.length;
+}
+
+function updateAll() {
+  updateDashboard();
+  renderChatList();
+  renderLogs();
+  renderContacts();
+  updateFilterCounts();
+  updateBotStats();
+}
+
+// ===================== SILENT REFRESH =====================
+function startSilentRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(async () => {
+    try {
+      const r = await fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } });
+      const newConvs = await r.json();
+      const changed = JSON.stringify(newConvs) !== JSON.stringify(convs);
+      convs = newConvs;
+      buildContacts();
+      if (changed) {
+        renderChatList();
+        updateDashboard();
+        renderLogs();
+        renderContacts();
+        updateFilterCounts();
+      }
+      if (activePhone) {
+        const r2 = await fetch(`/api/messages/${activePhone}`, { headers: { 'x-dashboard-token': AUTH } });
+        const newMsgs = await r2.json();
+        renderMessages(newMsgs);
+      }
+    } catch(e) {}
+  }, 8000);
+}
+
+// ===================== DASHBOARD =====================
+function updateDashboard() {
+  const today = new Date().toDateString();
+  const todayMsgs = allMsgs.filter(m => new Date(m.timestamp).toDateString() === today);
+  const incoming = todayMsgs.filter(m => m.direction === 'incoming').length;
+  const outgoing = todayMsgs.filter(m => m.direction === 'outgoing').length;
+  const total = allMsgs.length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statIncoming').textContent = incoming;
+  document.getElementById('statOutgoing').textContent = outgoing;
+  document.getElementById('statContacts').textContent = allContacts.length;
+  document.getElementById('statTotalChange').textContent = `↑ ${total} total messages`;
+  document.getElementById('statInChange').textContent = `↑ ${incoming} received today`;
+  document.getElementById('statOutChange').textContent = `↑ ${outgoing} sent today`;
+  document.getElementById('statContactChange').textContent = `↑ ${allContacts.length} customers`;
+
+  renderChart();
+  renderQuickStats();
+  renderRecentConvs();
+  renderRecentMsgs();
+}
+
+function renderChart() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+  const maxVal = Math.max(...days.map(d => allMsgs.filter(m => new Date(m.timestamp).toDateString() === d.toDateString()).length), 1);
+  const html = days.map(d => {
+    const ds = d.toDateString();
+    const inc = allMsgs.filter(m => new Date(m.timestamp).toDateString() === ds && m.direction === 'incoming').length;
+    const out = allMsgs.filter(m => new Date(m.timestamp).toDateString() === ds && m.direction === 'outgoing').length;
+    const ih = Math.max((inc / maxVal) * 120, 4);
+    const oh = Math.max((out / maxVal) * 120, 4);
+    const label = d.toLocaleDateString('en',{weekday:'short'});
+    return `<div class="chart-bar-wrap">
+      <div style="display:flex;gap:2px;align-items:flex-end;height:120px;">
+        <div class="chart-bar incoming" style="height:${ih}px;width:12px;" title="${inc} incoming"></div>
+        <div class="chart-bar outgoing" style="height:${oh}px;width:12px;" title="${out} outgoing"></div>
       </div>
-      ${isUnread?'<div class="unread-dot"></div>':''}
+      <div class="chart-label">${label}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('chartBars').innerHTML = html;
+}
+
+function renderQuickStats() {
+  const totalIn = allMsgs.filter(m => m.direction === 'incoming').length;
+  const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
+  const rate = totalIn > 0 ? Math.round((totalOut / totalIn) * 100) : 0;
+  document.getElementById('quickStats').innerHTML = `
+    <div class="recent-item"><div class="r-avatar" style="background:#dcfce7;color:#16a34a;">📥</div><div class="r-info"><div class="r-name">Total Received</div><div class="r-msg">${totalIn} messages</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1d4ed8;">📤</div><div class="r-info"><div class="r-name">Total Sent</div><div class="r-msg">${totalOut} messages</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;">⚡</div><div class="r-info"><div class="r-name">Response Rate</div><div class="r-msg">${rate}%</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#ede9fe;color:#6d28d9;">🤖</div><div class="r-info"><div class="r-name">Bot (Aafia)</div><div class="r-msg">Active 24/7</div></div></div>
+  `;
+}
+
+function renderRecentConvs() {
+  const el = document.getElementById('recentConvs');
+  if (!convs.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px;">No conversations yet</div>'; return; }
+  el.innerHTML = convs.slice(0,5).map(c => `
+    <div class="recent-item" style="cursor:pointer;" onclick="showPage('inbox',null);setTimeout(()=>openChat('${c._id}','${esc(c.customerName||'Unknown')}'),300)">
+      <div class="r-avatar">${(c.customerName||'?').charAt(0).toUpperCase()}</div>
+      <div class="r-info">
+        <div class="r-name">${esc(c.customerName||'Unknown')}</div>
+        <div class="r-msg">${esc((c.lastMessage||'').substring(0,40))}</div>
+      </div>
+      <div class="r-time">${formatTime(c.lastTime)}</div>
+    </div>`).join('');
+}
+
+function renderRecentMsgs() {
+  const el = document.getElementById('recentMsgs');
+  const recent = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,5);
+  if (!recent.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px;">No messages yet</div>'; return; }
+  el.innerHTML = recent.map(m => `
+    <div class="recent-item">
+      <div class="r-avatar" style="${m.direction==='outgoing'?'background:#dcfce7;color:#16a34a;':'background:#dbeafe;color:#1e40af;'}">${m.direction==='outgoing'?'📤':'📥'}</div>
+      <div class="r-info">
+        <div class="r-name">${esc(m.customerName||'Unknown')}</div>
+        <div class="r-msg">${esc((m.text||'').substring(0,40))}</div>
+      </div>
+      <div class="r-time">${formatTime(m.timestamp)}</div>
+    </div>`).join('');
+}
+
+// ===================== INBOX =====================
+function updateFilterCounts() {
+  const unread = convs.filter(c => c.lastDirection === 'incoming').length;
+  const awaiting = convs.filter(c => c.lastDirection === 'incoming').length;
+  const open = convs.filter(c => !closedChats.has(c._id)).length;
+  const closed = closedChats.size;
+  document.getElementById('fc-all').textContent = convs.length;
+  document.getElementById('fc-unread').textContent = unread;
+  document.getElementById('fc-awaiting').textContent = awaiting;
+  document.getElementById('fc-open').textContent = open;
+  document.getElementById('fc-closed').textContent = closed;
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderChatList();
+}
+
+function getFilteredConvs() {
+  let list = [...convs];
+  if (currentFilter === 'unread' || currentFilter === 'awaiting') list = list.filter(c => c.lastDirection === 'incoming');
+  else if (currentFilter === 'open') list = list.filter(c => !closedChats.has(c._id));
+  else if (currentFilter === 'closed') list = list.filter(c => closedChats.has(c._id));
+  const q = document.getElementById('chatSearchInput')?.value?.toLowerCase() || '';
+  if (q) list = list.filter(c => (c.customerName||'').toLowerCase().includes(q) || c._id.includes(q));
+  return list;
+}
+
+function renderChatList() {
+  const el = document.getElementById('chatItems');
+  if (!el) return;
+  const list = getFilteredConvs();
+  if (!list.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">📭 No conversations</div>'; return; }
+  el.innerHTML = list.map(c => {
+    const init = (c.customerName||'?').charAt(0).toUpperCase();
+    const isUnread = c.lastDirection === 'incoming';
+    const tag = contactTags[c._id];
+    return `<div class="chat-item ${c._id === activePhone ? 'active' : ''}" onclick="openChat('${c._id}','${esc(c.customerName||'Unknown')}')">
+      <div class="ci-avatar">${init}</div>
+      <div class="ci-info">
+        <div class="ci-top">
+          <span class="ci-name">${esc(c.customerName||'Unknown')}</span>
+          <span class="ci-time">${formatTime(c.lastTime)}</span>
+        </div>
+        <div class="ci-preview">${isUnread?'📩 ':''}${esc((c.lastMessage||'').substring(0,45))}</div>
+        ${tag ? `<span class="ci-tag ${tag}">${tag==='hot'?'🔥 Hot Lead':tag==='order'?'📦 Order':'🆕 New'}</span>` : ''}
+      </div>
+      ${isUnread ? '<div class="ci-unread"></div>' : ''}
     </div>`;
   }).join('');
 }
 
-function filterChats(type, el) {
-  document.querySelectorAll('.sidebar-item').forEach(e => e.classList.remove('active'));
-  if (el) el.classList.add('active');
-  let filtered = conversations;
-  if (type === 'unread' || type === 'awaiting') filtered = conversations.filter(c => c.lastDirection === 'incoming');
-  renderChatList(filtered);
-}
-
-function searchChats(q) {
-  const filtered = q ? conversations.filter(c => (c.customerName||'').toLowerCase().includes(q.toLowerCase()) || c._id.includes(q)) : conversations;
-  renderChatList(filtered);
-}
+function searchChats(q) { renderChatList(); }
 
 async function openChat(phone, name) {
   activePhone = phone;
-  activeCustomerName = name;
-  document.getElementById('noChatSelected').style.display = 'none';
+  activeName = name;
+  document.getElementById('noChatSel').style.display = 'none';
   const view = document.getElementById('activeChatView');
   view.style.display = 'flex';
-  document.getElementById('activeAvatar').textContent = (name||'?').charAt(0).toUpperCase();
-  document.getElementById('activeName').textContent = name;
-  document.getElementById('activePhone').textContent = '+' + phone;
-  // Mobile: show chat window
+  document.getElementById('cwAvatar').textContent = (name||'?').charAt(0).toUpperCase();
+  document.getElementById('cwName').textContent = name;
+  document.getElementById('cwPhone').textContent = '+' + phone;
+  document.getElementById('cwWaBtn').onclick = () => window.open('https://wa.me/'+phone,'_blank');
   document.getElementById('chatWindow').classList.add('mobile-open');
-  renderChatList(conversations);
-  await loadMessages(phone);
-  renderDetails(phone, name);
+  renderChatList();
+  renderCustomerDetails(phone, name);
+  try {
+    const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH } });
+    const msgs = await r.json();
+    renderMessages(msgs);
+  } catch(e) {}
+}
+
+function renderMessages(msgs) {
+  const el = document.getElementById('chatMessages');
+  if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px;">No messages yet</div>'; return; }
+  let lastDate = '';
+  const scrolled = el.scrollTop + el.clientHeight >= el.scrollHeight - 60;
+  el.innerHTML = msgs.map(m => {
+    const d = new Date(m.timestamp);
+    const ds = d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const ts = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    let sep = '';
+    if (ds !== lastDate) { lastDate = ds; sep = `<div class="date-sep"><span>${ds}</span></div>`; }
+    const isOut = m.direction === 'outgoing';
+    return `${sep}<div class="msg-row ${isOut?'out':'in'}"><div class="msg-bubble">
+      <div class="msg-sender">${isOut?'🤖 Aafia':esc(m.customerName||'Customer')}</div>
+      ${esc(m.text||'').replace(/\n/g,'<br>')}
+      <div class="msg-time">${ts}</div>
+    </div></div>`;
+  }).join('');
+  if (scrolled || msgs.length < 5) el.scrollTop = el.scrollHeight;
+}
+
+function renderCustomerDetails(phone, name) {
+  const conv = convs.find(c => c._id === phone);
+  const tag = contactTags[phone] || '';
+  document.getElementById('cdContent').innerHTML = `
+    <div class="cd-stats">
+      <div class="cd-stat"><div class="num">${conv?.totalMessages||0}</div><div class="lbl">Messages</div></div>
+      <div class="cd-stat"><div class="num">${conv?.lastDirection==='incoming'?'1':'0'}</div><div class="lbl">Unread</div></div>
+    </div>
+    <div class="cd-field"><label>Name</label><div class="val">${esc(name)}</div></div>
+    <div class="cd-field"><label>Phone</label><div class="val">+${esc(phone)}</div></div>
+    <div class="cd-field"><label>Last Active</label><div class="val">${conv?formatTime(conv.lastTime):'—'}</div></div>
+    <div class="cd-field"><label>Status</label><div class="val" style="color:#16a34a;">● Active</div></div>
+    <div class="cd-field"><label>WhatsApp</label><a href="https://wa.me/${esc(phone)}" target="_blank">Open in WhatsApp ↗</a></div>
+    <div class="cd-field">
+      <label>Tags</label>
+      <div class="cd-tags">
+        <span class="cd-tag hot ${tag==='hot'?'':'opacity-50'}" onclick="setTag('${phone}','hot')">🔥 Hot Lead</span>
+        <span class="cd-tag order ${tag==='order'?'':'opacity-50'}" onclick="setTag('${phone}','order')">📦 Order</span>
+        <span class="cd-tag new ${tag==='new'?'':'opacity-50'}" onclick="setTag('${phone}','new')">🆕 New</span>
+        <span class="cd-tag add" onclick="setTag('${phone}','')">✕ Clear</span>
+      </div>
+    </div>`;
+}
+
+function setTag(phone, tag) {
+  if (tag) contactTags[phone] = tag;
+  else delete contactTags[phone];
+  renderChatList();
+  renderCustomerDetails(phone, activeName);
+  renderContacts();
+  showToast(`Tag ${tag?'set to '+tag:'cleared'} ✓`, 'success');
 }
 
 function closeMobileChat() {
   document.getElementById('chatWindow').classList.remove('mobile-open');
 }
 
-async function loadMessages(phone) {
-  const el = document.getElementById('chatMessages');
-  el.innerHTML = '<div style="text-align:center;color:#555;padding:20px;font-size:13px;">Loading...</div>';
-  try {
-    const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH_TOKEN } });
-    const msgs = await r.json();
-    renderMessages(msgs);
-  } catch(e) { el.innerHTML = '<div style="color:#ff4444;padding:20px;">Error loading</div>'; }
-}
-
-function renderMessages(msgs) {
-  const el = document.getElementById('chatMessages');
-  if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#555;padding:40px;font-size:13px;">No messages</div>'; return; }
-  let lastDate = '';
-  el.innerHTML = msgs.map(m => {
-    const d = new Date(m.timestamp);
-    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
-    const timeStr = d.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
-    let div = '';
-    if (dateStr !== lastDate) { lastDate = dateStr; div = `<div class="date-divider">${dateStr}</div>`; }
-    const isOut = m.direction === 'outgoing';
-    const sender = isOut ? '🤖 Aafia' : (m.customerName||'Customer');
-    return `${div}<div class="msg ${m.direction}"><div class="msg-bubble">
-      <div class="msg-sender">${esc(sender)}</div>
-      ${esc(m.text).replace(/\n/g,'<br>')}
-      <div class="msg-time">${timeStr}</div>
-    </div></div>`;
-  }).join('');
-  el.scrollTop = el.scrollHeight;
-}
-
-function renderDetails(phone, name) {
-  const conv = conversations.find(c => c._id === phone);
-  document.getElementById('detailsContent').innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card"><div class="num">${conv?.totalMessages||0}</div><div class="lbl">Messages</div></div>
-      <div class="stat-card"><div class="num">${conv?.unread?'1':'0'}</div><div class="lbl">Unread</div></div>
-    </div>
-    <div class="detail-field"><label>Name</label><div class="value">${esc(name)}</div></div>
-    <div class="detail-field"><label>Phone</label><div class="value">+${esc(phone)}</div></div>
-    <div class="detail-field"><label>Last Active</label><div class="value">${conv?formatTime(conv.lastTime):'—'}</div></div>
-    <div class="detail-field"><label>Status</label><div class="value" style="color:#25D366">● Active</div></div>
-    <div class="detail-field"><label>WhatsApp</label><div class="value"><a href="https://wa.me/${esc(phone)}" target="_blank" style="color:#25D366;text-decoration:none;">Open ↗</a></div></div>`;
-}
-
 async function sendReply() {
   if (!activePhone) return;
-  const textarea = document.getElementById('replyText');
-  const msg = textarea.value.trim();
+  const ta = document.getElementById('replyText');
+  const msg = ta.value.trim();
   if (!msg) return;
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '⏳';
   try {
     const r = await fetch('/api/send', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-dashboard-token':AUTH_TOKEN},
-      body:JSON.stringify({phone:activePhone,message:msg,customerName:activeCustomerName})
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-dashboard-token': AUTH },
+      body: JSON.stringify({ phone: activePhone, message: msg, customerName: activeName })
     });
-    if (r.ok) { textarea.value=''; textarea.style.height='auto'; await loadMessages(activePhone); await loadConversations(); }
-    else alert('Failed to send. Try again.');
-  } catch(e) { alert('Network error.'); }
+    if (r.ok) {
+      ta.value = ''; ta.style.height = 'auto';
+      showToast('Message sent ✓', 'success');
+      const r2 = await fetch(`/api/messages/${activePhone}`, { headers: { 'x-dashboard-token': AUTH } });
+      renderMessages(await r2.json());
+      const cr = await fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } });
+      convs = await cr.json();
+      buildContacts(); renderChatList(); updateFilterCounts();
+    } else showToast('Send failed ✗', 'error');
+  } catch(e) { showToast('Network error ✗', 'error'); }
   btn.disabled = false; btn.textContent = '➤';
 }
 
+// ===================== LOGS =====================
+let logFilter = '';
+let logDir = 'all';
+function renderLogs() {
+  const el = document.getElementById('logsBody');
+  if (!el) return;
+  let msgs = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  if (logFilter) msgs = msgs.filter(m => (m.text||'').toLowerCase().includes(logFilter) || (m.customerName||'').toLowerCase().includes(logFilter));
+  if (logDir !== 'all') msgs = msgs.filter(m => m.direction === logDir);
+  if (!msgs.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">No logs found</div>'; return; }
+  el.innerHTML = msgs.slice(0,100).map(m => {
+    const d = new Date(m.timestamp);
+    const time = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const date = d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    return `<div class="log-row">
+      <div style="font-size:13px;font-weight:600;">${esc(m.customerName||'Unknown')}</div>
+      <div class="log-msg">${esc(m.text||'')}</div>
+      <div><span class="dir-badge ${m.direction==='incoming'?'in':'out'}">${m.direction==='incoming'?'IN':'OUT'}</span></div>
+      <div style="font-size:12px;color:#6b7280;">${time}</div>
+      <div style="font-size:12px;color:#6b7280;">${date}</div>
+    </div>`;
+  }).join('');
+}
+function filterLogs(v) { logFilter = v.toLowerCase(); renderLogs(); }
+function filterLogDir(v) { logDir = v; renderLogs(); }
+
+// ===================== CONTACTS =====================
+let contactFilter = '';
+let contactTagFilter = 'all';
+function renderContacts() {
+  const el = document.getElementById('contactsBody');
+  if (!el) return;
+  let list = [...allContacts];
+  if (contactFilter) list = list.filter(c => c.name.toLowerCase().includes(contactFilter) || c.phone.includes(contactFilter));
+  if (contactTagFilter !== 'all') list = list.filter(c => (contactTags[c.phone]||'new') === contactTagFilter);
+  if (!list.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">No contacts found</div>'; return; }
+  el.innerHTML = list.map(c => {
+    const tag = contactTags[c.phone] || 'new';
+    return `<div class="table-row">
+      <div><input type="checkbox" class="checkbox"></div>
+      <div class="contact-name">
+        <div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
+        <div><div style="font-size:13px;font-weight:600;">${esc(c.name)}</div><div style="font-size:11px;color:#9ca3af;">+${esc(c.phone)}</div></div>
+      </div>
+      <div style="font-size:13px;">+${esc(c.phone)}</div>
+      <div><span class="tag-pill ${tag}">${tag==='hot'?'🔥 Hot':tag==='order'?'📦 Order':'🆕 New'}</span></div>
+      <div style="font-size:13px;color:#6b7280;">${c.totalMessages}</div>
+      <div style="display:flex;gap:4px;">
+        <button class="action-btn" title="Chat" onclick="showPage('inbox',null);setTimeout(()=>openChat('${c.phone}','${esc(c.name)}'),300)">💬</button>
+        <button class="action-btn" title="Message" onclick="prefillOutbound('${c.phone}','${esc(c.name)}')">📤</button>
+        <button class="action-btn" title="WhatsApp" onclick="window.open('https://wa.me/${c.phone}','_blank')">🔗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function searchContacts(v) { contactFilter = v.toLowerCase(); renderContacts(); }
+function filterContactTag(v) { contactTagFilter = v; renderContacts(); }
+
+// ===================== TEMPLATES =====================
+function renderTemplates() {
+  const grid = document.getElementById('templatesGrid');
+  if (!grid) return;
+  grid.innerHTML = TEMPLATES.map(t => `
+    <div class="template-card">
+      <div class="tc-head"><span class="tc-name">${t.name}</span><span class="tc-cat">${t.cat}</span></div>
+      <div class="tc-body">${t.body.substring(0,100)}...</div>
+      <div class="tc-footer">
+        <button class="btn btn-secondary" style="font-size:12px;padding:5px 10px;" onclick="useTemplate(${TEMPLATES.indexOf(t)})">Use Template</button>
+        <button class="btn btn-secondary" style="font-size:12px;padding:5px 10px;" onclick="copyText('${esc(t.body)}')">Copy</button>
+      </div>
+    </div>`).join('') + `
+    <div class="template-card new-card">
+      <div class="plus">+</div>
+      <span>New Template</span>
+    </div>`;
+}
+
+function renderOutboundTemplates() {
+  const el = document.getElementById('outboundTemplates');
+  if (!el) return;
+  el.innerHTML = TEMPLATES.map((t,i) => `
+    <div class="template-option" onclick="useTemplate(${i})">
+      <div class="t-name">${t.name}</div>
+      <div class="t-preview">${t.body.substring(0,60)}...</div>
+    </div>`).join('');
+}
+
+function useTemplate(i) {
+  const t = TEMPLATES[i];
+  const name = document.getElementById('outName')?.value || 'Customer';
+  const msg = t.body.replace('{name}', name);
+  const ta = document.getElementById('outMessage');
+  if (ta) ta.value = msg;
+  showPage('outbound', null);
+  showToast('Template applied ✓', 'success');
+}
+
+function prefillOutbound(phone, name) {
+  showPage('outbound', null);
+  setTimeout(() => {
+    const p = document.getElementById('outPhone');
+    const n = document.getElementById('outName');
+    if (p) p.value = phone;
+    if (n) n.value = name;
+  }, 100);
+}
+
+// ===================== OUTBOUND =====================
+async function sendOutbound() {
+  const phone = document.getElementById('outPhone').value.trim().replace(/\D/g,'');
+  const name = document.getElementById('outName').value.trim() || 'Customer';
+  const msg = document.getElementById('outMessage').value.trim();
+  if (!phone || !msg) { showToast('Please fill phone and message ✗', 'error'); return; }
+  try {
+    const r = await fetch('/api/send', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-dashboard-token':AUTH},
+      body:JSON.stringify({phone,message:msg,customerName:name})
+    });
+    if (r.ok) {
+      showToast('Message sent to +'+phone+' ✓','success');
+      document.getElementById('outPhone').value = '';
+      document.getElementById('outMessage').value = '';
+    } else showToast('Send failed ✗','error');
+  } catch(e) { showToast('Network error ✗','error'); }
+}
+
+// ===================== SCHEDULER =====================
+function setupScheduler() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const inp = document.getElementById('schedDate');
+  if (inp) inp.value = d.toISOString().split('T')[0];
+  const t = document.getElementById('schedTime');
+  if (t) t.value = '10:00';
+  renderScheduled();
+}
+
+function addScheduled() {
+  const date = document.getElementById('schedDate')?.value;
+  const time = document.getElementById('schedTime')?.value;
+  if (!date || !time) { showToast('Please set date and time ✗','error'); return; }
+  scheduledMsgs.push({ id: Date.now(), date, time, status:'pending', title:'Scheduled Message', sub: `${date} at ${time}` });
+  renderScheduled();
+  showToast('Message scheduled ✓','success');
+}
+
+function renderScheduled() {
+  const el = document.getElementById('scheduledList');
+  if (!el) return;
+  if (!scheduledMsgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:20px;">No scheduled messages yet</div>'; return; }
+  el.innerHTML = scheduledMsgs.map(s => `
+    <div class="scheduled-item">
+      <div class="sch-icon">📅</div>
+      <div class="sch-info">
+        <div class="sch-title">${s.title}</div>
+        <div class="sch-sub">${s.sub}</div>
+      </div>
+      <span class="sch-status ${s.status}">${s.status}</span>
+      <button class="action-btn" onclick="removeScheduled(${s.id})">✕</button>
+    </div>`).join('');
+}
+
+function removeScheduled(id) {
+  scheduledMsgs = scheduledMsgs.filter(s => s.id !== id);
+  renderScheduled();
+}
+
+// ===================== BOT STATS =====================
+function updateBotStats() {
+  const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
+  const totalIn = allMsgs.filter(m => m.direction === 'incoming').length;
+  const el = document.getElementById('botStats');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="recent-item"><div class="r-avatar" style="background:#dcfce7;color:#16a34a;font-size:16px;">✓</div><div class="r-info"><div class="r-name">Total Replies</div><div class="r-msg">${totalOut} messages sent</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1e40af;font-size:16px;">📥</div><div class="r-info"><div class="r-name">Messages Handled</div><div class="r-msg">${totalIn} received</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;font-size:16px;">👥</div><div class="r-info"><div class="r-name">Customers Served</div><div class="r-msg">${allContacts.length} unique customers</div></div></div>`;
+}
+
+// ===================== EXPORT =====================
+function doExport() {
+  const page = document.querySelector('.page.active')?.id || '';
+  if (page.includes('logs')) doExportLogs();
+  else doExportContacts();
+}
+
+function doExportContacts() {
+  const rows = [['Name','Phone','Tag','Messages','Last Active']];
+  allContacts.forEach(c => rows.push([c.name, '+'+c.phone, contactTags[c.phone]||'new', c.totalMessages, formatTime(c.lastTime)]));
+  downloadCSV(rows, 'gogadafi-contacts.csv');
+}
+
+function doExportLogs() {
+  const rows = [['Customer','Phone','Message','Direction','Time']];
+  const msgs = [...allMsgs].sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp));
+  msgs.forEach(m => rows.push([m.customerName||'Unknown', '+'+m.customerPhone, m.text||'', m.direction, new Date(m.timestamp).toLocaleString('en-IN')]));
+  downloadCSV(rows, 'gogadafi-message-logs.csv');
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Download started ✓','success');
+}
+
+// ===================== PAGE NAVIGATION =====================
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-'+id);
+  if (page) page.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const titles = {
+    dashboard:'Dashboard',inbox:'All Chats',logs:'Message Logs',
+    contacts:'All Contacts',templates:'Templates',outbound:'Outbound Message',
+    chatbot:'Chatbot Settings',qrcode:'QR Code',scheduler:'Scheduler',
+    integrations:'Integrations',setup:'Setup Guide',instructions:'Instructions',
+    locked:'Feature'
+  };
+  document.getElementById('topbarTitle').textContent = titles[id] || id;
+  if (id === 'inbox') { renderChatList(); updateFilterCounts(); }
+  if (id === 'logs') { if (!allMsgs.length) loadAll().then(renderLogs); else renderLogs(); }
+  if (id === 'contacts') renderContacts();
+  if (id === 'dashboard') updateDashboard();
+  closeSidebar();
+}
+
+function showLocked(title, sub) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-locked').classList.add('active');
+  document.getElementById('lockedTitle').textContent = title;
+  document.getElementById('lockedSub').textContent = sub || 'This feature is coming soon';
+  document.getElementById('topbarTitle').textContent = title;
+  closeSidebar();
+}
+
+// ===================== SIDEBAR =====================
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// ===================== UTILS =====================
 function formatTime(ts) {
   if (!ts) return '—';
   const d = new Date(ts), now = new Date(), diff = now - d;
   if (diff < 60000) return 'just now';
-  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+  if (diff < 3600000) return Math.floor(diff/60000)+'m ago';
   if (diff < 86400000) return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
 }
 
 function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Copied ✓','success'));
+}
+
+function copyWaLink() {
+  const val = document.getElementById('waLinkInput')?.value;
+  if (val) copyText(val);
+}
+
+function openWhatsApp() {
+  if (activePhone) window.open('https://wa.me/'+activePhone,'_blank');
 }
 </script>
 </body>
