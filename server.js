@@ -45,7 +45,8 @@ async function saveMessage({ customerPhone, customerName, text, direction, messa
     await messagesCol.insertOne({
       customerPhone, customerName, text,
       direction, messageId: messageId || null,
-      timestamp: new Date()
+      timestamp: new Date(),
+      read: direction === 'incoming' ? false : true   // NEW: needed for unread tracking
     });
   } catch (err) {
     console.error('DB save error:', err.message);
@@ -130,7 +131,63 @@ app.get('/api/conversations', authCheck, async (req, res) => {
   }
 });
 
-// ---------- API: messages for one customer ----------
+// =====================================================================
+// IMPORTANT: literal routes like '/api/messages/all-recent' MUST be
+// registered BEFORE the parameterized '/api/messages/:phone' route.
+// Express matches routes in registration order — if the wildcard route
+// came first, a request to /api/messages/all-recent would incorrectly
+// match :phone = "all-recent" and silently return an empty array.
+// This was the root cause of the Dashboard/Message Logs showing 0s.
+// =====================================================================
+
+// ---------- API: all recent messages (for Dashboard / Message Logs) ----------
+app.get('/api/messages/all-recent', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json([]);
+  try {
+    const messages = await messagesCol
+      .find({})
+      .sort({ timestamp: -1 })
+      .limit(500)
+      .toArray();
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- API: mark a conversation's incoming messages as read ----------
+app.post('/api/mark-read/:phone', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json({ success: true });
+  try {
+    await messagesCol.updateMany(
+      { customerPhone: req.params.phone, direction: 'incoming', read: { $ne: true } },
+      { $set: { read: true } }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- API: aggregate stats ----------
+app.get('/api/stats', authCheck, async (req, res) => {
+  if (!messagesCol) return res.json({});
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [total, todayIn, todayOut, customers] = await Promise.all([
+      messagesCol.countDocuments({}),
+      messagesCol.countDocuments({ direction: 'incoming', timestamp: { $gte: today } }),
+      messagesCol.countDocuments({ direction: 'outgoing', timestamp: { $gte: today } }),
+      customersCol.countDocuments({})
+    ]);
+    res.json({ total, todayIn, todayOut, customers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- API: messages for one customer (must come AFTER the routes above) ----------
 app.get('/api/messages/:phone', authCheck, async (req, res) => {
   if (!messagesCol) return res.json([]);
   try {
@@ -189,6 +246,8 @@ app.get('/webhook', (req, res) => {
     res.sendStatus(403);
   }
 });
+
+const processedMessages = new Set();
 
 // ---------- Webhook receive ----------
 app.post('/webhook', async (req, res) => {
@@ -297,52 +356,6 @@ ${isFirstTime ? `- This is the customer's first message. Start your reply with e
     res.sendStatus(500);
   }
 });
-// All messages endpoint
-app.get('/api/messages/all-recent', authCheck, async (req, res) => {
-  if (!messagesCol) return res.json([]);
-  try {
-    const messages = await messagesCol
-      .find({})
-      .sort({ timestamp: -1 })
-      .limit(500)
-      .toArray();
-    res.json(messages);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
-// Mark as read
-app.post('/api/mark-read/:phone', authCheck, async (req, res) => {
-  if (!messagesCol) return res.json({ success: true });
-  try {
-    await messagesCol.updateMany(
-      { customerPhone: req.params.phone, direction: 'incoming', read: { $ne: true } },
-      { $set: { read: true } }
-    );
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Stats endpoint
-app.get('/api/stats', authCheck, async (req, res) => {
-  if (!messagesCol) return res.json({});
-  try {
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const [total, todayIn, todayOut, customers] = await Promise.all([
-      messagesCol.countDocuments({}),
-      messagesCol.countDocuments({ direction:'incoming', timestamp:{ $gte: today } }),
-      messagesCol.countDocuments({ direction:'outgoing', timestamp:{ $gte: today } }),
-      customersCol.countDocuments({})
-    ]);
-    res.json({ total, todayIn, todayOut, customers });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-const processedMessages = new Set();
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
