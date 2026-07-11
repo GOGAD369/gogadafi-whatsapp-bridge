@@ -95,21 +95,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   padding:16px 12px 6px; font-size:10px; color:var(--text-muted);
   text-transform:uppercase; letter-spacing:1.2px; font-weight:600; flex-shrink:0;
 }
-.sidebar-section.group-header {
-  cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-  padding-right:14px; user-select:none; transition:color 0.15s;
-}
-.sidebar-section.group-header:hover { color:var(--text-secondary); }
-.group-chevron {
-  font-size:8px; display:inline-block; transition:transform 0.2s ease; color:var(--text-muted);
-}
-.sidebar-section.group-header.collapsed .group-chevron { transform:rotate(-90deg); }
-.sidebar-group-body {
-  overflow:hidden; max-height:600px; opacity:1;
-  transition:max-height 0.28s ease, opacity 0.2s ease;
-  flex-shrink:0;
-}
-.sidebar-group-body.collapsed { max-height:0; opacity:0; }
 
 .nav-item {
   display:flex; align-items:center; gap:10px; padding:9px 12px;
@@ -374,6 +359,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 }
 .reply-send-btn:hover { transform:scale(1.05); }
 .reply-send-btn:disabled { background:#e5e7eb; cursor:not-allowed; transform:none; }
+.reply-icon-btn {
+  width:34px; height:34px; background:none; border:none;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  color:#9ca3af; border-radius:8px; transition:0.15s; flex-shrink:0;
+}
+.reply-icon-btn:hover { color:var(--accent); background:#f0fdf4; }
 .reply-note { font-size:11px; color:#9ca3af; text-align:center; margin-top:6px; }
 
 /* CUSTOMER DETAILS */
@@ -418,7 +409,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .btn-danger { background:#fee2e2; color:#991b1b; }
 .btn-danger:hover { background:#fecaca; }
 
-.search-filter-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.search-filter-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
 .search-input-wrap { position:relative; flex:1; min-width:200px; }
 .search-input-wrap input {
   width:100%; padding:9px 12px 9px 34px; border-radius:9px;
@@ -428,24 +419,23 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:14px; }
 .filter-select {
   padding:9px 12px; border-radius:9px; border:1px solid var(--border-light);
-  font-size:13px; background:#fff; outline:none; cursor:pointer; color:var(--text-dark); flex-shrink:0;
+  font-size:13px; background:#fff; outline:none; cursor:pointer; color:var(--text-dark);
 }
 
-.contacts-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow-x:auto; }
+.contacts-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; }
 .table-header {
-  display:grid; grid-template-columns:1.8fr 1.3fr 110px 90px 110px;
+  display:grid; grid-template-columns:40px 2fr 1.5fr 1fr 1fr 1fr;
   padding:12px 16px; background:#f9fafb; border-bottom:1px solid var(--border-light);
   font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;
-  min-width:600px; gap:8px;
 }
 .table-row {
-  display:grid; grid-template-columns:1.8fr 1.3fr 110px 90px 110px;
+  display:grid; grid-template-columns:40px 2fr 1.5fr 1fr 1fr 1fr;
   padding:12px 16px; border-bottom:1px solid #f9fafb;
-  align-items:center; transition:0.15s; min-width:600px; gap:8px;
+  align-items:center; transition:0.15s;
 }
 .table-row:hover { background:#f9fafb; }
 .table-row:last-child { border-bottom:none; }
-.contact-name { display:flex; align-items:center; gap:10px; min-width:0; }
+.contact-name { display:flex; align-items:center; gap:10px; }
 .contact-avatar {
   width:32px; height:32px; border-radius:50%;
   background:linear-gradient(135deg,#25D366,#128C7E);
@@ -454,15 +444,15 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 }
 .tag-pill {
   display:inline-block; padding:2px 8px; border-radius:6px;
-  font-size:11px; font-weight:600; cursor:pointer; border:none;
+  font-size:11px; font-weight:600;
 }
 .tag-pill.hot { background:#fef3c7; color:#92400e; }
 .tag-pill.order { background:#dbeafe; color:#1e40af; }
 .tag-pill.new { background:#dcfce7; color:#166534; }
 .tag-pill.none { background:#f3f4f6; color:#9ca3af; }
-.action-btn { background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:5px; transition:0.15s; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
+.action-btn { background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:4px; transition:0.15s; border-radius:4px; }
 .action-btn:hover { color:var(--accent); background:#f0fdf4; }
-.action-btn svg { width:15px; height:15px; }
+.checkbox { width:16px; height:16px; cursor:pointer; accent-color:var(--accent); }
 
 /* ===================== MESSAGE LOGS ===================== */
 .logs-wrap { padding:24px; }
@@ -491,11 +481,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .qr-card p { color:#6b7280; font-size:14px; margin-bottom:28px; }
 .qr-box {
   width:220px; height:220px; margin:0 auto 24px;
-  background:#fff;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
   border:3px solid var(--accent); border-radius:16px;
-  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; font-size:80px;
 }
-.qr-box img { width:100%; height:100%; object-fit:contain; }
 .qr-link { display:flex; gap:8px; margin-bottom:16px; }
 .qr-link input {
   flex:1; padding:9px 12px; border-radius:9px;
@@ -625,9 +614,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .inst-text .inst-desc { font-size:12px; color:#6b7280; }
 .code-box {
   background:#1e1e1e; border-radius:10px; padding:14px 16px;
-  font-family:monospace; font-size:12px; color:#a3e635;
-  overflow-x:auto; margin-top:10px; white-space:pre-wrap; word-break:break-word;
-  max-width:100%;
+  font-family:monospace; font-size:12px; color:#a3e635; overflow-x:auto; margin-top:10px;
 }
 
 /* ===================== MY PLAN PAGE ===================== */
@@ -649,13 +636,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .api-endpoint {
   display:flex; align-items:center; gap:10px; padding:10px 14px;
   background:#f9fafb; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px;
-  flex-wrap:wrap;
 }
-.method-badge { padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; flex-shrink:0; }
+.method-badge { padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; }
 .method-badge.get { background:#dbeafe; color:#1e40af; }
 .method-badge.post { background:#dcfce7; color:#166534; }
-.endpoint-url { font-family:monospace; font-size:12px; color:var(--text-dark); flex:1; word-break:break-all; min-width:140px; }
-.copy-btn { background:none; border:1px solid var(--border-light); border-radius:6px; padding:4px 8px; font-size:11px; cursor:pointer; color:#6b7280; transition:0.15s; flex-shrink:0; }
+.endpoint-url { font-family:monospace; font-size:12px; color:var(--text-dark); flex:1; }
+.copy-btn { background:none; border:1px solid var(--border-light); border-radius:6px; padding:4px 8px; font-size:11px; cursor:pointer; color:#6b7280; transition:0.15s; }
 .copy-btn:hover { background:#f0fdf4; color:var(--accent); border-color:var(--accent); }
 
 /* ===================== SETUP PAGE ===================== */
@@ -678,6 +664,76 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .sidebar-overlay {
   display:none; position:fixed; top:0; left:0; right:0; bottom:0;
   background:rgba(0,0,0,0.5); z-index:40;
+}
+
+
+/* ===================== BOT MANAGER ===================== */
+.bots-wrap { padding:24px; }
+.bots-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-bottom:24px; }
+.bot-card {
+  background:#fff; border-radius:14px; padding:20px;
+  border:1.5px solid var(--border-light); transition:0.2s; position:relative;
+}
+.bot-card.is-default { border-color:var(--accent); }
+.bot-card-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+.bot-card-name { font-size:15px; font-weight:700; }
+.bot-card-model { font-size:11px; color:#6b7280; margin-top:2px; }
+.bot-default-badge {
+  font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700;
+  background:var(--accent); color:#fff;
+}
+.bot-card-desc { font-size:12px; color:#6b7280; margin-bottom:12px; line-height:1.5; }
+.bot-card-prompt {
+  font-size:11px; color:#9ca3af; background:#f9fafb; border-radius:8px;
+  padding:8px 10px; max-height:60px; overflow:hidden; margin-bottom:12px;
+  font-family:monospace; line-height:1.4;
+}
+.bot-card-footer { display:flex; gap:6px; flex-wrap:wrap; }
+.bot-active-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block; margin-right:4px; }
+.bot-inactive-dot { width:8px; height:8px; border-radius:50%; background:#9ca3af; display:inline-block; margin-right:4px; }
+.bot-add-card {
+  border-style:dashed; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; min-height:200px; cursor:pointer;
+}
+.bot-add-card:hover { border-color:var(--accent); background:#f0fdf4; }
+.bot-add-card .plus { font-size:36px; color:#9ca3af; margin-bottom:8px; }
+.bot-add-card span { font-size:14px; color:#6b7280; font-weight:600; }
+
+/* Bot form modal */
+.modal-overlay {
+  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;
+}
+.modal-overlay.show { display:flex; }
+.modal-box {
+  background:#fff; border-radius:16px; padding:28px; width:90%; max-width:600px;
+  max-height:90vh; overflow-y:auto;
+}
+.modal-box h3 { font-size:18px; font-weight:700; margin-bottom:20px; }
+.modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+.modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280; }
+
+/* ===================== KNOWLEDGE BASE ===================== */
+.kb-wrap { padding:24px; }
+.kb-section { background:#fff; border-radius:14px; padding:20px; border:1px solid var(--border-light); margin-bottom:16px; }
+.kb-section h3 { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+.product-item {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  padding:14px; background:#f9fafb; border-radius:10px; border:1px solid var(--border-light);
+  margin-bottom:10px; position:relative;
+}
+.product-item.full { grid-template-columns:1fr; }
+.remove-btn {
+  position:absolute; top:8px; right:8px; background:#fee2e2; border:none;
+  color:#991b1b; border-radius:6px; padding:2px 6px; font-size:11px; cursor:pointer;
+}
+.faq-item { padding:12px; background:#f9fafb; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px; position:relative; }
+.kb-bot-select { padding:8px 12px; border-radius:9px; border:1px solid var(--border-light); font-size:13px; outline:none; background:#fff; cursor:pointer; }
+
+/* Chat window — bot assignment dropdown */
+.bot-assign-select {
+  padding:4px 8px; border-radius:7px; border:1px solid var(--border-light);
+  font-size:12px; outline:none; background:#fff; cursor:pointer; color:var(--text-dark);
 }
 
 /* ===================== SCROLLBAR ===================== */
@@ -720,6 +776,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   .chat-window.mobile-open { display:flex; flex-direction:column; }
   .chat-list-panel { width:100%; }
   .form-grid { grid-template-columns:1fr; }
+  .table-header, .table-row { grid-template-columns:2fr 1.5fr 1fr; }
+  .table-header > *:nth-child(1), .table-row > *:nth-child(1),
+  .table-header > *:nth-child(5), .table-row > *:nth-child(5),
+  .table-header > *:nth-child(6), .table-row > *:nth-child(6) { display:none; }
   .log-header, .log-row { grid-template-columns:1.5fr 2fr 80px; }
   .log-header > *:nth-child(4), .log-row > *:nth-child(4),
   .log-header > *:nth-child(5), .log-row > *:nth-child(5) { display:none; }
@@ -783,10 +843,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-badge grey">✓</span>
       </div>
 
-      <div class="sidebar-section group-header" onclick="toggleGroup('contacts',this)">
-        <span>Contacts</span><span class="group-chevron">▾</span>
-      </div>
-      <div class="sidebar-group-body" id="grp-contacts">
+      <div class="sidebar-section">Contacts</div>
       <div class="nav-item" onclick="showPage('contacts',this)">
         <span class="nav-icon">👥</span>
         <span class="nav-label">All Contacts</span>
@@ -797,9 +854,9 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Contact Groups</span>
         <span class="lock-icon">🔒</span>
       </div>
-      <div class="nav-item locked" onclick="showLocked('Lead Forms','Capture leads with custom input forms on your website')">
+      <div class="nav-item locked" onclick="showLocked('Add Input','Capture leads with custom input forms')">
         <span class="nav-icon">➕</span>
-        <span class="nav-label">Lead Forms</span>
+        <span class="nav-label">Add Input</span>
         <span class="lock-icon">🔒</span>
       </div>
       <div class="nav-item locked" onclick="showLocked('Invoices','Create and send invoices via WhatsApp')">
@@ -807,16 +864,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Invoices</span>
         <span class="lock-icon">🔒</span>
       </div>
-      </div>
 
-      <div class="sidebar-section group-header" onclick="toggleGroup('messaging',this)">
-        <span>Messaging</span><span class="group-chevron">▾</span>
-      </div>
-      <div class="sidebar-group-body" id="grp-messaging">
+      <div class="sidebar-section">Messaging</div>
       <div class="nav-item" onclick="showPage('templates',this)">
         <span class="nav-icon">📝</span>
         <span class="nav-label">Templates</span>
-        <span class="nav-badge grey" id="templatesBadge">0</span>
+        <span class="nav-badge grey">3</span>
       </div>
       <div class="nav-item" onclick="showPage('outbound',this)">
         <span class="nav-icon">📤</span>
@@ -838,12 +891,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Scheduler</span>
         <span class="nav-badge grey">✓</span>
       </div>
-      </div>
 
-      <div class="sidebar-section group-header collapsed" onclick="toggleGroup('ecommerce',this)">
-        <span>E-commerce</span><span class="group-chevron">▾</span>
-      </div>
-      <div class="sidebar-group-body collapsed" id="grp-ecommerce">
+      <div class="sidebar-section">E-commerce</div>
       <div class="nav-item locked" onclick="showLocked('WhatsApp Orders','Manage orders placed via WhatsApp')">
         <span class="nav-icon">🛒</span>
         <span class="nav-label">WA Orders</span>
@@ -859,12 +908,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">WooCommerce</span>
         <span class="lock-icon">🔒</span>
       </div>
-      </div>
 
-      <div class="sidebar-section group-header" onclick="toggleGroup('automation',this)">
-        <span>Automation</span><span class="group-chevron">▾</span>
-      </div>
-      <div class="sidebar-group-body" id="grp-automation">
+      <div class="sidebar-section">Automation</div>
       <div class="nav-item" onclick="showPage('chatbot',this)">
         <span class="nav-icon">🤖</span>
         <span class="nav-label">Chatbot</span>
@@ -875,12 +920,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Agents</span>
         <span class="lock-icon">🔒</span>
       </div>
-      </div>
 
-      <div class="sidebar-section group-header" onclick="toggleGroup('settings',this)">
-        <span>Settings</span><span class="group-chevron">▾</span>
-      </div>
-      <div class="sidebar-group-body" id="grp-settings">
+      <div class="sidebar-section">Settings</div>
       <div class="nav-item" onclick="showPage('integrations',this)">
         <span class="nav-icon">🔗</span>
         <span class="nav-label">Integrations</span>
@@ -905,7 +946,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-icon">💎</span>
         <span class="nav-label">My Plan</span>
         <span class="lock-icon">🔒</span>
-      </div>
       </div>
 
       <div class="sidebar-footer">
@@ -1035,6 +1075,9 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                     </div>
                   </div>
                   <div class="cwh-actions">
+                    <select class="bot-assign-select" id="botAssignSelect" onchange="assignBot(this.value)" title="Assign bot to this chat">
+                      <option value="">🤖 Loading...</option>
+                    </select>
                     <button class="cwh-btn open-tag">● Open</button>
                     <button class="cwh-btn wa-btn" id="cwWaBtn" onclick="openWhatsApp()">Open in WA ↗</button>
                   </div>
@@ -1044,9 +1087,15 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 </div>
                 <div class="reply-box">
                   <div class="reply-inner">
+                    <button class="reply-icon-btn" title="Attach file" onclick="showToast('File attachment coming soon','success')">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
                     <textarea class="reply-textarea" id="replyText" placeholder="Type a message to send..."
                       rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply()}"
                       oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+                    <button class="reply-icon-btn" title="Voice message" onclick="showToast('Voice message coming soon','success')">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </button>
                     <button class="reply-send-btn" id="sendBtn" onclick="sendReply()">➤</button>
                   </div>
                   <div class="reply-note">⚡ Manual reply — Aafia bot will continue after this</div>
@@ -1065,6 +1114,9 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <div class="logs-wrap">
             <div class="page-header">
               <h2>📋 Message Logs</h2>
+              <div class="page-header-actions">
+                <button class="btn btn-secondary" onclick="doExportLogs()">⬇️ Export CSV</button>
+              </div>
             </div>
             <div class="search-filter-bar">
               <div class="search-input-wrap">
@@ -1097,6 +1149,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <div class="contacts-wrap">
             <div class="page-header">
               <h2>👥 All Contacts</h2>
+              <div class="page-header-actions">
+                <button class="btn btn-secondary" onclick="doExportContacts()">⬇️ Export</button>
+                <button class="btn btn-primary" onclick="showPage('outbound',null)">✉️ Message</button>
+              </div>
             </div>
             <div class="search-filter-bar">
               <div class="search-input-wrap">
@@ -1112,10 +1168,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
             <div class="contacts-table">
               <div class="table-header">
+                <div></div>
                 <div>Name</div>
                 <div>Phone</div>
                 <div>Tag</div>
-                <div>Msgs</div>
+                <div>Messages</div>
                 <div>Actions</div>
               </div>
               <div id="contactsBody">
@@ -1130,6 +1187,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <div class="templates-wrap">
             <div class="page-header">
               <h2>📝 Message Templates</h2>
+              <button class="btn btn-primary">+ New Template</button>
             </div>
             <div class="template-grid" id="templatesGrid">
               <!-- Filled by JS -->
@@ -1247,7 +1305,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             <div class="qr-card">
               <h2>📲 WhatsApp QR Code</h2>
               <p>Scan this QR code to start a chat with GoGadAFI on WhatsApp</p>
-              <div class="qr-box" id="qrBox">📱</div>
+              <div class="qr-box">📱</div>
               <div class="qr-link">
                 <input type="text" id="waLinkInput" value="https://wa.me/917639917149" readonly>
                 <button class="btn btn-primary" onclick="copyWaLink()">Copy</button>
@@ -1279,11 +1337,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
               <div class="form-grid">
                 <div class="form-field">
                   <label>Recipient Phone</label>
-                  <input type="tel" placeholder="91XXXXXXXXXX" id="schedPhone">
+                  <input type="tel" placeholder="91XXXXXXXXXX">
                 </div>
                 <div class="form-field">
                   <label>Recipient Name</label>
-                  <input type="text" placeholder="Customer name" id="schedName">
+                  <input type="text" placeholder="Customer name">
                 </div>
                 <div class="form-field">
                   <label>Date</label>
@@ -1295,7 +1353,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 </div>
                 <div class="form-field full">
                   <label>Message</label>
-                  <textarea placeholder="Type your scheduled message..." id="schedMessage"></textarea>
+                  <textarea placeholder="Type your scheduled message..."></textarea>
                 </div>
               </div>
               <div style="margin-top:14px;">
@@ -1355,21 +1413,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <button class="copy-btn" onclick="copyText('/api/messages/:phone')">Copy</button>
               </div>
               <div class="api-endpoint">
-                <span class="method-badge get">GET</span>
-                <span class="endpoint-url">/api/messages/all-recent</span>
-                <button class="copy-btn" onclick="copyText('/api/messages/all-recent')">Copy</button>
-              </div>
-              <div class="api-endpoint">
                 <span class="method-badge post">POST</span>
                 <span class="endpoint-url">/api/send</span>
                 <button class="copy-btn" onclick="copyText('/api/send')">Copy</button>
               </div>
-              <div style="font-size:11px;color:#9ca3af;margin:-4px 0 10px 2px;">Body: <code>{ phone, message, customerName }</code> · Header: <code>x-dashboard-token</code></div>
-              <div class="api-endpoint">
-                <span class="method-badge post">POST</span>
-                <span class="endpoint-url">/api/mark-read/:phone</span>
-                <button class="copy-btn" onclick="copyText('/api/mark-read/:phone')">Copy</button>
-              </div>
+              <div class="code-box">{
+  "phone": "919XXXXXXXXX",
+  "message": "Your message here",
+  "customerName": "Name"
+}
+Header: x-dashboard-token: [your-password]</div>
             </div>
           </div>
         </div>
@@ -1461,14 +1514,14 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <div class="inst-num">4</div>
                 <div class="inst-text">
                   <div class="inst-title">Contact Tags — Label Customers</div>
-                  <div class="inst-desc">In the Contacts page, click the tag pill on any row to cycle it between "Hot Lead", "Order Placed" and "New Customer".</div>
+                  <div class="inst-desc">In the Contacts page, you can add tags like "Hot Lead", "Order Placed", "New Customer" to organize your contacts.</div>
                 </div>
               </div>
               <div class="inst-step">
                 <div class="inst-num">5</div>
                 <div class="inst-text">
                   <div class="inst-title">Export Data</div>
-                  <div class="inst-desc">Use the Export button on the Contacts or Message Logs page to download data as CSV. Open in Excel for analysis.</div>
+                  <div class="inst-desc">Use the Export button in Contacts or Message Logs to download data as CSV. Open in Excel for analysis.</div>
                 </div>
               </div>
             </div>
@@ -1493,12 +1546,90 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           </div>
         </div>
 
+
+        <!-- BOT MANAGER -->
+        <div class="page" id="page-bots">
+          <div class="bots-wrap">
+            <div class="page-header">
+              <h2>🤖 Bot Manager</h2>
+            </div>
+            <div class="bots-grid" id="botsGrid">
+              <div style="color:#9ca3af;font-size:13px;padding:20px;">Loading bots...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KNOWLEDGE BASE -->
+        <div class="page" id="page-kb">
+          <div class="kb-wrap">
+            <div class="page-header">
+              <h2>📚 Knowledge Base</h2>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <label style="font-size:13px;color:#6b7280;">Bot:</label>
+                <select class="kb-bot-select" id="kbBotSelect" onchange="loadKB()">
+                  <option value="">Loading bots...</option>
+                </select>
+                <button class="btn btn-primary" onclick="saveKB()">💾 Save</button>
+              </div>
+            </div>
+
+            <div class="kb-section">
+              <h3>🛍️ Products
+                <button class="btn btn-secondary" style="font-size:12px;padding:5px 10px;" onclick="addProduct()">+ Add Product</button>
+              </h3>
+              <div id="productsContainer">
+                <div style="color:#9ca3af;font-size:13px;">No products yet. Click "+ Add Product"</div>
+              </div>
+            </div>
+
+            <div class="kb-section">
+              <h3>📋 Policies</h3>
+              <div class="form-grid">
+                <div class="form-field full">
+                  <label>Refund Policy</label>
+                  <textarea id="kbRefund" placeholder="Describe your refund policy step by step..." rows="3"></textarea>
+                </div>
+                <div class="form-field full">
+                  <label>Shipping Policy</label>
+                  <textarea id="kbShipping" placeholder="Shipping time, charges, areas covered..." rows="3"></textarea>
+                </div>
+                <div class="form-field full">
+                  <label>Exchange Policy</label>
+                  <textarea id="kbExchange" placeholder="Exchange conditions and process..." rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="kb-section">
+              <h3>❓ FAQs
+                <button class="btn btn-secondary" style="font-size:12px;padding:5px 10px;" onclick="addFAQ()">+ Add FAQ</button>
+              </h3>
+              <div id="faqsContainer">
+                <div style="color:#9ca3af;font-size:13px;">No FAQs yet. Click "+ Add FAQ"</div>
+              </div>
+            </div>
+
+            <div class="kb-section">
+              <h3>🎧 Support Info</h3>
+              <div class="form-field">
+                <textarea id="kbSupport" placeholder="Support hours, contact info, escalation process..." rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- LOCKED PAGE -->
         <div class="page" id="page-locked">
           <div class="locked-wrap">
             <div class="locked-icon" id="lockedIcon">🔒</div>
             <div class="locked-title" id="lockedTitle">Feature Locked</div>
             <div class="locked-sub" id="lockedSub">This feature is coming soon</div>
+            <div class="locked-features">
+              <div class="locked-feat">✅ All Chats — Available</div>
+              <div class="locked-feat">✅ Contacts — Available</div>
+              <div class="locked-feat">✅ Message Logs — Available</div>
+              <div class="locked-feat">✅ Outbound — Available</div>
+            </div>
             <button class="btn btn-primary" onclick="showPage('dashboard',null)">← Back to Dashboard</button>
           </div>
         </div>
@@ -1507,6 +1638,55 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div><!-- end main -->
   </div><!-- end app-layout -->
 </div><!-- end app -->
+
+<!-- BOT MODAL -->
+<div class="modal-overlay" id="botModal">
+  <div class="modal-box" style="position:relative;">
+    <button class="modal-close" onclick="closeBotModal()">✕</button>
+    <h3 id="botModalTitle">Add New Bot</h3>
+    <input type="hidden" id="botModalId">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Bot Name *</label>
+        <input type="text" id="botModalName" placeholder="e.g. Aafia, Support Bot">
+      </div>
+      <div class="form-field">
+        <label>AI Model</label>
+        <select id="botModalModel">
+          <option value="llama-3.1-8b-instant">Llama 3.1 8b Instant (Fast)</option>
+          <option value="llama-3.1-70b-versatile">Llama 3.1 70b Versatile (Smart)</option>
+          <option value="mixtral-8x7b-32768">Mixtral 8x7b (Balanced)</option>
+          <option value="gemma2-9b-it">Gemma2 9b (Efficient)</option>
+        </select>
+      </div>
+      <div class="form-field full">
+        <label>Description</label>
+        <input type="text" id="botModalDesc" placeholder="What does this bot do?">
+      </div>
+      <div class="form-field full">
+        <label>System Prompt *</label>
+        <textarea id="botModalPrompt" rows="6" placeholder="You are [Bot Name], [Brand]'s WhatsApp assistant..."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Context Messages (0-20)</label>
+        <input type="number" id="botModalContext" min="0" max="20" value="10">
+      </div>
+      <div class="form-field">
+        <label>Message Wait Time (seconds)</label>
+        <input type="number" id="botModalWait" min="0" max="60" value="0" placeholder="0 = reply immediately">
+      </div>
+      <div class="form-field full">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="botModalDefault"> Set as Default Bot
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeBotModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBotModal()">💾 Save Bot</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -1521,17 +1701,9 @@ let activePhone = null;
 let activeName = '';
 let currentFilter = 'all';
 let closedChats = new Set();
-let lastReadTimes = {};        // { phone: ISOtimestamp } — last time admin opened/viewed this chat
-function isConvUnread(c) {
-  if (c.lastDirection !== 'incoming') return false;
-  const readAt = lastReadTimes[c._id];
-  if (!readAt) return true;
-  return new Date(c.lastTime) > new Date(readAt);
-}
 let contactTags = {};
 let scheduledMsgs = [];
 let refreshTimer = null;
-const TAG_CYCLE = ['new','hot','order'];
 
 const TEMPLATES = [
   { name:'Welcome', cat:'Greeting', body:'Hi {name}! Welcome to GoGadAFI 🛍️ I am Aafia, your WhatsApp assistant. How can I help you today?' },
@@ -1569,7 +1741,6 @@ async function initApp() {
   renderTemplates();
   renderOutboundTemplates();
   setupScheduler();
-  renderQr();
   startSilentRefresh();
 }
 
@@ -1580,45 +1751,29 @@ function setGreeting() {
   document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
 
-// ===================== DATA LOADING =====================
 async function loadAll() {
   try {
-    const cR = await fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } });
+    const [cR, mR] = await Promise.all([
+      fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } }),
+      fetch('/api/messages/all-recent', { headers: { 'x-dashboard-token': AUTH } }).catch(() => null)
+    ]);
     convs = await cR.json();
-  } catch(e) { console.error('conversations load failed', e); convs = []; }
-
-  // Try the dedicated all-recent endpoint first; fall back to per-chat fetch if it's missing (404/500)
-  // or returns something that isn't a JSON array (older servers may not have this route yet).
-  let gotAllRecent = false;
-  try {
-    const mR = await fetch('/api/messages/all-recent', { headers: { 'x-dashboard-token': AUTH } });
-    if (mR.ok) {
-      const data = await mR.json();
-      if (Array.isArray(data)) { allMsgs = data; gotAllRecent = true; }
-    }
-  } catch(e) { /* endpoint not available yet — fall back below */ }
-
-  if (!gotAllRecent) {
-    await loadAllMsgs();
-  }
-
-  buildContacts();
-  updateAll();
+    if (mR && mR.ok) allMsgs = await mR.json();
+    else await loadAllMsgs();
+    buildContacts();
+    updateAll();
+  } catch(e) { console.error(e); }
 }
 
 async function loadAllMsgs() {
   allMsgs = [];
-  // Fallback for servers without /api/messages/all-recent: pull each conversation's
-  // messages individually so the dashboard still has real data to show.
-  const results = await Promise.all(convs.slice(0, 60).map(async c => {
+  for (const c of convs.slice(0, 50)) {
     try {
       const r = await fetch(`/api/messages/${c._id}`, { headers: { 'x-dashboard-token': AUTH } });
-      if (!r.ok) return [];
       const msgs = await r.json();
-      return Array.isArray(msgs) ? msgs : [];
-    } catch(e) { return []; }
-  }));
-  allMsgs = results.flat();
+      allMsgs.push(...msgs);
+    } catch(e) {}
+  }
 }
 
 function buildContacts() {
@@ -1630,7 +1785,7 @@ function buildContacts() {
     tag: contactTags[c._id] || 'new'
   }));
   document.getElementById('contactsBadge').textContent = allContacts.length;
-  document.getElementById('inboxBadge').textContent = convs.filter(isConvUnread).length;
+  document.getElementById('inboxBadge').textContent = convs.length;
 }
 
 function updateAll() {
@@ -1651,16 +1806,6 @@ function startSilentRefresh() {
       const newConvs = await r.json();
       const changed = JSON.stringify(newConvs) !== JSON.stringify(convs);
       convs = newConvs;
-
-      // Keep allMsgs fresh too, using the same endpoint-with-fallback strategy as initial load
-      try {
-        const mR = await fetch('/api/messages/all-recent', { headers: { 'x-dashboard-token': AUTH } });
-        if (mR.ok) {
-          const data = await mR.json();
-          if (Array.isArray(data)) allMsgs = data;
-        }
-      } catch(e) {}
-
       buildContacts();
       if (changed) {
         renderChatList();
@@ -1701,25 +1846,11 @@ function updateDashboard() {
   renderRecentMsgs();
 }
 
-// If there ARE conversations but NO messages loaded, that's not "empty inbox" —
-// it means /api/messages/all-recent (and its per-chat fallback) isn't returning data.
-// Surface that clearly instead of a misleading "no messages yet".
-function noMsgDataHtml(emptyText) {
-  if (convs.length > 0 && allMsgs.length === 0) {
-    return '<div style="color:#b45309;font-size:12px;text-align:center;padding:10px;background:#fffbeb;border-radius:8px;">⚠️ Could not load message history from the server. Conversations exist but message data isn\'t returning — check the /api/messages endpoints on the server.</div>';
-  }
-  return `<div style="color:#9ca3af;font-size:13px;padding:10px;">${emptyText}</div>`;
-}
-
 function renderChart() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     days.push(d);
-  }
-  if (!allMsgs.length) {
-    document.getElementById('chartBars').innerHTML = noMsgDataHtml('No message activity yet');
-    return;
   }
   const maxVal = Math.max(...days.map(d => allMsgs.filter(m => new Date(m.timestamp).toDateString() === d.toDateString()).length), 1);
   const html = days.map(d => {
@@ -1744,9 +1875,7 @@ function renderQuickStats() {
   const totalIn = allMsgs.filter(m => m.direction === 'incoming').length;
   const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
   const rate = totalIn > 0 ? Math.round((totalOut / totalIn) * 100) : 0;
-  const warn = (convs.length > 0 && allMsgs.length === 0) ? noMsgDataHtml('') : '';
   document.getElementById('quickStats').innerHTML = `
-    ${warn}
     <div class="recent-item"><div class="r-avatar" style="background:#dcfce7;color:#16a34a;">📥</div><div class="r-info"><div class="r-name">Total Received</div><div class="r-msg">${totalIn} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1d4ed8;">📤</div><div class="r-info"><div class="r-name">Total Sent</div><div class="r-msg">${totalOut} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;">⚡</div><div class="r-info"><div class="r-name">Response Rate</div><div class="r-msg">${rate}%</div></div></div>
@@ -1771,7 +1900,7 @@ function renderRecentConvs() {
 function renderRecentMsgs() {
   const el = document.getElementById('recentMsgs');
   const recent = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,5);
-  if (!recent.length) { el.innerHTML = noMsgDataHtml('No messages yet'); return; }
+  if (!recent.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px;">No messages yet</div>'; return; }
   el.innerHTML = recent.map(m => `
     <div class="recent-item">
       <div class="r-avatar" style="${m.direction==='outgoing'?'background:#dcfce7;color:#16a34a;':'background:#dbeafe;color:#1e40af;'}">${m.direction==='outgoing'?'📤':'📥'}</div>
@@ -1785,7 +1914,7 @@ function renderRecentMsgs() {
 
 // ===================== INBOX =====================
 function updateFilterCounts() {
-  const unread = convs.filter(isConvUnread).length;
+  const unread = convs.filter(c => c.lastDirection === 'incoming').length;
   const awaiting = convs.filter(c => c.lastDirection === 'incoming').length;
   const open = convs.filter(c => !closedChats.has(c._id)).length;
   const closed = closedChats.size;
@@ -1794,7 +1923,6 @@ function updateFilterCounts() {
   document.getElementById('fc-awaiting').textContent = awaiting;
   document.getElementById('fc-open').textContent = open;
   document.getElementById('fc-closed').textContent = closed;
-  document.getElementById('inboxBadge').textContent = unread;
 }
 
 function setFilter(f, el) {
@@ -1806,8 +1934,7 @@ function setFilter(f, el) {
 
 function getFilteredConvs() {
   let list = [...convs];
-  if (currentFilter === 'unread') list = list.filter(isConvUnread);
-  else if (currentFilter === 'awaiting') list = list.filter(c => c.lastDirection === 'incoming');
+  if (currentFilter === 'unread' || currentFilter === 'awaiting') list = list.filter(c => c.lastDirection === 'incoming');
   else if (currentFilter === 'open') list = list.filter(c => !closedChats.has(c._id));
   else if (currentFilter === 'closed') list = list.filter(c => closedChats.has(c._id));
   const q = document.getElementById('chatSearchInput')?.value?.toLowerCase() || '';
@@ -1822,7 +1949,7 @@ function renderChatList() {
   if (!list.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">📭 No conversations</div>'; return; }
   el.innerHTML = list.map(c => {
     const init = (c.customerName||'?').charAt(0).toUpperCase();
-    const isUnread = isConvUnread(c);
+    const isUnread = c.lastDirection === 'incoming';
     const tag = contactTags[c._id];
     return `<div class="chat-item ${c._id === activePhone ? 'active' : ''}" onclick="openChat('${c._id}','${esc(c.customerName||'Unknown')}')">
       <div class="ci-avatar">${init}</div>
@@ -1852,18 +1979,10 @@ async function openChat(phone, name) {
   document.getElementById('cwPhone').textContent = '+' + phone;
   document.getElementById('cwWaBtn').onclick = () => window.open('https://wa.me/'+phone,'_blank');
   document.getElementById('chatWindow').classList.add('mobile-open');
-
-  // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet).
-  // We store a timestamp (not just a flag) so a NEW incoming message after this point correctly
-  // flips the conversation back to unread instead of staying "read" forever.
-  lastReadTimes[phone] = new Date().toISOString();
+  updateChatBotSelect();
+  loadBotAssignment(phone);
   renderChatList();
-  updateFilterCounts();
   renderCustomerDetails(phone, name);
-  try {
-    fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
-  } catch(e) {}
-
   try {
     const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH } });
     const msgs = await r.json();
@@ -1876,7 +1995,11 @@ function renderMessages(msgs) {
   if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px;">No messages yet</div>'; return; }
   let lastDate = '';
   const scrolled = el.scrollTop + el.clientHeight >= el.scrollHeight - 60;
-  el.innerHTML = msgs.map(m => {
+  const assignedBanner = `<div style="text-align:center;margin:12px 0 16px;">
+    <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;
+    font-size:11px;padding:4px 12px;border-radius:20px;display:inline-block;">
+    🤖 Chat assigned to Aafia</span></div>`;
+  el.innerHTML = assignedBanner + msgs.map(m => {
     const d = new Date(m.timestamp);
     const ds = d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
     const ts = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -1898,7 +2021,7 @@ function renderCustomerDetails(phone, name) {
   document.getElementById('cdContent').innerHTML = `
     <div class="cd-stats">
       <div class="cd-stat"><div class="num">${conv?.totalMessages||0}</div><div class="lbl">Messages</div></div>
-      <div class="cd-stat"><div class="num">${(conv && isConvUnread(conv))?'1':'0'}</div><div class="lbl">Unread</div></div>
+      <div class="cd-stat"><div class="num">${conv?.lastDirection==='incoming'?'1':'0'}</div><div class="lbl">Unread</div></div>
     </div>
     <div class="cd-field"><label>Name</label><div class="val">${esc(name)}</div></div>
     <div class="cd-field"><label>Phone</label><div class="val">+${esc(phone)}</div></div>
@@ -1923,16 +2046,6 @@ function setTag(phone, tag) {
   renderCustomerDetails(phone, activeName);
   renderContacts();
   showToast(`Tag ${tag?'set to '+tag:'cleared'} ✓`, 'success');
-}
-
-function cycleTag(phone) {
-  const current = contactTags[phone] || 'new';
-  const idx = TAG_CYCLE.indexOf(current);
-  const next = TAG_CYCLE[(idx + 1) % TAG_CYCLE.length];
-  contactTags[phone] = next;
-  renderContacts();
-  renderChatList();
-  showToast(`Tag set to ${next} ✓`, 'success');
 }
 
 function closeMobileChat() {
@@ -1974,7 +2087,7 @@ function renderLogs() {
   let msgs = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
   if (logFilter) msgs = msgs.filter(m => (m.text||'').toLowerCase().includes(logFilter) || (m.customerName||'').toLowerCase().includes(logFilter));
   if (logDir !== 'all') msgs = msgs.filter(m => m.direction === logDir);
-  if (!msgs.length) { el.innerHTML = `<div style="padding:30px;">${noMsgDataHtml(logFilter||logDir!=='all' ? 'No logs match your filters' : 'No logs found')}</div>`; return; }
+  if (!msgs.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">No logs found</div>'; return; }
   el.innerHTML = msgs.slice(0,100).map(m => {
     const d = new Date(m.timestamp);
     const time = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -2004,23 +2117,18 @@ function renderContacts() {
   el.innerHTML = list.map(c => {
     const tag = contactTags[c.phone] || 'new';
     return `<div class="table-row">
+      <div><input type="checkbox" class="checkbox"></div>
       <div class="contact-name">
         <div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
-        <div style="min-width:0;"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.name)}</div><div style="font-size:11px;color:#9ca3af;">+${esc(c.phone)}</div></div>
+        <div><div style="font-size:13px;font-weight:600;">${esc(c.name)}</div><div style="font-size:11px;color:#9ca3af;">+${esc(c.phone)}</div></div>
       </div>
-      <div style="font-size:13px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">+${esc(c.phone)}</div>
-      <div><button class="tag-pill ${tag}" title="Click to change tag" onclick="cycleTag('${c.phone}')">${tag==='hot'?'🔥 Hot':tag==='order'?'📦 Order':'🆕 New'}</button></div>
+      <div style="font-size:13px;">+${esc(c.phone)}</div>
+      <div><span class="tag-pill ${tag}">${tag==='hot'?'🔥 Hot':tag==='order'?'📦 Order':'🆕 New'}</span></div>
       <div style="font-size:13px;color:#6b7280;">${c.totalMessages}</div>
-      <div style="display:flex;gap:2px;">
-        <button class="action-btn" title="Open chat" onclick="showPage('inbox',null);setTimeout(()=>openChat('${c.phone}','${esc(c.name)}'),300)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </button>
-        <button class="action-btn" title="Send message" onclick="prefillOutbound('${c.phone}','${esc(c.name)}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-        <button class="action-btn" title="Open in WhatsApp" onclick="window.open('https://wa.me/${c.phone}','_blank')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </button>
+      <div style="display:flex;gap:4px;">
+        <button class="action-btn" title="Chat" onclick="showPage('inbox',null);setTimeout(()=>openChat('${c.phone}','${esc(c.name)}'),300)">💬</button>
+        <button class="action-btn" title="Message" onclick="prefillOutbound('${c.phone}','${esc(c.name)}')">📤</button>
+        <button class="action-btn" title="WhatsApp" onclick="window.open('https://wa.me/${c.phone}','_blank')">🔗</button>
       </div>
     </div>`;
   }).join('');
@@ -2032,8 +2140,6 @@ function filterContactTag(v) { contactTagFilter = v; renderContacts(); }
 function renderTemplates() {
   const grid = document.getElementById('templatesGrid');
   if (!grid) return;
-  const badge = document.getElementById('templatesBadge');
-  if (badge) badge.textContent = TEMPLATES.length;
   grid.innerHTML = TEMPLATES.map(t => `
     <div class="template-card">
       <div class="tc-head"><span class="tc-name">${t.name}</span><span class="tc-cat">${t.cat}</span></div>
@@ -2111,18 +2217,12 @@ function setupScheduler() {
 }
 
 function addScheduled() {
-  const phone = document.getElementById('schedPhone')?.value?.trim();
-  const name = document.getElementById('schedName')?.value?.trim() || 'Customer';
   const date = document.getElementById('schedDate')?.value;
   const time = document.getElementById('schedTime')?.value;
-  const message = document.getElementById('schedMessage')?.value?.trim();
-  if (!phone || !date || !time || !message) { showToast('Please fill phone, date, time and message ✗','error'); return; }
-  scheduledMsgs.push({ id: Date.now(), phone, name, date, time, message, status:'pending', title:`To ${name} (+${phone})`, sub: `${date} at ${time}` });
+  if (!date || !time) { showToast('Please set date and time ✗','error'); return; }
+  scheduledMsgs.push({ id: Date.now(), date, time, status:'pending', title:'Scheduled Message', sub: `${date} at ${time}` });
   renderScheduled();
   showToast('Message scheduled ✓','success');
-  document.getElementById('schedPhone').value = '';
-  document.getElementById('schedName').value = '';
-  document.getElementById('schedMessage').value = '';
 }
 
 function renderScheduled() {
@@ -2133,8 +2233,8 @@ function renderScheduled() {
     <div class="scheduled-item">
       <div class="sch-icon">📅</div>
       <div class="sch-info">
-        <div class="sch-title">${esc(s.title)}</div>
-        <div class="sch-sub">${esc(s.sub)}</div>
+        <div class="sch-title">${s.title}</div>
+        <div class="sch-sub">${s.sub}</div>
       </div>
       <span class="sch-status ${s.status}">${s.status}</span>
       <button class="action-btn" onclick="removeScheduled(${s.id})">✕</button>
@@ -2158,20 +2258,10 @@ function updateBotStats() {
     <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;font-size:16px;">👥</div><div class="r-info"><div class="r-name">Customers Served</div><div class="r-msg">${allContacts.length} unique customers</div></div></div>`;
 }
 
-// ===================== QR CODE (real, scannable) =====================
-function renderQr() {
-  const box = document.getElementById('qrBox');
-  if (!box) return;
-  const link = document.getElementById('waLinkInput')?.value || 'https://wa.me/917639917149';
-  const src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
-  box.innerHTML = `<img src="${src}" alt="WhatsApp QR code for ${esc(link)}">`;
-}
-
 // ===================== EXPORT =====================
 function doExport() {
   const page = document.querySelector('.page.active')?.id || '';
   if (page.includes('logs')) doExportLogs();
-  else if (page.includes('contacts')) doExportContacts();
   else doExportContacts();
 }
 
@@ -2198,56 +2288,25 @@ function downloadCSV(rows, filename) {
   showToast('Download started ✓','success');
 }
 
-// ===================== PAGE-SPECIFIC TOPBAR =====================
-const TOPBAR_CONFIG = {
-  dashboard:  [{label:'🔄 Refresh', fn:'topbarRefresh()', kind:'secondary'}],
-  inbox:      [{label:'🔄 Refresh', fn:'topbarRefresh()', kind:'secondary'}],
-  logs:       [{label:'⬇️ Export CSV', fn:'doExportLogs()', kind:'secondary'}],
-  contacts:   [{label:'⬇️ Export', fn:'doExportContacts()', kind:'secondary'}],
-  templates:  [{label:'➕ New Template', fn:"showToast('Template builder coming soon','success')", kind:'primary'}],
-  outbound:   [{label:'📤 Send', fn:'sendOutbound()', kind:'primary'}],
-  scheduler:  [{label:'➕ Schedule New', fn:"document.getElementById('schedPhone')?.focus()", kind:'primary'}],
-  qrcode:     [{label:'📋 Copy Link', fn:'copyWaLink()', kind:'secondary'}],
-  chatbot:    [{label:'💾 Save Settings', fn:"showToast('Settings saved ✓','success')", kind:'primary'}],
-  integrations:[{label:'📋 Copy API Base', fn:"copyText(window.location.origin)", kind:'secondary'}],
-  setup:      [],
-  instructions:[],
-  locked:     [{label:'💎 Upgrade Plan', fn:"showLocked('My Plan','Upgrade to unlock premium features')", kind:'primary'}]
-};
-
-function renderTopbarActions(id) {
-  const el = document.getElementById('topbarActions');
-  const config = TOPBAR_CONFIG[id] || [];
-  if (!config.length) { el.innerHTML = ''; return; }
-  el.innerHTML = config.map(b => `<button class="topbar-btn ${b.kind}" onclick="${b.fn}">${b.label}</button>`).join('');
-}
-
-function topbarRefresh() {
-  showToast('Refreshing…', 'success');
-  loadAll();
-}
-
 // ===================== PAGE NAVIGATION =====================
 function showPage(id, navEl) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const page = document.getElementById('page-'+id);
   if (page) page.classList.add('active');
-  if (navEl) { navEl.classList.add('active'); ensureGroupOpenFor(navEl); }
+  if (navEl) navEl.classList.add('active');
   const titles = {
     dashboard:'Dashboard',inbox:'All Chats',logs:'Message Logs',
     contacts:'All Contacts',templates:'Templates',outbound:'Outbound Message',
-    chatbot:'Chatbot Settings',qrcode:'QR Code',scheduler:'Scheduler',
+    chatbot:'Chatbot Settings',qrcode:'QR Code',scheduler:'Scheduler',bots:'Bot Manager',kb:'Knowledge Base',
     integrations:'Integrations',setup:'Setup Guide',instructions:'Instructions',
     locked:'Feature'
   };
   document.getElementById('topbarTitle').textContent = titles[id] || id;
-  renderTopbarActions(id);
   if (id === 'inbox') { renderChatList(); updateFilterCounts(); }
   if (id === 'logs') { if (!allMsgs.length) loadAll().then(renderLogs); else renderLogs(); }
   if (id === 'contacts') renderContacts();
   if (id === 'dashboard') updateDashboard();
-  if (id === 'qrcode') renderQr();
   closeSidebar();
 }
 
@@ -2257,7 +2316,6 @@ function showLocked(title, sub) {
   document.getElementById('lockedTitle').textContent = title;
   document.getElementById('lockedSub').textContent = sub || 'This feature is coming soon';
   document.getElementById('topbarTitle').textContent = title;
-  renderTopbarActions('locked');
   closeSidebar();
 }
 
@@ -2269,28 +2327,6 @@ function openSidebar() {
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('sidebarOverlay').classList.remove('show');
-}
-
-// Accordion sections (Contacts / Messaging / E-commerce / Automation / Settings).
-// "Main" (Dashboard, All Chats, Message Logs) stays flat — not part of this system.
-function toggleGroup(name, headerEl) {
-  const body = document.getElementById('grp-' + name);
-  if (!body) return;
-  const collapsed = body.classList.toggle('collapsed');
-  if (headerEl) headerEl.classList.toggle('collapsed', collapsed);
-}
-
-// If a nav item lives inside a collapsed group and becomes active (e.g. reached via
-// a shortcut button rather than the sidebar itself), auto-expand its group so the
-// highlighted item is actually visible.
-function ensureGroupOpenFor(navEl) {
-  if (!navEl) return;
-  const body = navEl.closest('.sidebar-group-body');
-  if (body && body.classList.contains('collapsed')) {
-    body.classList.remove('collapsed');
-    const header = body.previousElementSibling;
-    if (header && header.classList.contains('group-header')) header.classList.remove('collapsed');
-  }
 }
 
 // ===================== UTILS =====================
@@ -2325,9 +2361,6 @@ function copyWaLink() {
 function openWhatsApp() {
   if (activePhone) window.open('https://wa.me/'+activePhone,'_blank');
 }
-
-// Initialize topbar for the default page once the DOM is ready
-document.addEventListener('DOMContentLoaded', () => renderTopbarActions('dashboard'));
 </script>
 </body>
 </html>
