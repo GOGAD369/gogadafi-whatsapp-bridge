@@ -63,7 +63,7 @@ ABOUT GoGadAFI:
 - WhatsApp: +91 93849 26539
 - Customer Support Email: gogadafiofficial@gmail.com
 STRICT RULES:
-- Your name is AFI
+- Your name is Afi
 - Always refer to brand as "GoGadAFI"
 - ONLY answer questions related to GoGadAFI business
 - If asked anything unrelated, reply: "Sorry, I don't have knowledge about it. I'm exclusively created for GoGadAFI"
@@ -636,7 +636,7 @@ async function processAndReply(customerPhone, customerName, bot) {
 
     const reply = groqResponse.data.choices[0].message.content;
 const formattedReply = addColorEmojis(reply);
-    await saveMessage({ customerPhone, customerName, text: formattedreply, direction: 'outgoing' });
+    await saveMessage({ customerPhone, customerName, text: formattedReply, direction: 'outgoing' });
 
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
@@ -671,7 +671,7 @@ ABOUT GoGadAFI:
 - Email: gogadafiofficial@gmail.com
 PRODUCTS: Men's Casual Wear, Formal Wear, Ethnic Wear, Accessories
 RULES:
-- Name: AFI
+- Name: Afi
 - ONLY GoGadAFI topics
 - Reply in customer's language
 - Short replies (1-2 lines)
