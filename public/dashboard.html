@@ -95,6 +95,20 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   padding:16px 12px 6px; font-size:10px; color:var(--text-muted);
   text-transform:uppercase; letter-spacing:1.2px; font-weight:600; flex-shrink:0;
 }
+.sidebar-section.group-header {
+  cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+  padding-right:14px; user-select:none; transition:color 0.15s;
+}
+.sidebar-section.group-header:hover { color:var(--text-secondary); }
+.group-chevron {
+  font-size:8px; display:inline-block; transition:transform 0.2s ease; color:var(--text-muted);
+}
+.sidebar-section.group-header.collapsed .group-chevron { transform:rotate(-90deg); }
+.sidebar-group-body {
+  overflow:hidden; max-height:600px; opacity:1;
+  transition:max-height 0.28s ease, opacity 0.2s ease;
+}
+.sidebar-group-body.collapsed { max-height:0; opacity:0; }
 
 .nav-item {
   display:flex; align-items:center; gap:10px; padding:9px 12px;
@@ -768,7 +782,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-badge grey">✓</span>
       </div>
 
-      <div class="sidebar-section">Contacts</div>
+      <div class="sidebar-section group-header" onclick="toggleGroup('contacts',this)">
+        <span>Contacts</span><span class="group-chevron">▾</span>
+      </div>
+      <div class="sidebar-group-body" id="grp-contacts">
       <div class="nav-item" onclick="showPage('contacts',this)">
         <span class="nav-icon">👥</span>
         <span class="nav-label">All Contacts</span>
@@ -789,8 +806,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Invoices</span>
         <span class="lock-icon">🔒</span>
       </div>
+      </div>
 
-      <div class="sidebar-section">Messaging</div>
+      <div class="sidebar-section group-header" onclick="toggleGroup('messaging',this)">
+        <span>Messaging</span><span class="group-chevron">▾</span>
+      </div>
+      <div class="sidebar-group-body" id="grp-messaging">
       <div class="nav-item" onclick="showPage('templates',this)">
         <span class="nav-icon">📝</span>
         <span class="nav-label">Templates</span>
@@ -816,8 +837,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Scheduler</span>
         <span class="nav-badge grey">✓</span>
       </div>
+      </div>
 
-      <div class="sidebar-section">E-commerce</div>
+      <div class="sidebar-section group-header collapsed" onclick="toggleGroup('ecommerce',this)">
+        <span>E-commerce</span><span class="group-chevron">▾</span>
+      </div>
+      <div class="sidebar-group-body collapsed" id="grp-ecommerce">
       <div class="nav-item locked" onclick="showLocked('WhatsApp Orders','Manage orders placed via WhatsApp')">
         <span class="nav-icon">🛒</span>
         <span class="nav-label">WA Orders</span>
@@ -833,8 +858,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">WooCommerce</span>
         <span class="lock-icon">🔒</span>
       </div>
+      </div>
 
-      <div class="sidebar-section">Automation</div>
+      <div class="sidebar-section group-header" onclick="toggleGroup('automation',this)">
+        <span>Automation</span><span class="group-chevron">▾</span>
+      </div>
+      <div class="sidebar-group-body" id="grp-automation">
       <div class="nav-item" onclick="showPage('chatbot',this)">
         <span class="nav-icon">🤖</span>
         <span class="nav-label">Chatbot</span>
@@ -845,8 +874,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Agents</span>
         <span class="lock-icon">🔒</span>
       </div>
+      </div>
 
-      <div class="sidebar-section">Settings</div>
+      <div class="sidebar-section group-header" onclick="toggleGroup('settings',this)">
+        <span>Settings</span><span class="group-chevron">▾</span>
+      </div>
+      <div class="sidebar-group-body" id="grp-settings">
       <div class="nav-item" onclick="showPage('integrations',this)">
         <span class="nav-icon">🔗</span>
         <span class="nav-label">Integrations</span>
@@ -871,6 +904,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-icon">💎</span>
         <span class="nav-label">My Plan</span>
         <span class="lock-icon">🔒</span>
+      </div>
       </div>
 
       <div class="sidebar-footer">
@@ -2198,7 +2232,7 @@ function showPage(id, navEl) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const page = document.getElementById('page-'+id);
   if (page) page.classList.add('active');
-  if (navEl) navEl.classList.add('active');
+  if (navEl) { navEl.classList.add('active'); ensureGroupOpenFor(navEl); }
   const titles = {
     dashboard:'Dashboard',inbox:'All Chats',logs:'Message Logs',
     contacts:'All Contacts',templates:'Templates',outbound:'Outbound Message',
@@ -2234,6 +2268,28 @@ function openSidebar() {
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// Accordion sections (Contacts / Messaging / E-commerce / Automation / Settings).
+// "Main" (Dashboard, All Chats, Message Logs) stays flat — not part of this system.
+function toggleGroup(name, headerEl) {
+  const body = document.getElementById('grp-' + name);
+  if (!body) return;
+  const collapsed = body.classList.toggle('collapsed');
+  if (headerEl) headerEl.classList.toggle('collapsed', collapsed);
+}
+
+// If a nav item lives inside a collapsed group and becomes active (e.g. reached via
+// a shortcut button rather than the sidebar itself), auto-expand its group so the
+// highlighted item is actually visible.
+function ensureGroupOpenFor(navEl) {
+  if (!navEl) return;
+  const body = navEl.closest('.sidebar-group-body');
+  if (body && body.classList.contains('collapsed')) {
+    body.classList.remove('collapsed');
+    const header = body.previousElementSibling;
+    if (header && header.classList.contains('group-header')) header.classList.remove('collapsed');
+  }
 }
 
 // ===================== UTILS =====================
