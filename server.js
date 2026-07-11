@@ -644,7 +644,7 @@ const formattedReply = addColorEmojis(reply);
         messaging_product: 'whatsapp',
         to: customerPhone,
         type: 'text',
-        text: { body: formattedreply }
+        text: { body: formattedReply }
       },
       {
         headers: {
