@@ -50,10 +50,10 @@ async function seedDefaultBot() {
   const count = await botsCol.countDocuments({});
   if (count === 0) {
     await botsCol.insertOne({
-      name: 'Aafia',
+      name: 'Afi',
       model: 'llama-3.1-8b-instant',
       description: 'GoGadAFI WhatsApp Assistant',
-      systemPrompt: `You are Aafia, GoGadAFI's WhatsApp assistant.
+      systemPrompt: `You are Afi, GoGadAFI's WhatsApp assistant.
 ABOUT GoGadAFI:
 - Brand Name: GoGadAFI (always use this exact format)
 - Founder: Neelakandan
@@ -75,7 +75,7 @@ STRICT RULES:
       messageWaitTime: 0,
       createdAt: new Date()
     });
-    console.log('✅ Default bot "Aafia" seeded');
+    console.log('✅ Default bot "Afi" seeded');
   }
 }
 
@@ -213,7 +213,7 @@ function buildSystemPrompt(bot, kb, customerName, isFirstTime) {
 
   // Welcome message for first-time
   if (isFirstTime) {
-    prompt += `\n\n- This is the customer's first message. Start your reply with exactly:\n"Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm ${bot.name || 'Aafia'}, your WhatsApp assistant. How can I help you today?"`;
+    prompt += `\n\n- This is the customer's first message. Start your reply with exactly:\n"Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm ${bot.name || 'Afi'}, your WhatsApp assistant. How can I help you today?"`;
   } else {
     prompt += `\n\n- This is a returning customer, do NOT send welcome message, just answer their question directly`;
   }
@@ -660,7 +660,7 @@ const formattedReply = addColorEmojis(reply);
 
 // ---------- Fallback prompt (no bot in DB) ----------
 function buildFallbackPrompt(customerName, isFirstTime) {
-  return `You are Aafia, GoGadAFI's WhatsApp assistant.
+  return `You are Afi, GoGadAFI's WhatsApp assistant.
 ABOUT GoGadAFI:
 - Brand Name: GoGadAFI
 - Founder: Neelakandan
@@ -675,7 +675,7 @@ RULES:
 - ONLY GoGadAFI topics
 - Reply in customer's language
 - Short replies (1-2 lines)
-${isFirstTime ? `- Start with: "Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm Aafia, your WhatsApp assistant. How can I help you today?"` : '- Returning customer, no welcome message'}`;
+${isFirstTime ? `- Start with: "Hi ${customerName}!\n\nWelcome to GoGadAFI! I'm Afi, your WhatsApp assistant. How can I help you today?"` : '- Returning customer, no welcome message'}`;
 }
 
 const PORT = process.env.PORT || 3000;
