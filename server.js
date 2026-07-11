@@ -601,7 +601,7 @@ async function processAndReply(customerPhone, customerName, bot) {
     if (!latestMsgs.length) return;
     const latestMessage = latestMsgs[0].text;
 
-    const isFirstTime = !(await customersCol?.findOne({ customerPhone, firstSeen: { $exists: true } }));
+    const isFirstTime = await checkFirstTime(customerPhone, customerName);
 
     // Get knowledge base
     const kb = bot ? await getKnowledgeBase(bot._id) : null;
