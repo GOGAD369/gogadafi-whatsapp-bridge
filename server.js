@@ -63,7 +63,7 @@ ABOUT GoGadAFI:
 - WhatsApp: +91 93849 26539
 - Customer Support Email: gogadafiofficial@gmail.com
 STRICT RULES:
-- Your name is Aafia
+- Your name is AFI
 - Always refer to brand as "GoGadAFI"
 - ONLY answer questions related to GoGadAFI business
 - If asked anything unrelated, reply: "Sorry, I don't have knowledge about it. I'm exclusively created for GoGadAFI"
@@ -572,7 +572,22 @@ app.post('/webhook', async (req, res) => {
     res.sendStatus(500);
   }
 });
-
+// Add color emojis to text
+function addColorEmojis(text) {
+  const colorMap = {
+    'black': '⚫', 'white': '⚪', 'red': '🔴', 'blue': '🔵',
+    'green': '🟢', 'yellow': '🟡', 'orange': '🟠', 'purple': '🟣',
+    'brown': '🟤', 'pink': '🩷', 'grey': '🩶', 'gray': '🩶',
+    'navy': '🔵', 'maroon': '🔴', 'cream': '🟡', 'beige': '🟤',
+    'கருப்பு': '⚫', 'வெள்ளை': '⚪', 'சிவப்பு': '🔴',
+    'நீலம்': '🔵', 'பச்சை': '🟢', 'மஞ்சள்': '🟡',
+    'ஆரஞ்சு': '🟠', 'ரோஜா': '🩷', 'பழுப்பு': '🟤'
+  };
+  return text.replace(/\b(\w+)\b/g, (word) => {
+    const lower = word.toLowerCase();
+    return colorMap[lower] ? `${word} ${colorMap[lower]}` : word;
+  });
+}
 // ---------- Process and send reply ----------
 async function processAndReply(customerPhone, customerName, bot) {
   try {
@@ -620,8 +635,8 @@ async function processAndReply(customerPhone, customerName, bot) {
     );
 
     const reply = groqResponse.data.choices[0].message.content;
-
-    await saveMessage({ customerPhone, customerName, text: reply, direction: 'outgoing' });
+const formattedReply = addColorEmojis(reply);
+    await saveMessage({ customerPhone, customerName, text: formattedreply, direction: 'outgoing' });
 
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
@@ -629,7 +644,7 @@ async function processAndReply(customerPhone, customerName, bot) {
         messaging_product: 'whatsapp',
         to: customerPhone,
         type: 'text',
-        text: { body: reply }
+        text: { body: formattedreply }
       },
       {
         headers: {
@@ -656,7 +671,7 @@ ABOUT GoGadAFI:
 - Email: gogadafiofficial@gmail.com
 PRODUCTS: Men's Casual Wear, Formal Wear, Ethnic Wear, Accessories
 RULES:
-- Name: Aafia
+- Name: AFI
 - ONLY GoGadAFI topics
 - Reply in customer's language
 - Short replies (1-2 lines)
