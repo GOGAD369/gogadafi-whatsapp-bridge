@@ -418,15 +418,15 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 .contacts-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow-x:auto; }
 .table-header {
-  display:grid; grid-template-columns:36px 1.8fr 1.3fr 110px 90px 110px;
+  display:grid; grid-template-columns:1.8fr 1.3fr 110px 90px 110px;
   padding:12px 16px; background:#f9fafb; border-bottom:1px solid var(--border-light);
   font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;
-  min-width:640px; gap:8px;
+  min-width:600px; gap:8px;
 }
 .table-row {
-  display:grid; grid-template-columns:36px 1.8fr 1.3fr 110px 90px 110px;
+  display:grid; grid-template-columns:1.8fr 1.3fr 110px 90px 110px;
   padding:12px 16px; border-bottom:1px solid #f9fafb;
-  align-items:center; transition:0.15s; min-width:640px; gap:8px;
+  align-items:center; transition:0.15s; min-width:600px; gap:8px;
 }
 .table-row:hover { background:#f9fafb; }
 .table-row:last-child { border-bottom:none; }
@@ -448,7 +448,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .action-btn { background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:5px; transition:0.15s; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
 .action-btn:hover { color:var(--accent); background:#f0fdf4; }
 .action-btn svg { width:15px; height:15px; }
-.checkbox { width:16px; height:16px; cursor:pointer; accent-color:var(--accent); }
 
 /* ===================== MESSAGE LOGS ===================== */
 .logs-wrap { padding:24px; }
@@ -795,7 +794,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div class="nav-item" onclick="showPage('templates',this)">
         <span class="nav-icon">📝</span>
         <span class="nav-label">Templates</span>
-        <span class="nav-badge grey">3</span>
+        <span class="nav-badge grey" id="templatesBadge">0</span>
       </div>
       <div class="nav-item" onclick="showPage('outbound',this)">
         <span class="nav-icon">📤</span>
@@ -1078,7 +1077,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
             <div class="contacts-table">
               <div class="table-header">
-                <div></div>
                 <div>Name</div>
                 <div>Phone</div>
                 <div>Tag</div>
@@ -1331,17 +1329,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <span class="endpoint-url">/api/send</span>
                 <button class="copy-btn" onclick="copyText('/api/send')">Copy</button>
               </div>
+              <div style="font-size:11px;color:#9ca3af;margin:-4px 0 10px 2px;">Body: <code>{ phone, message, customerName }</code> · Header: <code>x-dashboard-token</code></div>
               <div class="api-endpoint">
                 <span class="method-badge post">POST</span>
                 <span class="endpoint-url">/api/mark-read/:phone</span>
                 <button class="copy-btn" onclick="copyText('/api/mark-read/:phone')">Copy</button>
               </div>
-              <div class="code-box">{
-  "phone": "919XXXXXXXXX",
-  "message": "Your message here",
-  "customerName": "Name"
-}
-Header: x-dashboard-token: [your-password]</div>
             </div>
           </div>
         </div>
@@ -1471,12 +1464,6 @@ Header: x-dashboard-token: [your-password]</div>
             <div class="locked-icon" id="lockedIcon">🔒</div>
             <div class="locked-title" id="lockedTitle">Feature Locked</div>
             <div class="locked-sub" id="lockedSub">This feature is coming soon</div>
-            <div class="locked-features">
-              <div class="locked-feat">✅ All Chats — Available</div>
-              <div class="locked-feat">✅ Contacts — Available</div>
-              <div class="locked-feat">✅ Message Logs — Available</div>
-              <div class="locked-feat">✅ Outbound — Available</div>
-            </div>
             <button class="btn btn-primary" onclick="showPage('dashboard',null)">← Back to Dashboard</button>
           </div>
         </div>
@@ -1499,7 +1486,13 @@ let activePhone = null;
 let activeName = '';
 let currentFilter = 'all';
 let closedChats = new Set();
-let readChats = new Set();          // phones the user has opened/read
+let lastReadTimes = {};        // { phone: ISOtimestamp } — last time admin opened/viewed this chat
+function isConvUnread(c) {
+  if (c.lastDirection !== 'incoming') return false;
+  const readAt = lastReadTimes[c._id];
+  if (!readAt) return true;
+  return new Date(c.lastTime) > new Date(readAt);
+}
 let contactTags = {};
 let scheduledMsgs = [];
 let refreshTimer = null;
@@ -1602,7 +1595,7 @@ function buildContacts() {
     tag: contactTags[c._id] || 'new'
   }));
   document.getElementById('contactsBadge').textContent = allContacts.length;
-  document.getElementById('inboxBadge').textContent = convs.filter(c => c.lastDirection === 'incoming' && !readChats.has(c._id)).length;
+  document.getElementById('inboxBadge').textContent = convs.filter(isConvUnread).length;
 }
 
 function updateAll() {
@@ -1673,6 +1666,16 @@ function updateDashboard() {
   renderRecentMsgs();
 }
 
+// If there ARE conversations but NO messages loaded, that's not "empty inbox" —
+// it means /api/messages/all-recent (and its per-chat fallback) isn't returning data.
+// Surface that clearly instead of a misleading "no messages yet".
+function noMsgDataHtml(emptyText) {
+  if (convs.length > 0 && allMsgs.length === 0) {
+    return '<div style="color:#b45309;font-size:12px;text-align:center;padding:10px;background:#fffbeb;border-radius:8px;">⚠️ Could not load message history from the server. Conversations exist but message data isn\'t returning — check the /api/messages endpoints on the server.</div>';
+  }
+  return `<div style="color:#9ca3af;font-size:13px;padding:10px;">${emptyText}</div>`;
+}
+
 function renderChart() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -1680,7 +1683,7 @@ function renderChart() {
     days.push(d);
   }
   if (!allMsgs.length) {
-    document.getElementById('chartBars').innerHTML = '<div style="color:#9ca3af;font-size:13px;align-self:center;">No message activity yet</div>';
+    document.getElementById('chartBars').innerHTML = noMsgDataHtml('No message activity yet');
     return;
   }
   const maxVal = Math.max(...days.map(d => allMsgs.filter(m => new Date(m.timestamp).toDateString() === d.toDateString()).length), 1);
@@ -1706,7 +1709,9 @@ function renderQuickStats() {
   const totalIn = allMsgs.filter(m => m.direction === 'incoming').length;
   const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
   const rate = totalIn > 0 ? Math.round((totalOut / totalIn) * 100) : 0;
+  const warn = (convs.length > 0 && allMsgs.length === 0) ? noMsgDataHtml('') : '';
   document.getElementById('quickStats').innerHTML = `
+    ${warn}
     <div class="recent-item"><div class="r-avatar" style="background:#dcfce7;color:#16a34a;">📥</div><div class="r-info"><div class="r-name">Total Received</div><div class="r-msg">${totalIn} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1d4ed8;">📤</div><div class="r-info"><div class="r-name">Total Sent</div><div class="r-msg">${totalOut} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;">⚡</div><div class="r-info"><div class="r-name">Response Rate</div><div class="r-msg">${rate}%</div></div></div>
@@ -1731,7 +1736,7 @@ function renderRecentConvs() {
 function renderRecentMsgs() {
   const el = document.getElementById('recentMsgs');
   const recent = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,5);
-  if (!recent.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px;">No messages yet</div>'; return; }
+  if (!recent.length) { el.innerHTML = noMsgDataHtml('No messages yet'); return; }
   el.innerHTML = recent.map(m => `
     <div class="recent-item">
       <div class="r-avatar" style="${m.direction==='outgoing'?'background:#dcfce7;color:#16a34a;':'background:#dbeafe;color:#1e40af;'}">${m.direction==='outgoing'?'📤':'📥'}</div>
@@ -1745,7 +1750,7 @@ function renderRecentMsgs() {
 
 // ===================== INBOX =====================
 function updateFilterCounts() {
-  const unread = convs.filter(c => c.lastDirection === 'incoming' && !readChats.has(c._id)).length;
+  const unread = convs.filter(isConvUnread).length;
   const awaiting = convs.filter(c => c.lastDirection === 'incoming').length;
   const open = convs.filter(c => !closedChats.has(c._id)).length;
   const closed = closedChats.size;
@@ -1766,7 +1771,7 @@ function setFilter(f, el) {
 
 function getFilteredConvs() {
   let list = [...convs];
-  if (currentFilter === 'unread') list = list.filter(c => c.lastDirection === 'incoming' && !readChats.has(c._id));
+  if (currentFilter === 'unread') list = list.filter(isConvUnread);
   else if (currentFilter === 'awaiting') list = list.filter(c => c.lastDirection === 'incoming');
   else if (currentFilter === 'open') list = list.filter(c => !closedChats.has(c._id));
   else if (currentFilter === 'closed') list = list.filter(c => closedChats.has(c._id));
@@ -1782,7 +1787,7 @@ function renderChatList() {
   if (!list.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">📭 No conversations</div>'; return; }
   el.innerHTML = list.map(c => {
     const init = (c.customerName||'?').charAt(0).toUpperCase();
-    const isUnread = c.lastDirection === 'incoming' && !readChats.has(c._id);
+    const isUnread = isConvUnread(c);
     const tag = contactTags[c._id];
     return `<div class="chat-item ${c._id === activePhone ? 'active' : ''}" onclick="openChat('${c._id}','${esc(c.customerName||'Unknown')}')">
       <div class="ci-avatar">${init}</div>
@@ -1813,8 +1818,10 @@ async function openChat(phone, name) {
   document.getElementById('cwWaBtn').onclick = () => window.open('https://wa.me/'+phone,'_blank');
   document.getElementById('chatWindow').classList.add('mobile-open');
 
-  // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet)
-  readChats.add(phone);
+  // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet).
+  // We store a timestamp (not just a flag) so a NEW incoming message after this point correctly
+  // flips the conversation back to unread instead of staying "read" forever.
+  lastReadTimes[phone] = new Date().toISOString();
   renderChatList();
   updateFilterCounts();
   renderCustomerDetails(phone, name);
@@ -1856,7 +1863,7 @@ function renderCustomerDetails(phone, name) {
   document.getElementById('cdContent').innerHTML = `
     <div class="cd-stats">
       <div class="cd-stat"><div class="num">${conv?.totalMessages||0}</div><div class="lbl">Messages</div></div>
-      <div class="cd-stat"><div class="num">${(conv?.lastDirection==='incoming' && !readChats.has(phone))?'1':'0'}</div><div class="lbl">Unread</div></div>
+      <div class="cd-stat"><div class="num">${(conv && isConvUnread(conv))?'1':'0'}</div><div class="lbl">Unread</div></div>
     </div>
     <div class="cd-field"><label>Name</label><div class="val">${esc(name)}</div></div>
     <div class="cd-field"><label>Phone</label><div class="val">+${esc(phone)}</div></div>
@@ -1932,7 +1939,7 @@ function renderLogs() {
   let msgs = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
   if (logFilter) msgs = msgs.filter(m => (m.text||'').toLowerCase().includes(logFilter) || (m.customerName||'').toLowerCase().includes(logFilter));
   if (logDir !== 'all') msgs = msgs.filter(m => m.direction === logDir);
-  if (!msgs.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:#9ca3af;font-size:13px;">No logs found</div>'; return; }
+  if (!msgs.length) { el.innerHTML = `<div style="padding:30px;">${noMsgDataHtml(logFilter||logDir!=='all' ? 'No logs match your filters' : 'No logs found')}</div>`; return; }
   el.innerHTML = msgs.slice(0,100).map(m => {
     const d = new Date(m.timestamp);
     const time = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -1962,7 +1969,6 @@ function renderContacts() {
   el.innerHTML = list.map(c => {
     const tag = contactTags[c.phone] || 'new';
     return `<div class="table-row">
-      <div><input type="checkbox" class="checkbox"></div>
       <div class="contact-name">
         <div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
         <div style="min-width:0;"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.name)}</div><div style="font-size:11px;color:#9ca3af;">+${esc(c.phone)}</div></div>
@@ -1991,6 +1997,8 @@ function filterContactTag(v) { contactTagFilter = v; renderContacts(); }
 function renderTemplates() {
   const grid = document.getElementById('templatesGrid');
   if (!grid) return;
+  const badge = document.getElementById('templatesBadge');
+  if (badge) badge.textContent = TEMPLATES.length;
   grid.innerHTML = TEMPLATES.map(t => `
     <div class="template-card">
       <div class="tc-head"><span class="tc-name">${t.name}</span><span class="tc-cat">${t.cat}</span></div>
