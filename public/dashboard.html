@@ -973,7 +973,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <div class="bot-status-card">
           <div class="status-row">
             <div class="pulse-dot"></div>
-            <span class="status-label">Aafia is <strong>Active</strong></span>
+            <span class="status-label">Afi is <strong>Active</strong></span>
           </div>
           <div class="status-sub">Auto-replies enabled • 24/7</div>
         </div>
@@ -1119,7 +1119,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                     </button>
                     <button class="reply-send-btn" id="sendBtn" onclick="sendReply()">➤</button>
                   </div>
-                  <div class="reply-note">⚡ Manual reply — Aafia bot will continue after this</div>
+                  <div class="reply-note">⚡ Manual reply — Afi bot will continue after this</div>
                 </div>
               </div>
             </div>
@@ -1251,7 +1251,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
               <div class="chatbot-card">
                 <h3>Bot Status</h3>
                 <div class="toggle-row">
-                  <div><div class="toggle-label">Aafia Bot Active</div><div class="toggle-sub">Auto-reply to all messages</div></div>
+                  <div><div class="toggle-label">Afi Bot Active</div><div class="toggle-sub">Auto-reply to all messages</div></div>
                   <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="toggle-row">
@@ -1271,7 +1271,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <h3>Bot Identity</h3>
                 <div class="form-field" style="margin-bottom:12px;">
                   <label>Bot Name</label>
-                  <input type="text" value="Aafia" readonly style="background:#f9fafb;">
+                  <input type="text" value="Afi" readonly style="background:#f9fafb;">
                 </div>
                 <div class="form-field" style="margin-bottom:12px;">
                   <label>AI Model</label>
@@ -1481,7 +1481,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             <div class="setup-step-card">
               <div class="step-indicator done">✓</div>
               <div class="setup-step-info">
-                <h4>Aafia Bot Active</h4>
+                <h4>Afi Bot Active</h4>
                 <p>Groq Llama 3.1 — Tamil/English — Welcome message ✅</p>
               </div>
             </div>
@@ -1632,7 +1632,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="form-grid">
       <div class="form-field">
         <label>Bot Name *</label>
-        <input type="text" id="botModalName" placeholder="e.g. Aafia, Support Bot">
+        <input type="text" id="botModalName" placeholder="e.g. Afi, Support Bot">
       </div>
       <div class="form-field">
         <label>AI Model</label>
@@ -1698,7 +1698,7 @@ let refreshTimer = null;
 const TAG_CYCLE = ['new','hot','order'];
 
 const TEMPLATES = [
-  { name:'Welcome', cat:'Greeting', body:'Hi {name}! Welcome to GoGadAFI 🛍️ I am Aafia, your WhatsApp assistant. How can I help you today?' },
+  { name:'Welcome', cat:'Greeting', body:'Hi {name}! Welcome to GoGadAFI 🛍️ I am Afi, your WhatsApp assistant. How can I help you today?' },
   { name:'Order Confirmation', cat:'Order', body:'Thank you for your order {name}! 🎉 Your order has been placed successfully. We will share tracking details soon. Visit us: https://gogad369.github.io/GOGADAFI' },
   { name:'Follow Up', cat:'Sales', body:'Hi {name}! Just checking in from GoGadAFI 👋 Did you get a chance to browse our collection? Let me know if you need any help!' },
   { name:'Offer', cat:'Marketing', body:'🎉 Special offer for you {name}! GoGadAFI is having a sale on men\'s fashion. Visit us at https://gogad369.github.io/GOGADAFI' },
@@ -1914,7 +1914,7 @@ function renderQuickStats() {
     <div class="recent-item"><div class="r-avatar" style="background:#dcfce7;color:#16a34a;">📥</div><div class="r-info"><div class="r-name">Total Received</div><div class="r-msg">${totalIn} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1d4ed8;">📤</div><div class="r-info"><div class="r-name">Total Sent</div><div class="r-msg">${totalOut} messages</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;">⚡</div><div class="r-info"><div class="r-name">Response Rate</div><div class="r-msg">${rate}%</div></div></div>
-    <div class="recent-item"><div class="r-avatar" style="background:#ede9fe;color:#6d28d9;">🤖</div><div class="r-info"><div class="r-name">Bot (Aafia)</div><div class="r-msg">Active 24/7</div></div></div>
+    <div class="recent-item"><div class="r-avatar" style="background:#ede9fe;color:#6d28d9;">🤖</div><div class="r-info"><div class="r-name">Bot (Afi)</div><div class="r-msg">Active 24/7</div></div></div>
   `;
 }
 
@@ -2045,7 +2045,7 @@ function renderMessages(msgs) {
   const assignedBanner = `<div style="text-align:center;margin:12px 0 16px;">
     <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;
     font-size:11px;padding:4px 12px;border-radius:20px;display:inline-block;">
-    🤖 Chat assigned to Aafia</span></div>`;
+    🤖 Chat assigned to Afi</span></div>`;
   el.innerHTML = assignedBanner + msgs.map(m => {
     const d = new Date(m.timestamp);
     const ds = d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
@@ -2054,7 +2054,7 @@ function renderMessages(msgs) {
     if (ds !== lastDate) { lastDate = ds; sep = `<div class="date-sep"><span>${ds}</span></div>`; }
     const isOut = m.direction === 'outgoing';
     return `${sep}<div class="msg-row ${isOut?'out':'in'}"><div class="msg-bubble">
-      <div class="msg-sender">${isOut?'🤖 Aafia':esc(m.customerName||'Customer')}</div>
+      <div class="msg-sender">${isOut?'🤖 Afi':esc(m.customerName||'Customer')}</div>
       ${esc(m.text||'').replace(/\n/g,'<br>')}
       <div class="msg-time">${ts}</div>
     </div></div>`;
