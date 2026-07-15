@@ -326,6 +326,71 @@ app.post('/api/send', authCheck, async (req, res) => {
   }
 });
 
+// ---------- Send WhatsApp template message ----------
+app.post('/api/send-template', authCheck, async (req, res) => {
+  const {
+    phone,               // required — recipient WhatsApp number, e.g. "919384926539"
+    templateName,        // optional — defaults to 'intern_recruiting'
+    languageCode,        // optional — defaults to 'en'
+    customerName,        // required — fills header {{1}}
+    referredBy           // required — fills body {{2}}
+  } = req.body;
+
+  if (!phone || !customerName || !referredBy) {
+    return res.status(400).json({ error: 'phone, customerName and referredBy are required' });
+  }
+
+  const template = templateName || 'intern_recruiting';
+  const lang = languageCode || 'en';
+
+  try {
+    const waRes = await axios.post(
+      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        to: phone,
+        type: 'template',
+        template: {
+          name: template,
+          language: { code: lang },
+          components: [
+            {
+              type: 'header',
+              parameters: [
+                { type: 'text', text: customerName }
+              ]
+            },
+            {
+              type: 'body',
+              parameters: [
+                { type: 'text', text: referredBy }
+              ]
+            }
+          ]
+        }
+      },
+      { headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' } }
+    );
+
+    const waMessageId = waRes.data?.messages?.[0]?.id || null;
+
+    // Log a readable summary in the chat history so it shows in the dashboard
+    await saveMessage({
+      customerPhone: phone,
+      customerName: customerName,
+      text: `[Template: ${template}] Header: ${customerName} | Referred by: ${referredBy}`,
+      direction: 'outgoing',
+      messageId: waMessageId,
+      status: 'sent'
+    });
+
+    res.json({ success: true, messageId: waMessageId });
+  } catch (err) {
+    console.error('Template send error:', err.response?.data || err.message);
+    res.status(500).json({ error: err.response?.data?.error?.message || err.message });
+  }
+});
+
 // =====================================================================
 // BOT MANAGEMENT APIs
 // =====================================================================
