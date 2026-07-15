@@ -731,6 +731,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 .bot-assign-select { padding:4px 8px; border-radius:7px; border:1px solid var(--border-light); font-size:12px; outline:none; background:#fff; cursor:pointer; color:var(--text-dark); }
 
+/* ===================== MESSAGE TICKS ===================== */
+.msg-tick { font-size:11px; margin-left:4px; display:inline; }
+.tick-sent { color:#9ca3af; }
+.tick-delivered { color:#9ca3af; }
+.tick-read { color:#3b82f6; }
+
 /* ===================== SCROLLBAR ===================== */
 ::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
@@ -2019,17 +2025,19 @@ async function openChat(phone, name) {
   updateBotSelects();
   loadBotAssignment(phone);
 
-  // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet).
-  // We store a timestamp (not just a flag) so a NEW incoming message after this point correctly
-  // flips the conversation back to unread instead of staying "read" forever.
+  // Mark as read locally immediately
   lastReadTimes[phone] = new Date().toISOString();
   renderChatList();
   updateFilterCounts();
   renderCustomerDetails(phone, name);
-  try {
-    fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
-  } catch(e) {}
+  fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
 
+  // Show cached messages instantly (no loading spinner = fast switch feel)
+  const cached = allMsgs.filter(m => m.customerPhone === phone).sort((a,b) => new Date(a.timestamp)-new Date(b.timestamp));
+  if (cached.length) renderMessages(cached);
+  else document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px;font-size:13px;">Loading...</div>';
+
+  // Then fetch fresh in background
   try {
     const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH } });
     const msgs = await r.json();
@@ -2037,11 +2045,18 @@ async function openChat(phone, name) {
   } catch(e) {}
 }
 
+function getTickHtml(status) {
+  if (!status || status === 'sent') return '<span class="msg-tick tick-sent" title="Sent">✓</span>';
+  if (status === 'delivered') return '<span class="msg-tick tick-delivered" title="Delivered">✓✓</span>';
+  if (status === 'read') return '<span class="msg-tick tick-read" title="Read">✓✓</span>';
+  return '';
+}
+
 function renderMessages(msgs) {
   const el = document.getElementById('chatMessages');
   if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px;">No messages yet</div>'; return; }
   let lastDate = '';
-  const scrolled = el.scrollTop + el.clientHeight >= el.scrollHeight - 60;
+  const wasAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 80;
   const assignedBanner = `<div style="text-align:center;margin:12px 0 16px;">
     <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;
     font-size:11px;padding:4px 12px;border-radius:20px;display:inline-block;">
@@ -2053,13 +2068,14 @@ function renderMessages(msgs) {
     let sep = '';
     if (ds !== lastDate) { lastDate = ds; sep = `<div class="date-sep"><span>${ds}</span></div>`; }
     const isOut = m.direction === 'outgoing';
+    const ticks = isOut ? getTickHtml(m.status) : '';
     return `${sep}<div class="msg-row ${isOut?'out':'in'}"><div class="msg-bubble">
       <div class="msg-sender">${isOut?'🤖 Afi':esc(m.customerName||'Customer')}</div>
       ${esc(m.text||'').replace(/\n/g,'<br>')}
-      <div class="msg-time">${ts}</div>
+      <div class="msg-time">${ts}${ticks}</div>
     </div></div>`;
   }).join('');
-  if (scrolled || msgs.length < 5) el.scrollTop = el.scrollHeight;
+  if (wasAtBottom || msgs.length < 5) el.scrollTop = el.scrollHeight;
 }
 
 function renderCustomerDetails(phone, name) {
