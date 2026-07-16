@@ -585,6 +585,13 @@ app.post('/webhook', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
     const changes = entry?.changes?.[0];
+        // --- NEW CODE TO CATCH DELIVERY ERRORS ---
+    const status = changes?.value?.statuses?.[0];
+    if (status && status.status === 'failed') {
+      console.error('❌ META BLOCKED DELIVERY:', JSON.stringify(status.errors, null, 2));
+      return res.sendStatus(200);
+    }
+    // -----------------------------------------
     const message = changes?.value?.messages?.[0];
     if (!message || message.type !== 'text') return res.sendStatus(200);
 
