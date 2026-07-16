@@ -547,6 +547,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 /* ===================== OUTBOUND PAGE ===================== */
 .outbound-wrap { padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.outbound-wrap > .outbound-card:first-child { grid-column: 1 / -1; }
 .outbound-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); }
 .outbound-card h3 { font-size:16px; font-weight:700; margin-bottom:6px; }
 .outbound-card p { font-size:13px; color:#6b7280; margin-bottom:20px; }
@@ -730,12 +731,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .kb-bot-select { padding:8px 12px; border-radius:9px; border:1px solid var(--border-light); font-size:13px; outline:none; background:#fff; cursor:pointer; }
 
 .bot-assign-select { padding:4px 8px; border-radius:7px; border:1px solid var(--border-light); font-size:12px; outline:none; background:#fff; cursor:pointer; color:var(--text-dark); }
-
-/* ===================== MESSAGE TICKS ===================== */
-.msg-tick { font-size:11px; margin-left:4px; display:inline; }
-.tick-sent { color:#9ca3af; }
-.tick-delivered { color:#9ca3af; }
-.tick-read { color:#3b82f6; }
 
 /* ===================== SCROLLBAR ===================== */
 ::-webkit-scrollbar { width:4px; height:4px; }
@@ -1216,16 +1211,48 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <!-- OUTBOUND -->
         <div class="page" id="page-outbound">
           <div class="outbound-wrap">
-            <div class="outbound-card">
-              <h3>📤 Send Outbound Message</h3>
-              <p>Send a message to a new or existing contact</p>
+
+            <!-- APPROVED TEMPLATE SECTION -->
+            <div class="outbound-card" style="border:2px solid var(--accent);grid-column:1/-1;">
+              <h3>🚀 Send Approved Template — Intern Recruiting</h3>
+              <p style="color:#16a34a;font-weight:600;margin-bottom:16px;">✅ Meta Approved • Works for NEW contacts • Opens 24hr window</p>
+              <div style="background:#f0fdf4;border-radius:10px;padding:14px;border:1px solid #bbf7d0;margin-bottom:16px;font-size:13px;color:#14532d;line-height:1.7;">
+                <strong>Template Preview:</strong><br>
+                Hi <em>[Name]</em>! 👋 I'm Afi from GoGadAFI 🛍️ You were referred to us by <em>[Referred By]</em>. We are looking for interns to join our team. Are you interested in working with us?<br>
+                <em style="color:#6b7280;">Footer: looking forward for your response...Thank you...-AFI LTD</em><br>
+                <strong>Buttons:</strong> Details | No Need | Interested
+              </div>
               <div class="form-grid">
                 <div class="form-field">
-                  <label>Recipient Phone Number</label>
+                  <label>Phone Number *</label>
+                  <input type="tel" id="tplPhone" placeholder="91XXXXXXXXXX (with country code)">
+                </div>
+                <div class="form-field">
+                  <label>Customer Name * ({{1}})</label>
+                  <input type="text" id="tplName" placeholder="e.g. Sanjay Kumar">
+                </div>
+                <div class="form-field full">
+                  <label>Referred By ({{2}})</label>
+                  <input type="text" id="tplReferred" placeholder="e.g. our Instagram page, Rajesh, LinkedIn">
+                </div>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="sendTemplate()">🚀 Send Template Message</button>
+                <span style="font-size:12px;color:#6b7280;align-self:center;">→ Customer will receive with buttons to tap</span>
+              </div>
+            </div>
+
+            <!-- FREE TEXT SECTION -->
+            <div class="outbound-card">
+              <h3>📤 Free Text Message</h3>
+              <p>Only works if customer messaged you in last 24 hours</p>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Phone Number</label>
                   <input type="tel" id="outPhone" placeholder="91XXXXXXXXXX (with country code)">
                 </div>
                 <div class="form-field">
-                  <label>Recipient Name</label>
+                  <label>Customer Name</label>
                   <input type="text" id="outName" placeholder="Customer name">
                 </div>
                 <div class="form-field full">
@@ -1237,6 +1264,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <button class="btn btn-primary" onclick="sendOutbound()">➤ Send Message</button>
               </div>
             </div>
+
             <div class="outbound-card">
               <h3>📋 Quick Templates</h3>
               <p>Pick a template to auto-fill the message</p>
@@ -1244,6 +1272,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <!-- Filled by JS -->
               </div>
             </div>
+
           </div>
         </div>
 
@@ -2025,19 +2054,17 @@ async function openChat(phone, name) {
   updateBotSelects();
   loadBotAssignment(phone);
 
-  // Mark as read locally immediately
+  // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet).
+  // We store a timestamp (not just a flag) so a NEW incoming message after this point correctly
+  // flips the conversation back to unread instead of staying "read" forever.
   lastReadTimes[phone] = new Date().toISOString();
   renderChatList();
   updateFilterCounts();
   renderCustomerDetails(phone, name);
-  fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
+  try {
+    fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
+  } catch(e) {}
 
-  // Show cached messages instantly (no loading spinner = fast switch feel)
-  const cached = allMsgs.filter(m => m.customerPhone === phone).sort((a,b) => new Date(a.timestamp)-new Date(b.timestamp));
-  if (cached.length) renderMessages(cached);
-  else document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px;font-size:13px;">Loading...</div>';
-
-  // Then fetch fresh in background
   try {
     const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH } });
     const msgs = await r.json();
@@ -2045,18 +2072,11 @@ async function openChat(phone, name) {
   } catch(e) {}
 }
 
-function getTickHtml(status) {
-  if (!status || status === 'sent') return '<span class="msg-tick tick-sent" title="Sent">✓</span>';
-  if (status === 'delivered') return '<span class="msg-tick tick-delivered" title="Delivered">✓✓</span>';
-  if (status === 'read') return '<span class="msg-tick tick-read" title="Read">✓✓</span>';
-  return '';
-}
-
 function renderMessages(msgs) {
   const el = document.getElementById('chatMessages');
   if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px;">No messages yet</div>'; return; }
   let lastDate = '';
-  const wasAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 80;
+  const scrolled = el.scrollTop + el.clientHeight >= el.scrollHeight - 60;
   const assignedBanner = `<div style="text-align:center;margin:12px 0 16px;">
     <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;
     font-size:11px;padding:4px 12px;border-radius:20px;display:inline-block;">
@@ -2068,14 +2088,13 @@ function renderMessages(msgs) {
     let sep = '';
     if (ds !== lastDate) { lastDate = ds; sep = `<div class="date-sep"><span>${ds}</span></div>`; }
     const isOut = m.direction === 'outgoing';
-    const ticks = isOut ? getTickHtml(m.status) : '';
     return `${sep}<div class="msg-row ${isOut?'out':'in'}"><div class="msg-bubble">
       <div class="msg-sender">${isOut?'🤖 Afi':esc(m.customerName||'Customer')}</div>
       ${esc(m.text||'').replace(/\n/g,'<br>')}
-      <div class="msg-time">${ts}${ticks}</div>
+      <div class="msg-time">${ts}</div>
     </div></div>`;
   }).join('');
-  if (wasAtBottom || msgs.length < 5) el.scrollTop = el.scrollHeight;
+  if (scrolled || msgs.length < 5) el.scrollTop = el.scrollHeight;
 }
 
 function renderCustomerDetails(phone, name) {
@@ -2283,6 +2302,32 @@ async function sendOutbound() {
       document.getElementById('outMessage').value = '';
     } else showToast('Send failed ✗','error');
   } catch(e) { showToast('Network error ✗','error'); }
+}
+
+// ===================== SEND TEMPLATE =====================
+async function sendTemplate() {
+  const phone = document.getElementById('tplPhone').value.trim().replace(/\D/g,'');
+  const name = document.getElementById('tplName').value.trim();
+  const referred = document.getElementById('tplReferred').value.trim() || 'our team';
+  if (!phone || !name) { showToast('Phone and name required ✗', 'error'); return; }
+  try {
+    const r = await fetch('/api/send-template', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dashboard-token': AUTH },
+      body: JSON.stringify({ phone, customerName: name, referredBy: referred })
+    });
+    if (r.ok) {
+      showToast('Template sent to +' + phone + ' ✓', 'success');
+      document.getElementById('tplPhone').value = '';
+      document.getElementById('tplName').value = '';
+      document.getElementById('tplReferred').value = '';
+      // Refresh conversations after 2 seconds
+      setTimeout(() => loadAll(), 2000);
+    } else {
+      const err = await r.json();
+      showToast('Failed: ' + (err.error || 'Unknown error') + ' ✗', 'error');
+    }
+  } catch(e) { showToast('Network error ✗', 'error'); }
 }
 
 // ===================== SCHEDULER =====================
