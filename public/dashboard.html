@@ -792,12 +792,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <!-- LOGIN -->
 <div id="loginPage">
   <div class="login-box">
-    <div class="login-logo">🛍️</div>
+   <div class="login-logo">🤖</div>
     <h2>GoGadAFI Inbox</h2>
     <p>Sign in to access your WhatsApp dashboard</p>
     <input type="password" id="pwdInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">Sign In →</button>
-    <div class="login-error" id="loginError">❌ Incorrect password. Try again.</div>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
@@ -1744,12 +1744,34 @@ function doLogin() {
   const pwd = document.getElementById('pwdInput').value.trim();
   if (!pwd) return;
   AUTH = pwd;
+  const btn = document.querySelector('.login-btn');
+  btn.textContent = 'Connecting...';
+  btn.disabled = true;
   fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } })
     .then(r => {
       if (r.status === 401) {
-        document.getElementById('loginError').style.display = 'block';
         AUTH = '';
+        btn.textContent = 'Create Account →';
+        btn.disabled = false;
+        const err = document.getElementById('loginError');
+        err.style.display = 'block';
+        err.innerHTML = '🔍 Looks like you\'re not connected with us yet.<br><a href="https://gogadafi.in" target="_blank" style="color:#25D366;text-decoration:underline;">Please create an account at gogadafi.in</a>';
+        document.getElementById('pwdInput').value = '';
+        document.getElementById('pwdInput').placeholder = 'Already have an account? Sign in';
       } else {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        initApp();
+      }
+    }).catch(() => {
+      btn.textContent = 'Sign In →';
+      btn.disabled = false;
+      const err = document.getElementById('loginError');
+      err.style.display = 'block';
+      err.textContent = '❌ Connection error. Check server.';
+      AUTH = '';
+    });
+}
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         initApp();
