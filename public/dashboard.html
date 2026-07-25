@@ -1772,16 +1772,7 @@ function doLogin() {
       AUTH = '';
     });
 }
-        document.getElementById('loginPage').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        initApp();
-      }
-    }).catch(() => {
-      document.getElementById('loginError').style.display = 'block';
-      document.getElementById('loginError').textContent = '❌ Connection error. Check server.';
-      AUTH = '';
-    });
-}
+      
 
 // ===================== INIT =====================
 async function initApp() {
