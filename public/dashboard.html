@@ -1,3 +1,6 @@
+
+
+Dashboard · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,10 +32,10 @@
   --sidebar-w: 260px;
   --topbar-h: 56px;
 }
-
+ 
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background:var(--bg-page); color:var(--text-dark); height:100vh; overflow:hidden; }
-
+ 
 /* ===================== LOGIN ===================== */
 #loginPage {
   display:flex; align-items:center; justify-content:center;
@@ -65,11 +68,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 }
 .login-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,0.4); }
 .login-error { color:#ff6b6b; font-size:13px; margin-top:10px; display:none; }
-
+ 
 /* ===================== APP SHELL ===================== */
 #app { display:none; height:100vh; overflow:hidden; }
 .app-layout { display:flex; height:100vh; overflow:hidden; }
-
+ 
 /* ===================== SIDEBAR ===================== */
 .sidebar {
   width:var(--sidebar-w); background:var(--bg-primary);
@@ -90,7 +93,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .logo-text { overflow:hidden; }
 .logo-text span { display:block; font-size:14px; font-weight:700; color:#fff; }
 .logo-text small { font-size:10px; color:var(--text-muted); }
-
+ 
 .sidebar-section {
   padding:16px 14px 6px; font-size:11px; color:var(--text-muted);
   text-transform:uppercase; letter-spacing:1.2px; font-weight:600; flex-shrink:0;
@@ -110,7 +113,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   flex-shrink:0;
 }
 .sidebar-group-body.collapsed { max-height:0; opacity:0; }
-
+ 
 .nav-item {
   display:flex; align-items:center; gap:10px; padding:11px 14px;
   cursor:pointer; border-radius:8px; margin:2px 6px;
@@ -131,13 +134,13 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .nav-item .lock-icon { font-size:11px; color:var(--text-muted); flex-shrink:0; }
 .nav-item.locked { opacity:0.6; cursor:not-allowed; }
 .nav-item.locked:hover { background:transparent; color:var(--text-secondary); }
-
+ 
 .sub-nav { padding-left:8px; }
 .sub-nav .nav-item { padding:7px 12px; font-size:12px; }
-
+ 
 .nav-expand { font-size:10px; color:var(--text-muted); transition:0.2s; }
 .nav-item.open .nav-expand { transform:rotate(90deg); }
-
+ 
 .sidebar-footer {
   margin-top:auto; padding:12px; border-top:1px solid var(--border); flex-shrink:0;
 }
@@ -153,10 +156,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .bot-status-card .status-label { font-size:12px; color:var(--text-secondary); }
 .bot-status-card .status-label strong { color:var(--accent); }
 .bot-status-card .status-sub { font-size:10px; color:var(--text-muted); margin-top:3px; }
-
+ 
 /* ===================== MAIN CONTENT ===================== */
 .main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
-
+ 
 /* ===================== TOPBAR ===================== */
 .topbar {
   height:var(--topbar-h); background:#fff; border-bottom:1px solid var(--border-light);
@@ -175,18 +178,18 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .mobile-menu-btn {
   display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-dark);
 }
-
+ 
 /* ===================== PAGE CONTENT ===================== */
 .page-content { flex:1; overflow-y:auto; background:var(--bg-page); }
 .page { display:none; }
 .page.active { display:block; }
-
+ 
 /* ===================== DASHBOARD PAGE ===================== */
 .dash-wrap { padding:24px; }
 .dash-greeting { margin-bottom:24px; }
 .dash-greeting h2 { font-size:22px; font-weight:700; color:var(--text-dark); }
 .dash-greeting p { font-size:14px; color:#6b7280; margin-top:4px; }
-
+ 
 .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
 .stat-card {
   background:#fff; border-radius:14px; padding:20px;
@@ -206,7 +209,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .stat-card .stat-change { font-size:12px; margin-top:8px; }
 .stat-card .stat-change.up { color:#16a34a; }
 .stat-card .stat-change.down { color:var(--red); }
-
+ 
 .chart-section { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:24px; }
 .chart-card {
   background:#fff; border-radius:14px; padding:20px;
@@ -226,7 +229,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .chart-legend { display:flex; gap:16px; margin-top:12px; }
 .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#6b7280; }
 .legend-dot { width:10px; height:10px; border-radius:50%; }
-
+ 
 .recent-section { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .recent-card {
   background:#fff; border-radius:14px; padding:20px;
@@ -248,10 +251,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .r-name { font-size:13px; font-weight:600; color:var(--text-dark); }
 .r-msg { font-size:12px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .r-time { font-size:11px; color:#9ca3af; flex-shrink:0; }
-
+ 
 /* ===================== INBOX PAGE ===================== */
 .inbox-layout { display:flex; height:calc(100vh - var(--topbar-h)); overflow:hidden; }
-
+ 
 .chat-list-panel {
   width:300px; background:#fff; border-right:1px solid var(--border-light);
   display:flex; flex-direction:column; flex-shrink:0;
@@ -303,7 +306,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .ci-tag.hot { background:#fef3c7; color:#92400e; }
 .ci-tag.order { background:#dbeafe; color:#1e40af; }
 .ci-tag.new { background:#dcfce7; color:#166534; }
-
+ 
 /* CHAT WINDOW */
 .chat-window { flex:1; display:flex; flex-direction:column; min-width:0; background:#f9fafb; }
 .chat-window-header {
@@ -328,7 +331,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .cwh-btn.close-tag { background:#fee2e2; color:#991b1b; }
 .cwh-btn.wa-btn { background:#f0fdf4; color:var(--accent); border:1px solid #bbf7d0; }
 .mobile-back-btn { display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-dark); margin-right:4px; }
-
+ 
 .chat-messages {
   flex:1; overflow-y:auto; padding:16px;
   background:linear-gradient(180deg,#f0fdf4 0%,#f9fafb 100%);
@@ -353,7 +356,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   gap:12px; color:#9ca3af;
 }
 .no-chat-icon { font-size:56px; opacity:0.4; }
-
+ 
 .reply-box { padding:12px 16px; background:#fff; border-top:1px solid var(--border-light); flex-shrink:0; }
 .reply-inner {
   display:flex; align-items:flex-end; gap:10px; background:#f9fafb;
@@ -381,7 +384,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 }
 .reply-icon-btn:hover { color:var(--accent); background:#f0fdf4; }
 .reply-note { font-size:11px; color:#9ca3af; text-align:center; margin-top:6px; }
-
+ 
 /* CUSTOMER DETAILS */
 .customer-details {
   width:250px; background:#fff; border-left:1px solid var(--border-light);
@@ -407,7 +410,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .cd-tag.new { background:#dcfce7; color:#166534; }
 .cd-tag.add { background:#f3f4f6; color:#6b7280; border:1px dashed #d1d5db; }
 .cd-tag.add:hover { background:#e5e7eb; }
-
+ 
 /* ===================== CONTACTS PAGE ===================== */
 .contacts-wrap { padding:24px; }
 .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
@@ -423,7 +426,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .btn-secondary:hover { background:#f9fafb; }
 .btn-danger { background:#fee2e2; color:#991b1b; }
 .btn-danger:hover { background:#fecaca; }
-
+ 
 .search-filter-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
 .search-input-wrap { position:relative; flex:1; min-width:200px; }
 .search-input-wrap input {
@@ -436,7 +439,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   padding:9px 12px; border-radius:9px; border:1px solid var(--border-light);
   font-size:13px; background:#fff; outline:none; cursor:pointer; color:var(--text-dark); flex-shrink:0;
 }
-
+ 
 .contacts-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow-x:auto; }
 .table-header {
   display:grid; grid-template-columns:1.8fr 1.3fr 110px 90px 110px;
@@ -469,7 +472,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .action-btn { background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:5px; transition:0.15s; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
 .action-btn:hover { color:var(--accent); background:#f0fdf4; }
 .action-btn svg { width:15px; height:15px; }
-
+ 
 /* ===================== MESSAGE LOGS ===================== */
 .logs-wrap { padding:24px; }
 .logs-table { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; }
@@ -489,7 +492,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .dir-badge.in { background:#dbeafe; color:#1e40af; }
 .dir-badge.out { background:#dcfce7; color:#166534; }
 .log-msg { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#6b7280; font-size:12px; }
-
+ 
 /* ===================== QR PAGE ===================== */
 .qr-wrap { padding:40px 24px; display:flex; flex-direction:column; align-items:center; }
 .qr-card { background:#fff; border-radius:20px; padding:40px; text-align:center; border:1px solid var(--border-light); max-width:420px; width:100%; }
@@ -516,7 +519,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   transition:0.2s;
 }
 .wa-link a:hover { background:#1aad52; }
-
+ 
 /* ===================== SCHEDULER PAGE ===================== */
 .scheduler-wrap { padding:24px; }
 .scheduler-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
@@ -544,7 +547,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .sch-status { font-size:11px; padding:3px 8px; border-radius:6px; font-weight:600; }
 .sch-status.pending { background:#fef3c7; color:#92400e; }
 .sch-status.sent { background:#dcfce7; color:#166534; }
-
+ 
 /* ===================== OUTBOUND PAGE ===================== */
 .outbound-wrap { padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 .outbound-wrap > .outbound-card:first-child { grid-column: 1 / -1; }
@@ -564,7 +567,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   background:#f0fdf4; border-radius:12px; padding:14px;
   border:1px solid #bbf7d0; font-size:13px; color:#14532d; margin-bottom:14px;
 }
-
+ 
 /* ===================== CHATBOT PAGE ===================== */
 .chatbot-wrap { padding:24px; }
 .chatbot-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -586,7 +589,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 }
 .toggle-switch input:checked + .toggle-slider { background:var(--accent); }
 .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
-
+ 
 /* ===================== TEMPLATES PAGE ===================== */
 .templates-wrap { padding:24px; }
 .template-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
@@ -603,7 +606,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .tc-cat { font-size:11px; padding:2px 8px; border-radius:6px; font-weight:600; background:#f3f4f6; color:#6b7280; }
 .tc-body { font-size:13px; color:#6b7280; line-height:1.5; margin-bottom:12px; border-left:3px solid var(--accent); padding-left:10px; }
 .tc-footer { display:flex; gap:6px; }
-
+ 
 /* ===================== LOCKED PAGE ===================== */
 .locked-wrap {
   padding:60px 24px; display:flex; flex-direction:column;
@@ -614,7 +617,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .locked-sub { font-size:14px; color:#6b7280; margin-bottom:24px; max-width:400px; }
 .locked-features { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:24px; }
 .locked-feat { background:#fff; border-radius:10px; padding:8px 14px; font-size:13px; color:#6b7280; border:1px solid var(--border-light); }
-
+ 
 /* ===================== INSTRUCTIONS PAGE ===================== */
 .instructions-wrap { padding:24px; max-width:800px; }
 .inst-section { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
@@ -636,7 +639,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   overflow-x:auto; margin-top:10px; white-space:pre-wrap; word-break:break-word;
   max-width:100%;
 }
-
+ 
 /* ===================== MY PLAN PAGE ===================== */
 .plan-wrap { padding:24px; }
 .plan-card { background:#fff; border-radius:14px; border:1px solid var(--border-light); overflow:hidden; max-width:600px; }
@@ -648,7 +651,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .plan-feature:last-child { border-bottom:none; }
 .plan-feature .check { color:var(--accent); font-size:16px; }
 .plan-feature .lock { color:#9ca3af; font-size:14px; }
-
+ 
 /* ===================== API INTEGRATION PAGE ===================== */
 .api-wrap { padding:24px; max-width:700px; }
 .api-card { background:#fff; border-radius:14px; padding:24px; border:1px solid var(--border-light); margin-bottom:16px; }
@@ -664,7 +667,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .endpoint-url { font-family:monospace; font-size:12px; color:var(--text-dark); flex:1; word-break:break-all; min-width:140px; }
 .copy-btn { background:none; border:1px solid var(--border-light); border-radius:6px; padding:4px 8px; font-size:11px; cursor:pointer; color:#6b7280; transition:0.15s; flex-shrink:0; }
 .copy-btn:hover { background:#f0fdf4; color:var(--accent); border-color:var(--accent); }
-
+ 
 /* ===================== SETUP PAGE ===================== */
 .setup-wrap { padding:24px; max-width:700px; }
 .setup-step-card {
@@ -680,14 +683,14 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .setup-step-info h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
 .setup-step-info p { font-size:13px; color:#6b7280; }
 .setup-step-info .step-action { margin-top:10px; }
-
+ 
 /* ===================== MOBILE OVERLAY ===================== */
 .sidebar-overlay {
   display:none; position:fixed; top:0; left:0; right:0; bottom:0;
   background:rgba(0,0,0,0.5); z-index:40;
 }
-
-
+ 
+ 
 /* ===================== BOT MANAGER ===================== */
 .bots-wrap { padding:24px; }
 .bots-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-bottom:24px; }
@@ -713,14 +716,14 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .bot-add-card:hover { border-color:var(--accent); background:#f0fdf4; }
 .bot-add-card .plus { font-size:36px; color:#9ca3af; margin-bottom:8px; }
 .bot-add-card span { font-size:14px; color:#6b7280; font-weight:600; }
-
+ 
 .modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
 .modal-overlay.show { display:flex; }
 .modal-box { background:#fff; border-radius:16px; padding:28px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; position:relative; }
 .modal-box h3 { font-size:18px; font-weight:700; margin-bottom:20px; }
 .modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
 .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280; }
-
+ 
 /* ===================== KNOWLEDGE BASE ===================== */
 .kb-wrap { padding:24px; }
 .kb-section { background:#fff; border-radius:14px; padding:20px; border:1px solid var(--border-light); margin-bottom:16px; }
@@ -729,15 +732,15 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .remove-btn { position:absolute; top:8px; right:8px; background:#fee2e2; border:none; color:#991b1b; border-radius:6px; padding:2px 8px; font-size:11px; cursor:pointer; }
 .faq-item { padding:12px; background:#f9fafb; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px; position:relative; }
 .kb-bot-select { padding:8px 12px; border-radius:9px; border:1px solid var(--border-light); font-size:13px; outline:none; background:#fff; cursor:pointer; }
-
+ 
 .bot-assign-select { padding:4px 8px; border-radius:7px; border:1px solid var(--border-light); font-size:12px; outline:none; background:#fff; cursor:pointer; color:var(--text-dark); }
-
+ 
 /* ===================== SCROLLBAR ===================== */
 ::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:4px; }
 ::-webkit-scrollbar-thumb:hover { background:#9ca3af; }
-
+ 
 /* ===================== TOAST ===================== */
 .toast {
   position:fixed; bottom:20px; right:20px; background:#1e1e1e; color:#fff;
@@ -747,7 +750,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .toast.show { transform:translateY(0); opacity:1; }
 .toast.success { border-left:4px solid var(--accent); }
 .toast.error { border-left:4px solid var(--red); }
-
+ 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns:repeat(2,1fr); }
@@ -756,7 +759,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   .chatbot-grid { grid-template-columns:1fr; }
   .outbound-wrap { grid-template-columns:1fr; }
 }
-
+ 
 @media (max-width: 768px) {
   :root { --sidebar-w: 240px; }
   .sidebar {
@@ -776,7 +779,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   .log-header > *:nth-child(4), .log-row > *:nth-child(4),
   .log-header > *:nth-child(5), .log-row > *:nth-child(5) { display:none; }
 }
-
+ 
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns:1fr 1fr; }
   .dash-wrap, .contacts-wrap, .logs-wrap, .qr-wrap, .scheduler-wrap,
@@ -788,26 +791,53 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 </style>
 </head>
 <body>
-
+ 
 <!-- LOGIN -->
 <div id="loginPage">
   <div class="login-box">
-   <div class="login-logo">🤖</div>
-    <h2>GoGadAFI Inbox</h2>
-    <p>Sign in to access your WhatsApp dashboard</p>
-    <input type="password" id="pwdInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="husky-wrap">
+      <div class="husky-body">
+        <div class="husky-face">
+          <div class="husky-eye left"></div>
+          <div class="husky-eye right"></div>
+          <div class="husky-paw left" id="pawLeft">🐾</div>
+          <div class="husky-paw right" id="pawRight">🐾</div>
+          <div class="husky-snout">
+            <div class="husky-nose"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h2>GoGadAFI</h2>
+    <div class="login-sub">Your husky's keeping watch 🐺🔒</div>
+    <input type="text" id="userInput" placeholder="Username"
+      onkeydown="if(event.key==='Enter')document.getElementById('pwdInput').focus()">
+    <div class="pwd-wrap">
+      <input type="password" id="pwdInput" placeholder="Password"
+        oninput="onPasswordType(this.value)"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="pwd-toggle" id="pwdToggle" onclick="togglePwd()" tabindex="-1">👁</button>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">
+      Sign in <span class="door-icon">🚪</span>
+    </button>
     <div class="login-error" id="loginError"></div>
+    <div class="login-divider">or continue with</div>
+    <div class="social-btns">
+      <button class="social-btn">🌐 Google</button>
+      <button class="social-btn"> Apple</button>
+    </div>
+    <div class="login-footer">New to GoGadAFI? <a href="https://gogadafi.in" target="_blank">Create account</a></div>
   </div>
 </div>
-
+ 
 <!-- APP -->
 <div id="app">
   <div class="app-layout">
-
+ 
     <!-- SIDEBAR OVERLAY (mobile) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
+ 
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
       <div class="sidebar-logo">
@@ -817,7 +847,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <small>WhatsApp Dashboard</small>
         </div>
       </div>
-
+ 
       <div class="sidebar-section">Main</div>
       <div class="nav-item active" onclick="showPage('dashboard',this)">
         <span class="nav-icon">📊</span>
@@ -834,7 +864,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-label">Message Logs</span>
         <span class="nav-badge grey">✓</span>
       </div>
-
+ 
       <div class="sidebar-section group-header" onclick="toggleGroup('contacts',this)">
         <span>Contacts</span><span class="group-chevron">▾</span>
       </div>
@@ -860,7 +890,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="lock-icon">🔒</span>
       </div>
       </div>
-
+ 
       <div class="sidebar-section group-header" onclick="toggleGroup('messaging',this)">
         <span>Messaging</span><span class="group-chevron">▾</span>
       </div>
@@ -891,7 +921,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="nav-badge grey">✓</span>
       </div>
       </div>
-
+ 
       <div class="sidebar-section group-header collapsed" onclick="toggleGroup('ecommerce',this)">
         <span>E-commerce</span><span class="group-chevron">▾</span>
       </div>
@@ -912,7 +942,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="lock-icon">🔒</span>
       </div>
       </div>
-
+ 
       <div class="sidebar-section group-header" onclick="toggleGroup('automation',this)">
         <span>Automation</span><span class="group-chevron">▾</span>
       </div>
@@ -938,7 +968,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="lock-icon">🔒</span>
       </div>
       </div>
-
+ 
       <div class="sidebar-section group-header" onclick="toggleGroup('settings',this)">
         <span>Settings</span><span class="group-chevron">▾</span>
       </div>
@@ -969,7 +999,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span class="lock-icon">🔒</span>
       </div>
       </div>
-
+ 
       <div class="sidebar-footer">
         <div class="bot-status-card">
           <div class="status-row">
@@ -980,10 +1010,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         </div>
       </div>
     </div>
-
+ 
     <!-- MAIN -->
     <div class="main">
-
+ 
       <!-- TOPBAR -->
       <div class="topbar">
         <button class="mobile-menu-btn" onclick="openSidebar()">☰</button>
@@ -993,10 +1023,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <button class="topbar-btn primary" onclick="showPage('outbound',null)">✉️ New Message</button>
         </div>
       </div>
-
+ 
       <!-- PAGES -->
       <div class="page-content">
-
+ 
         <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
           <div class="dash-wrap">
@@ -1058,7 +1088,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- INBOX -->
         <div class="page" id="page-inbox">
           <div class="inbox-layout">
@@ -1130,7 +1160,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- MESSAGE LOGS -->
         <div class="page" id="page-logs">
           <div class="logs-wrap">
@@ -1162,7 +1192,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- CONTACTS -->
         <div class="page" id="page-contacts">
           <div class="contacts-wrap">
@@ -1195,7 +1225,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- TEMPLATES -->
         <div class="page" id="page-templates">
           <div class="templates-wrap">
@@ -1207,11 +1237,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- OUTBOUND -->
         <div class="page" id="page-outbound">
           <div class="outbound-wrap">
-
+ 
             <!-- APPROVED TEMPLATE SECTION -->
             <div class="outbound-card" style="border:2px solid var(--accent);grid-column:1/-1;">
               <h3>🚀 Send Approved Template — Intern Recruiting</h3>
@@ -1241,7 +1271,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <span style="font-size:12px;color:#6b7280;align-self:center;">→ Customer will receive with buttons to tap</span>
               </div>
             </div>
-
+ 
             <!-- FREE TEXT SECTION -->
             <div class="outbound-card">
               <h3>📤 Free Text Message</h3>
@@ -1264,7 +1294,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <button class="btn btn-primary" onclick="sendOutbound()">➤ Send Message</button>
               </div>
             </div>
-
+ 
             <div class="outbound-card">
               <h3>📋 Quick Templates</h3>
               <p>Pick a template to auto-fill the message</p>
@@ -1272,10 +1302,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
                 <!-- Filled by JS -->
               </div>
             </div>
-
+ 
           </div>
         </div>
-
+ 
         <!-- CHATBOT -->
         <div class="page" id="page-chatbot">
           <div class="chatbot-wrap">
@@ -1345,7 +1375,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- QR CODE -->
         <div class="page" id="page-qrcode">
           <div class="qr-wrap">
@@ -1372,7 +1402,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- SCHEDULER -->
         <div class="page" id="page-scheduler">
           <div class="scheduler-wrap">
@@ -1415,7 +1445,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- INTEGRATIONS -->
         <div class="page" id="page-integrations">
           <div class="api-wrap">
@@ -1478,7 +1508,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- SETUP -->
         <div class="page" id="page-setup">
           <div class="setup-wrap">
@@ -1532,7 +1562,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- INSTRUCTIONS -->
         <div class="page" id="page-instructions">
           <div class="instructions-wrap">
@@ -1597,8 +1627,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
-
+ 
+ 
         <!-- BOT MANAGER -->
         <div class="page" id="page-bots">
           <div class="bots-wrap">
@@ -1608,7 +1638,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- KNOWLEDGE BASE -->
         <div class="page" id="page-kb">
           <div class="kb-wrap">
@@ -1642,7 +1672,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             </div>
           </div>
         </div>
-
+ 
         <!-- LOCKED PAGE -->
         <div class="page" id="page-locked">
           <div class="locked-wrap">
@@ -1652,12 +1682,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
             <button class="btn btn-primary" onclick="showPage('dashboard',null)">← Back to Dashboard</button>
           </div>
         </div>
-
+ 
       </div><!-- end page-content -->
     </div><!-- end main -->
   </div><!-- end app-layout -->
 </div><!-- end app -->
-
+ 
 <!-- BOT MODAL -->
 <div class="modal-overlay" id="botModal">
   <div class="modal-box">
@@ -1706,11 +1736,38 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
   </div>
 </div>
-
+ 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
+ 
 <script>
+// ===================== HUSKY ANIMATIONS =====================
+function onPasswordType(val) {
+  const pawL = document.getElementById('pawLeft');
+  const pawR = document.getElementById('pawRight');
+  if (val.length > 0) {
+    pawL.classList.add('covering');
+    pawR.classList.add('covering');
+  } else {
+    pawL.classList.remove('covering');
+    pawR.classList.remove('covering');
+  }
+}
+function togglePwd() {
+  const inp = document.getElementById('pwdInput');
+  const btn = document.getElementById('pwdToggle');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+    document.getElementById('pawLeft').style.transform = 'translateY(8px)';
+    document.getElementById('pawRight').style.transform = 'translateY(8px)';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+    document.getElementById('pawLeft').style.transform = '';
+    document.getElementById('pawRight').style.transform = '';
+  }
+}
 // ===================== STATE =====================
 let AUTH = '';
 let convs = [];
@@ -1731,17 +1788,18 @@ let contactTags = {};
 let scheduledMsgs = [];
 let refreshTimer = null;
 const TAG_CYCLE = ['new','hot','order'];
-
+ 
 const TEMPLATES = [
   { name:'Welcome', cat:'Greeting', body:'Hi {name}! Welcome to GoGadAFI 🛍️ I am Afi, your WhatsApp assistant. How can I help you today?' },
   { name:'Order Confirmation', cat:'Order', body:'Thank you for your order {name}! 🎉 Your order has been placed successfully. We will share tracking details soon. Visit us: https://gogad369.github.io/GOGADAFI' },
   { name:'Follow Up', cat:'Sales', body:'Hi {name}! Just checking in from GoGadAFI 👋 Did you get a chance to browse our collection? Let me know if you need any help!' },
   { name:'Offer', cat:'Marketing', body:'🎉 Special offer for you {name}! GoGadAFI is having a sale on men\'s fashion. Visit us at https://gogad369.github.io/GOGADAFI' },
 ];
-
+ 
 // ===================== LOGIN =====================
 function doLogin() {
   const pwd = document.getElementById('pwdInput').value.trim();
+    document.getElementById('loginBtn').classList.add('opening');
   if (!pwd) return;
   AUTH = pwd;
   const btn = document.querySelector('.login-btn');
@@ -1751,7 +1809,8 @@ function doLogin() {
     .then(r => {
       if (r.status === 401) {
         AUTH = '';
-        btn.textContent = 'Create Account →';
+        btn.innerHTML = 'Create Account <span class="door-icon">🚪</span>';
+        btn.classList.remove('opening');
         btn.disabled = false;
         const err = document.getElementById('loginError');
         err.style.display = 'block';
@@ -1764,7 +1823,8 @@ function doLogin() {
         initApp();
       }
     }).catch(() => {
-      btn.textContent = 'Sign In →';
+      btn.innerHTML = 'Sign in <span class="door-icon">🚪</span>';
+        btn.classList.remove('opening');
       btn.disabled = false;
       const err = document.getElementById('loginError');
       err.style.display = 'block';
@@ -1773,7 +1833,7 @@ function doLogin() {
     });
 }
       
-
+ 
 // ===================== INIT =====================
 async function initApp() {
   setGreeting();
@@ -1784,21 +1844,21 @@ async function initApp() {
   renderQr();
   startSilentRefresh();
 }
-
+ 
 function setGreeting() {
   const h = new Date().getHours();
   const g = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   document.getElementById('greetingText').textContent = `${g}, Neelakandan 👋`;
   document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
-
+ 
 // ===================== DATA LOADING =====================
 async function loadAll() {
   try {
     const cR = await fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } });
     convs = await cR.json();
   } catch(e) { console.error('conversations load failed', e); convs = []; }
-
+ 
   // Try the dedicated all-recent endpoint first; fall back to per-chat fetch if it's missing (404/500)
   // or returns something that isn't a JSON array (older servers may not have this route yet).
   let gotAllRecent = false;
@@ -1809,15 +1869,15 @@ async function loadAll() {
       if (Array.isArray(data)) { allMsgs = data; gotAllRecent = true; }
     }
   } catch(e) { /* endpoint not available yet — fall back below */ }
-
+ 
   if (!gotAllRecent) {
     await loadAllMsgs();
   }
-
+ 
   buildContacts();
   updateAll();
 }
-
+ 
 async function loadAllMsgs() {
   allMsgs = [];
   // Fallback for servers without /api/messages/all-recent: pull each conversation's
@@ -1832,7 +1892,7 @@ async function loadAllMsgs() {
   }));
   allMsgs = results.flat();
 }
-
+ 
 function buildContacts() {
   allContacts = convs.map(c => ({
     phone: c._id,
@@ -1844,7 +1904,7 @@ function buildContacts() {
   document.getElementById('contactsBadge').textContent = allContacts.length;
   document.getElementById('inboxBadge').textContent = convs.filter(isConvUnread).length;
 }
-
+ 
 function updateAll() {
   updateDashboard();
   renderChatList();
@@ -1853,7 +1913,7 @@ function updateAll() {
   updateFilterCounts();
   updateBotStats();
 }
-
+ 
 // ===================== SILENT REFRESH =====================
 function startSilentRefresh() {
   if (refreshTimer) clearInterval(refreshTimer);
@@ -1863,7 +1923,7 @@ function startSilentRefresh() {
       const newConvs = await r.json();
       const changed = JSON.stringify(newConvs) !== JSON.stringify(convs);
       convs = newConvs;
-
+ 
       // Keep allMsgs fresh too, using the same endpoint-with-fallback strategy as initial load
       try {
         const mR = await fetch('/api/messages/all-recent', { headers: { 'x-dashboard-token': AUTH } });
@@ -1872,7 +1932,7 @@ function startSilentRefresh() {
           if (Array.isArray(data)) allMsgs = data;
         }
       } catch(e) {}
-
+ 
       buildContacts();
       if (changed) {
         renderChatList();
@@ -1889,7 +1949,7 @@ function startSilentRefresh() {
     } catch(e) {}
   }, 8000);
 }
-
+ 
 // ===================== DASHBOARD =====================
 function updateDashboard() {
   const today = new Date().toDateString();
@@ -1897,7 +1957,7 @@ function updateDashboard() {
   const incoming = todayMsgs.filter(m => m.direction === 'incoming').length;
   const outgoing = todayMsgs.filter(m => m.direction === 'outgoing').length;
   const total = allMsgs.length;
-
+ 
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statIncoming').textContent = incoming;
   document.getElementById('statOutgoing').textContent = outgoing;
@@ -1906,13 +1966,13 @@ function updateDashboard() {
   document.getElementById('statInChange').textContent = `↑ ${incoming} received today`;
   document.getElementById('statOutChange').textContent = `↑ ${outgoing} sent today`;
   document.getElementById('statContactChange').textContent = `↑ ${allContacts.length} customers`;
-
+ 
   renderChart();
   renderQuickStats();
   renderRecentConvs();
   renderRecentMsgs();
 }
-
+ 
 // If there ARE conversations but NO messages loaded, that's not "empty inbox" —
 // it means /api/messages/all-recent (and its per-chat fallback) isn't returning data.
 // Surface that clearly instead of a misleading "no messages yet".
@@ -1922,7 +1982,7 @@ function noMsgDataHtml(emptyText) {
   }
   return `<div style="color:#9ca3af;font-size:13px;padding:10px;">${emptyText}</div>`;
 }
-
+ 
 function renderChart() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -1951,7 +2011,7 @@ function renderChart() {
   }).join('');
   document.getElementById('chartBars').innerHTML = html;
 }
-
+ 
 function renderQuickStats() {
   const totalIn = allMsgs.filter(m => m.direction === 'incoming').length;
   const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
@@ -1965,7 +2025,7 @@ function renderQuickStats() {
     <div class="recent-item"><div class="r-avatar" style="background:#ede9fe;color:#6d28d9;">🤖</div><div class="r-info"><div class="r-name">Bot (Afi)</div><div class="r-msg">Active 24/7</div></div></div>
   `;
 }
-
+ 
 function renderRecentConvs() {
   const el = document.getElementById('recentConvs');
   if (!convs.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px;">No conversations yet</div>'; return; }
@@ -1979,7 +2039,7 @@ function renderRecentConvs() {
       <div class="r-time">${formatTime(c.lastTime)}</div>
     </div>`).join('');
 }
-
+ 
 function renderRecentMsgs() {
   const el = document.getElementById('recentMsgs');
   const recent = [...allMsgs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,5);
@@ -1994,7 +2054,7 @@ function renderRecentMsgs() {
       <div class="r-time">${formatTime(m.timestamp)}</div>
     </div>`).join('');
 }
-
+ 
 // ===================== INBOX =====================
 function updateFilterCounts() {
   const unread = convs.filter(isConvUnread).length;
@@ -2008,14 +2068,14 @@ function updateFilterCounts() {
   document.getElementById('fc-closed').textContent = closed;
   document.getElementById('inboxBadge').textContent = unread;
 }
-
+ 
 function setFilter(f, el) {
   currentFilter = f;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
   renderChatList();
 }
-
+ 
 function getFilteredConvs() {
   let list = [...convs];
   if (currentFilter === 'unread') list = list.filter(isConvUnread);
@@ -2026,7 +2086,7 @@ function getFilteredConvs() {
   if (q) list = list.filter(c => (c.customerName||'').toLowerCase().includes(q) || c._id.includes(q));
   return list;
 }
-
+ 
 function renderChatList() {
   const el = document.getElementById('chatItems');
   if (!el) return;
@@ -2050,9 +2110,9 @@ function renderChatList() {
     </div>`;
   }).join('');
 }
-
+ 
 function searchChats(q) { renderChatList(); }
-
+ 
 async function openChat(phone, name) {
   activePhone = phone;
   activeName = name;
@@ -2066,7 +2126,7 @@ async function openChat(phone, name) {
   document.getElementById('chatWindow').classList.add('mobile-open');
   updateBotSelects();
   loadBotAssignment(phone);
-
+ 
   // Mark as read locally immediately, then tell the server (best-effort — endpoint may not exist yet).
   // We store a timestamp (not just a flag) so a NEW incoming message after this point correctly
   // flips the conversation back to unread instead of staying "read" forever.
@@ -2077,14 +2137,14 @@ async function openChat(phone, name) {
   try {
     fetch(`/api/mark-read/${phone}`, { method:'POST', headers: { 'x-dashboard-token': AUTH } }).catch(()=>{});
   } catch(e) {}
-
+ 
   try {
     const r = await fetch(`/api/messages/${phone}`, { headers: { 'x-dashboard-token': AUTH } });
     const msgs = await r.json();
     renderMessages(msgs);
   } catch(e) {}
 }
-
+ 
 function renderMessages(msgs) {
   const el = document.getElementById('chatMessages');
   if (!msgs.length) { el.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px;">No messages yet</div>'; return; }
@@ -2109,7 +2169,7 @@ function renderMessages(msgs) {
   }).join('');
   if (scrolled || msgs.length < 5) el.scrollTop = el.scrollHeight;
 }
-
+ 
 function renderCustomerDetails(phone, name) {
   const conv = convs.find(c => c._id === phone);
   const tag = contactTags[phone] || '';
@@ -2133,7 +2193,7 @@ function renderCustomerDetails(phone, name) {
       </div>
     </div>`;
 }
-
+ 
 function setTag(phone, tag) {
   if (tag) contactTags[phone] = tag;
   else delete contactTags[phone];
@@ -2142,7 +2202,7 @@ function setTag(phone, tag) {
   renderContacts();
   showToast(`Tag ${tag?'set to '+tag:'cleared'} ✓`, 'success');
 }
-
+ 
 function cycleTag(phone) {
   const current = contactTags[phone] || 'new';
   const idx = TAG_CYCLE.indexOf(current);
@@ -2152,11 +2212,11 @@ function cycleTag(phone) {
   renderChatList();
   showToast(`Tag set to ${next} ✓`, 'success');
 }
-
+ 
 function closeMobileChat() {
   document.getElementById('chatWindow').classList.remove('mobile-open');
 }
-
+ 
 async function sendReply() {
   if (!activePhone) return;
   const ta = document.getElementById('replyText');
@@ -2182,7 +2242,7 @@ async function sendReply() {
   } catch(e) { showToast('Network error ✗', 'error'); }
   btn.disabled = false; btn.textContent = '➤';
 }
-
+ 
 // ===================== LOGS =====================
 let logFilter = '';
 let logDir = 'all';
@@ -2208,7 +2268,7 @@ function renderLogs() {
 }
 function filterLogs(v) { logFilter = v.toLowerCase(); renderLogs(); }
 function filterLogDir(v) { logDir = v; renderLogs(); }
-
+ 
 // ===================== CONTACTS =====================
 let contactFilter = '';
 let contactTagFilter = 'all';
@@ -2245,7 +2305,7 @@ function renderContacts() {
 }
 function searchContacts(v) { contactFilter = v.toLowerCase(); renderContacts(); }
 function filterContactTag(v) { contactTagFilter = v; renderContacts(); }
-
+ 
 // ===================== TEMPLATES =====================
 function renderTemplates() {
   const grid = document.getElementById('templatesGrid');
@@ -2266,7 +2326,7 @@ function renderTemplates() {
       <span>New Template</span>
     </div>`;
 }
-
+ 
 function renderOutboundTemplates() {
   const el = document.getElementById('outboundTemplates');
   if (!el) return;
@@ -2276,7 +2336,7 @@ function renderOutboundTemplates() {
       <div class="t-preview">${t.body.substring(0,60)}...</div>
     </div>`).join('');
 }
-
+ 
 function useTemplate(i) {
   const t = TEMPLATES[i];
   const name = document.getElementById('outName')?.value || 'Customer';
@@ -2286,7 +2346,7 @@ function useTemplate(i) {
   showPage('outbound', null);
   showToast('Template applied ✓', 'success');
 }
-
+ 
 function prefillOutbound(phone, name) {
   showPage('outbound', null);
   setTimeout(() => {
@@ -2296,7 +2356,7 @@ function prefillOutbound(phone, name) {
     if (n) n.value = name;
   }, 100);
 }
-
+ 
 // ===================== OUTBOUND =====================
 async function sendOutbound() {
   const phone = document.getElementById('outPhone').value.trim().replace(/\D/g,'');
@@ -2316,7 +2376,7 @@ async function sendOutbound() {
     } else showToast('Send failed ✗','error');
   } catch(e) { showToast('Network error ✗','error'); }
 }
-
+ 
 // ===================== SEND TEMPLATE =====================
 async function sendTemplate() {
   const phone = document.getElementById('tplPhone').value.trim().replace(/\D/g,'');
@@ -2342,7 +2402,7 @@ async function sendTemplate() {
     }
   } catch(e) { showToast('Network error ✗', 'error'); }
 }
-
+ 
 // ===================== SCHEDULER =====================
 function setupScheduler() {
   const d = new Date();
@@ -2353,7 +2413,7 @@ function setupScheduler() {
   if (t) t.value = '10:00';
   renderScheduled();
 }
-
+ 
 function addScheduled() {
   const phone = document.getElementById('schedPhone')?.value?.trim();
   const name = document.getElementById('schedName')?.value?.trim() || 'Customer';
@@ -2368,7 +2428,7 @@ function addScheduled() {
   document.getElementById('schedName').value = '';
   document.getElementById('schedMessage').value = '';
 }
-
+ 
 function renderScheduled() {
   const el = document.getElementById('scheduledList');
   if (!el) return;
@@ -2384,12 +2444,12 @@ function renderScheduled() {
       <button class="action-btn" onclick="removeScheduled(${s.id})">✕</button>
     </div>`).join('');
 }
-
+ 
 function removeScheduled(id) {
   scheduledMsgs = scheduledMsgs.filter(s => s.id !== id);
   renderScheduled();
 }
-
+ 
 // ===================== BOT STATS =====================
 function updateBotStats() {
   const totalOut = allMsgs.filter(m => m.direction === 'outgoing').length;
@@ -2401,7 +2461,7 @@ function updateBotStats() {
     <div class="recent-item"><div class="r-avatar" style="background:#dbeafe;color:#1e40af;font-size:16px;">📥</div><div class="r-info"><div class="r-name">Messages Handled</div><div class="r-msg">${totalIn} received</div></div></div>
     <div class="recent-item"><div class="r-avatar" style="background:#fef3c7;color:#92400e;font-size:16px;">👥</div><div class="r-info"><div class="r-name">Customers Served</div><div class="r-msg">${allContacts.length} unique customers</div></div></div>`;
 }
-
+ 
 // ===================== QR CODE (real, scannable) =====================
 function renderQr() {
   const box = document.getElementById('qrBox');
@@ -2410,7 +2470,7 @@ function renderQr() {
   const src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
   box.innerHTML = `<img src="${src}" alt="WhatsApp QR code for ${esc(link)}">`;
 }
-
+ 
 // ===================== EXPORT =====================
 function doExport() {
   const page = document.querySelector('.page.active')?.id || '';
@@ -2418,20 +2478,20 @@ function doExport() {
   else if (page.includes('contacts')) doExportContacts();
   else doExportContacts();
 }
-
+ 
 function doExportContacts() {
   const rows = [['Name','Phone','Tag','Messages','Last Active']];
   allContacts.forEach(c => rows.push([c.name, '+'+c.phone, contactTags[c.phone]||'new', c.totalMessages, formatTime(c.lastTime)]));
   downloadCSV(rows, 'gogadafi-contacts.csv');
 }
-
+ 
 function doExportLogs() {
   const rows = [['Customer','Phone','Message','Direction','Time']];
   const msgs = [...allMsgs].sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp));
   msgs.forEach(m => rows.push([m.customerName||'Unknown', '+'+m.customerPhone, m.text||'', m.direction, new Date(m.timestamp).toLocaleString('en-IN')]));
   downloadCSV(rows, 'gogadafi-message-logs.csv');
 }
-
+ 
 function downloadCSV(rows, filename) {
   const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
@@ -2441,7 +2501,7 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
   showToast('Download started ✓','success');
 }
-
+ 
 // ===================== PAGE-SPECIFIC TOPBAR =====================
 const TOPBAR_CONFIG = {
   dashboard:  [{label:'🔄 Refresh', fn:'topbarRefresh()', kind:'secondary'}],
@@ -2460,19 +2520,19 @@ const TOPBAR_CONFIG = {
   kb:         [{label:'💾 Save KB', fn:'saveKB()', kind:'primary'}],
   locked:     [{label:'💎 Upgrade Plan', fn:"showLocked('My Plan','Upgrade to unlock premium features')", kind:'primary'}]
 };
-
+ 
 function renderTopbarActions(id) {
   const el = document.getElementById('topbarActions');
   const config = TOPBAR_CONFIG[id] || [];
   if (!config.length) { el.innerHTML = ''; return; }
   el.innerHTML = config.map(b => `<button class="topbar-btn ${b.kind}" onclick="${b.fn}">${b.label}</button>`).join('');
 }
-
+ 
 function topbarRefresh() {
   showToast('Refreshing…', 'success');
   loadAll();
 }
-
+ 
 // ===================== PAGE NAVIGATION =====================
 function showPage(id, navEl) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2498,7 +2558,7 @@ function showPage(id, navEl) {
   if (id === 'kb') { loadBots().then(()=>{ if(allBots.length) loadKB(); }); }
   closeSidebar();
 }
-
+ 
 function showLocked(title, sub) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-locked').classList.add('active');
@@ -2508,7 +2568,7 @@ function showLocked(title, sub) {
   renderTopbarActions('locked');
   closeSidebar();
 }
-
+ 
 // ===================== SIDEBAR =====================
 function openSidebar() {
   document.getElementById('sidebar').classList.add('mobile-open');
@@ -2518,7 +2578,7 @@ function closeSidebar() {
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
-
+ 
 // Accordion sections (Contacts / Messaging / E-commerce / Automation / Settings).
 // "Main" (Dashboard, All Chats, Message Logs) stays flat — not part of this system.
 function toggleGroup(name, headerEl) {
@@ -2527,7 +2587,7 @@ function toggleGroup(name, headerEl) {
   const collapsed = body.classList.toggle('collapsed');
   if (headerEl) headerEl.classList.toggle('collapsed', collapsed);
 }
-
+ 
 // If a nav item lives inside a collapsed group and becomes active (e.g. reached via
 // a shortcut button rather than the sidebar itself), auto-expand its group so the
 // highlighted item is actually visible.
@@ -2540,7 +2600,7 @@ function ensureGroupOpenFor(navEl) {
     if (header && header.classList.contains('group-header')) header.classList.remove('collapsed');
   }
 }
-
+ 
 // ===================== UTILS =====================
 function formatTime(ts) {
   if (!ts) return '—';
@@ -2550,36 +2610,36 @@ function formatTime(ts) {
   if (diff < 86400000) return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
 }
-
+ 
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-
+ 
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = `toast ${type} show`;
   setTimeout(() => t.className = 'toast', 3000);
 }
-
+ 
 function copyText(text) {
   navigator.clipboard.writeText(text).then(() => showToast('Copied ✓','success'));
 }
-
+ 
 function copyWaLink() {
   const val = document.getElementById('waLinkInput')?.value;
   if (val) copyText(val);
 }
-
+ 
 function openWhatsApp() {
   if (activePhone) window.open('https://wa.me/'+activePhone,'_blank');
 }
-
-
+ 
+ 
 // ===================== BOT MANAGER =====================
 let allBots = [];
 let kbProducts = [];
 let kbFaqs = [];
-
+ 
 async function loadBots() {
   try {
     const r = await fetch('/api/bots', { headers: { 'x-dashboard-token': AUTH } });
@@ -2590,7 +2650,7 @@ async function loadBots() {
     if (badge) badge.textContent = allBots.length;
   } catch(e) { console.error('loadBots', e); }
 }
-
+ 
 function renderBots() {
   const grid = document.getElementById('botsGrid');
   if (!grid) return;
@@ -2617,14 +2677,14 @@ function renderBots() {
     <div class="plus">+</div><span>Add New Bot</span>
   </div>`;
 }
-
+ 
 function updateBotSelects() {
   const kbSel = document.getElementById('kbBotSelect');
   if (kbSel) kbSel.innerHTML = allBots.map(b=>`<option value="${b._id}">${esc(b.name)}${b.isDefault?' (Default)':''}</option>`).join('');
   const asSel = document.getElementById('botAssignSelect');
   if (asSel) asSel.innerHTML = '<option value="">🤖 Default Bot</option>' + allBots.map(b=>`<option value="${b._id}">${esc(b.name)}${b.isDefault?' ⭐':''}</option>`).join('');
 }
-
+ 
 function openBotModal(bot) {
   document.getElementById('botModalTitle').textContent = bot ? 'Edit Bot' : 'Add New Bot';
   document.getElementById('botModalId').value = bot?._id||'';
@@ -2637,11 +2697,11 @@ function openBotModal(bot) {
   document.getElementById('botModalDefault').checked = bot?.isDefault||false;
   document.getElementById('botModal').classList.add('show');
 }
-
+ 
 function closeBotModal() { document.getElementById('botModal').classList.remove('show'); }
-
+ 
 function editBot(id) { const b = allBots.find(b=>b._id===id); if(b) openBotModal(b); }
-
+ 
 async function saveBotModal() {
   const id = document.getElementById('botModalId').value;
   const name = document.getElementById('botModalName').value.trim();
@@ -2666,14 +2726,14 @@ async function saveBotModal() {
     else showToast('Save failed ✗','error');
   } catch(e) { showToast('Network error ✗','error'); }
 }
-
+ 
 async function setDefaultBot(id) {
   try {
     const r = await fetch(`/api/bots/${id}/set-default`,{method:'POST',headers:{'x-dashboard-token':AUTH}});
     if (r.ok) { showToast('Default bot updated ✓','success'); loadBots(); }
   } catch(e) { showToast('Error ✗','error'); }
 }
-
+ 
 async function deleteBot(id) {
   if (!confirm('Delete this bot?')) return;
   try {
@@ -2682,7 +2742,7 @@ async function deleteBot(id) {
     else { const d=await r.json(); showToast(d.error||'Delete failed ✗','error'); }
   } catch(e) { showToast('Network error ✗','error'); }
 }
-
+ 
 async function loadBotAssignment(phone) {
   const sel = document.getElementById('botAssignSelect');
   if (!sel||!phone) return;
@@ -2692,7 +2752,7 @@ async function loadBotAssignment(phone) {
     sel.value = d.assignedBotId||'';
   } catch(e) {}
 }
-
+ 
 async function assignBot(botId) {
   if (!activePhone) return;
   try {
@@ -2707,7 +2767,7 @@ async function assignBot(botId) {
     }
   } catch(e) { showToast('Assignment failed ✗','error'); }
 }
-
+ 
 // ===================== KNOWLEDGE BASE =====================
 async function loadKB() {
   const botId = document.getElementById('kbBotSelect')?.value;
@@ -2726,13 +2786,13 @@ async function loadKB() {
     showToast('Knowledge base loaded ✓','success');
   } catch(e) { showToast('Load failed ✗','error'); }
 }
-
+ 
 async function loadKBForBot(botId) {
   const sel = document.getElementById('kbBotSelect');
   if (sel) sel.value = botId;
   await loadKB();
 }
-
+ 
 async function saveKB() {
   const botId = document.getElementById('kbBotSelect')?.value;
   if (!botId) { showToast('Select a bot first ✗','error'); return; }
@@ -2756,13 +2816,13 @@ async function saveKB() {
     else showToast('Save failed ✗','error');
   } catch(e) { showToast('Network error ✗','error'); }
 }
-
+ 
 function addProduct() {
   kbProducts.push({name:'',description:'',price:'',colors:[],sizes:[],models:[]});
   renderProducts();
 }
 function removeProduct(i) { kbProducts.splice(i,1); renderProducts(); }
-
+ 
 function renderProducts() {
   const el = document.getElementById('productsContainer');
   if (!el) return;
@@ -2796,10 +2856,10 @@ function renderProducts() {
       </div>
     </div>`).join('');
 }
-
+ 
 function addFAQ() { kbFaqs.push({q:'',a:''}); renderFaqs(); }
 function removeFAQ(i) { kbFaqs.splice(i,1); renderFaqs(); }
-
+ 
 function renderFaqs() {
   const el = document.getElementById('faqsContainer');
   if (!el) return;
@@ -2817,9 +2877,10 @@ function renderFaqs() {
       </div>
     </div>`).join('');
 }
-
+ 
 // Initialize topbar for the default page once the DOM is ready
 document.addEventListener('DOMContentLoaded', () => renderTopbarActions('dashboard'));
 </script>
 </body>
 </html>
+ 
