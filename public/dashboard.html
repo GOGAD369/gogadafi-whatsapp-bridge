@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GoGadAFI — WhatsApp Dashboard</title>
+<!-- ✅ PWA Support -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#25D366">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GoGadAFI">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <style>
 :root {
   --bg-primary: #042717;
@@ -2820,6 +2827,16 @@ function renderFaqs() {
 
 // Initialize topbar for the default page once the DOM is ready
 document.addEventListener('DOMContentLoaded', () => renderTopbarActions('dashboard'));
+</script>
+<!-- ✅ Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ GoGadAFI PWA Ready'))
+        .catch(err => console.log('SW Error:', err));
+    });
+  }
 </script>
 </body>
 </html>
