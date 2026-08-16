@@ -792,6 +792,30 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   .filter-tabs { overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; }
   .outbound-wrap { grid-template-columns:1fr; }
 }
+  /* ===== PWA INSTALL BANNER ===== */
+#installBanner {
+  display:none; position:fixed; bottom:20px; left:50%;
+  transform:translateX(-50%); z-index:9999;
+  background:linear-gradient(135deg,#042717,#063320);
+  border:1px solid rgba(37,211,102,0.4); border-radius:16px;
+  padding:14px 20px; box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  display:none; align-items:center; gap:14px;
+  min-width:280px; max-width:340px;
+}
+#installBanner .ib-icon { font-size:28px; flex-shrink:0; }
+#installBanner .ib-text { flex:1; }
+#installBanner .ib-title { font-size:14px; font-weight:700; color:#fff; }
+#installBanner .ib-sub { font-size:12px; color:#a3c4b0; margin-top:2px; }
+#installBanner .ib-btn {
+  padding:8px 14px; background:var(--accent); color:#fff;
+  border:none; border-radius:10px; font-size:13px; font-weight:700;
+  cursor:pointer; flex-shrink:0; transition:0.2s;
+}
+#installBanner .ib-btn:hover { background:var(--accent-dark); }
+#installBanner .ib-close {
+  background:none; border:none; color:#6b9e80; font-size:18px;
+  cursor:pointer; flex-shrink:0; padding:0 2px;
+}
 </style>
 </head>
 <body>
@@ -1713,7 +1737,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
   </div>
 </div>
-
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+  <div class="ib-icon">📲</div>
+  <div class="ib-text">
+    <div class="ib-title">Install GoGadAFI App</div>
+    <div class="ib-sub">Add to home screen for quick access</div>
+  </div>
+  <button class="ib-btn" id="installBtn">Install</button>
+  <button class="ib-close" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+</div>
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -2829,6 +2862,27 @@ function renderFaqs() {
 document.addEventListener('DOMContentLoaded', () => renderTopbarActions('dashboard'));
 </script>
 <!-- ✅ Service Worker Registration -->
+  <script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  banner.style.display = 'flex';
+});
+document.getElementById('installBtn')?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') showToast('App installed ✓', 'success');
+  deferredPrompt = null;
+  document.getElementById('installBanner').style.display = 'none';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+  showToast('GoGadAFI App installed ✓', 'success');
+});
+</script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
