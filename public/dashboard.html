@@ -1780,36 +1780,27 @@ const TEMPLATES = [
 ];
 
 // ===================== LOGIN =====================
-function doLogin() {
-  const pwd = document.getElementById('pwdInput').value.trim();
-  if (!pwd) return;
-  AUTH = pwd;
-  const btn = document.querySelector('.login-btn');
-  btn.textContent = 'Connecting...';
-  btn.disabled = true;
+function checkSession() {
+  AUTH = localStorage.getItem('afi_dashboard_token') || '';
+  if (!AUTH) {
+    window.location.href = '/login';
+    return;
+  }
   fetch('/api/conversations', { headers: { 'x-dashboard-token': AUTH } })
     .then(r => {
       if (r.status === 401) {
-        AUTH = '';
-        btn.textContent = 'Create Account →';
-        btn.disabled = false;
-        const err = document.getElementById('loginError');
-        err.style.display = 'block';
-        err.innerHTML = '🔍 Looks like you\'re not connected with us yet.<br><a href="https://gogadafi.in" target="_blank" style="color:#25D366;text-decoration:underline;">Please create an account at gogadafi.in</a>';
-        document.getElementById('pwdInput').value = '';
-        document.getElementById('pwdInput').placeholder = 'Already have an account? Sign in';
+        localStorage.removeItem('afi_dashboard_token');
+        window.location.href = '/login';
       } else {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         initApp();
       }
-    }).catch(() => {
-      btn.textContent = 'Sign In →';
-      btn.disabled = false;
-      const err = document.getElementById('loginError');
-      err.style.display = 'block';
-      err.textContent = '❌ Connection error. Check server.';
-      AUTH = '';
+    })
+    .catch(() => {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('loginError').textContent = '❌ Connection error. Retrying...';
+      setTimeout(checkSession, 2000);
     });
 }
       
