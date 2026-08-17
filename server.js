@@ -309,6 +309,8 @@ app.post('/api/login', async (req, res) => {
 
     // Upsert the user. New clients get plan: 'starter' by default —
     // change this manually in MongoDB (or build an admin UI) to upgrade them.
+    const displayName = decoded.name || email.split('@')[0];
+
     const existing = await usersCol.findOne({ uid });
     if (!existing) {
       await usersCol.insertOne({
@@ -316,7 +318,7 @@ app.post('/api/login', async (req, res) => {
         email,
         role,
         plan: role === 'admin' ? 'business' : 'starter',
-        name: decoded.name || '',
+        name: displayName,
         createdAt: new Date(),
         lastLogin: new Date()
       });
@@ -332,7 +334,7 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token: sessionToken, role: user.role, plan: user.plan, email });
+    res.json({ token: sessionToken, role: user.role, plan: user.plan, email, name: user.name || '' });
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(401).json({ error: 'Invalid or expired sign-in. Please try again.' });
