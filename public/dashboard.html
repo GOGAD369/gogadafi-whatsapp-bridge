@@ -2850,7 +2850,10 @@ function renderFaqs() {
 }
 
 // Initialize topbar for the default page once the DOM is ready
-document.addEventListener('DOMContentLoaded', () => renderTopbarActions('dashboard'));
+document.addEventListener('DOMContentLoaded', () => {
+  renderTopbarActions('dashboard');
+  checkSession();
+});
 </script>
 <!-- ✅ Service Worker Registration -->
   <script>
