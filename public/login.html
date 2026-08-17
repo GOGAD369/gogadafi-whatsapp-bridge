@@ -885,6 +885,7 @@
     const data = await res.json();
     if (res.ok && data.token) {
       localStorage.setItem(DASHBOARD_TOKEN_KEY, data.token);
+      localStorage.setItem('afi_dashboard_name', data.name || '');
       window.location.href = '/dashboard';
     } else {
       showError(data.error || 'Sign-in failed. Please try again.');
