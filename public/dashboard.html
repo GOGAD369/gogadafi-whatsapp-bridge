@@ -1032,7 +1032,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <div class="page active" id="page-dashboard">
           <div class="dash-wrap">
             <div class="dash-greeting">
-              <h2 id="greetingText">Good morning, Neelakandan 👋</h2>
+             <h2 id="greetingText">Good morning 👋</h2>
               <p id="greetingDate">Loading today's overview...</p>
             </div>
             <div class="stats-grid">
@@ -1819,7 +1819,8 @@ async function initApp() {
 function setGreeting() {
   const h = new Date().getHours();
   const g = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('greetingText').textContent = `${g}, Neelakandan 👋`;
+  const name = localStorage.getItem('afi_dashboard_name') || 'there';
+  document.getElementById('greetingText').textContent = `${g}, ${name} 👋`;
   document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
 
