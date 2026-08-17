@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
+const admin = require('firebase-admin');
+const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -12,8 +14,41 @@ const {
   GROQ_API_KEY,
   VERIFY_TOKEN,
   MONGODB_URI,
-  DASHBOARD_PASSWORD
+  FIREBASE_SERVICE_ACCOUNT, // full JSON of the downloaded service account key, as a single-line string
+  SESSION_SECRET            // any long random string — used to sign our own session tokens
 } = process.env;
+
+// ---------- Admin emails ----------
+// Anyone signing in with one of these emails becomes role: 'admin'.
+// Everyone else becomes role: 'client'.
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
+// Fallback if ADMIN_EMAILS env var isn't set yet — replace with your real email.
+if (ADMIN_EMAILS.length === 0) {
+  ADMIN_EMAILS.push('neelakandan.afi@gmail.com');
+}
+
+// ---------- Firebase Admin setup ----------
+if (!FIREBASE_SERVICE_ACCOUNT) {
+  console.warn('⚠️  FIREBASE_SERVICE_ACCOUNT not set — login will not work');
+} else {
+  try {
+    const serviceAccount = JSON.parse(FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log('✅ Firebase Admin initialized');
+  } catch (err) {
+    console.error('❌ Failed to initialize Firebase Admin:', err.message);
+  }
+}
+
+if (!SESSION_SECRET) {
+  console.warn('⚠️  SESSION_SECRET not set — using an insecure default. Set this in Render!');
+}
+const SESSION_SECRET_VALUE = SESSION_SECRET || 'insecure-dev-secret-change-me';
 
 // ---------- MongoDB setup ----------
 let db = null;
@@ -21,6 +56,7 @@ let messagesCol = null;
 let customersCol = null;
 let botsCol = null;
 let kbCol = null;
+let usersCol = null;
 
 async function connectDB() {
   if (!MONGODB_URI) {
@@ -35,8 +71,11 @@ async function connectDB() {
     customersCol = db.collection('customers');
     botsCol = db.collection('bots');
     kbCol = db.collection('knowledge_base');
+    usersCol = db.collection('users');
     await messagesCol.createIndex({ customerPhone: 1, timestamp: 1 });
     await botsCol.createIndex({ isDefault: 1 });
+    await usersCol.createIndex({ uid: 1 }, { unique: true });
+    await usersCol.createIndex({ email: 1 }, { unique: true });
     console.log('✅ MongoDB connected');
     await seedDefaultBot();
   } catch (err) {
@@ -209,10 +248,26 @@ function buildSystemPrompt(bot, kb, customerName, isFirstTime) {
   return prompt;
 }
 
+// ---------- Auth: session token verification ----------
+// authCheck now verifies OUR OWN session JWT (issued in /api/login after
+// Firebase verifies the user). It attaches req.user = { uid, email, role, plan }.
 function authCheck(req, res, next) {
   const token = req.headers['x-dashboard-token'];
-  const pwd = DASHBOARD_PASSWORD || 'gogadafi2026';
-  if (token !== pwd) return res.status(401).json({ error: 'Unauthorized' });
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const payload = jwt.verify(token, SESSION_SECRET_VALUE);
+    req.user = payload;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
+  }
+}
+
+// Optional stricter guard for admin-only routes later
+function adminOnly(req, res, next) {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
   next();
 }
 
@@ -222,6 +277,62 @@ app.get('/', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// ---------- /api/login ----------
+// The login page (login.html) signs the user in with Firebase (Email/Password
+// or Google), then sends us the resulting Firebase ID token. We verify that
+// token server-side, upsert the user in MongoDB with a role, and hand back
+// our own short-lived session token for use on all other /api/* routes.
+app.post('/api/login', async (req, res) => {
+  const { idToken } = req.body;
+  if (!idToken) return res.status(400).json({ error: 'idToken required' });
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    const uid = decoded.uid;
+    const email = (decoded.email || '').toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ error: 'This account has no email on file.' });
+    }
+
+    const role = ADMIN_EMAILS.includes(email) ? 'admin' : 'client';
+
+    if (!usersCol) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+
+    // Upsert the user. New clients get plan: 'starter' by default —
+    // change this manually in MongoDB (or build an admin UI) to upgrade them.
+    const existing = await usersCol.findOne({ uid });
+    if (!existing) {
+      await usersCol.insertOne({
+        uid,
+        email,
+        role,
+        plan: role === 'admin' ? 'business' : 'starter',
+        name: decoded.name || '',
+        createdAt: new Date(),
+        lastLogin: new Date()
+      });
+    } else {
+      await usersCol.updateOne({ uid }, { $set: { lastLogin: new Date(), role } });
+    }
+
+    const user = await usersCol.findOne({ uid });
+
+    const sessionToken = jwt.sign(
+      { uid, email, role: user.role, plan: user.plan },
+      SESSION_SECRET_VALUE,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ token: sessionToken, role: user.role, plan: user.plan, email });
+  } catch (err) {
+    console.error('Login error:', err.message);
+    res.status(401).json({ error: 'Invalid or expired sign-in. Please try again.' });
+  }
 });
 
 app.get('/api/conversations', authCheck, async (req, res) => {
