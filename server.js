@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const axios = require('axios');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
@@ -6,6 +7,11 @@ const admin = require('firebase-admin');
 const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: ['https://afi-connect-frontend.vercel.app', 'https://app.gogadafi.in', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-dashboard-token']
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const {
