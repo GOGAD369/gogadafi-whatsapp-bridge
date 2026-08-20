@@ -654,6 +654,101 @@ RULES:
 - Short friendly replies with emojis
 ${isFirstTime ? `- Start with: "Hi ${customerName}! 👋 Welcome to GoGadAFI! I'm Afi, your digital assistant. We help businesses grow with WhatsApp automation & digital marketing. How can I help you today? 😊"` : '- Returning customer, no welcome message, answer directly'}`;
 }
+// ========== NEW MULTI-TENANT AUTH ROUTES ==========
 
+// Signup - new clients register here
+app.post('/api/signup', async (req, res) => {
+  const { name, businessName, email, phone, password } = req.body;
+  if (!name || !email || !password || !businessName) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+  if (!usersCol) return res.status(500).json({ message: 'Database not connected' });
+  try {
+    const existing = await usersCol.findOne({ email: email.toLowerCase() });
+    if (existing) return res.status(400).json({ message: 'Email already registered' });
+    const bcrypt = require('bcryptjs');
+    const passwordHash = await bcrypt.hash(password, 10);
+    const userId = new ObjectId();
+    await usersCol.insertOne({
+      _id: userId,
+      name,
+      businessName,
+      email: email.toLowerCase(),
+      phone,
+      passwordHash,
+      role: 'client',
+      plan: 'free',
+      status: 'active',
+      channels: { whatsapp: null, instagram: null, messenger: null },
+      createdAt: new Date(),
+      lastLogin: new Date()
+    });
+    res.json({ message: 'Account created successfully' });
+  } catch (err) {
+    console.error('Signup error:', err.message);
+    res.status(500).json({ message: 'Signup failed. Try again.' });
+  }
+});
+
+// Login - works for React frontend with email/password
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
+  if (!usersCol) return res.status(500).json({ message: 'Database not connected' });
+  try {
+    const user = await usersCol.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(401).json({ message: 'Invalid email or password' });
+    if (!user.passwordHash) return res.status(401).json({ message: 'Please use Google Sign-in for this account' });
+    const bcrypt = require('bcryptjs');
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) return res.status(401).json({ message: 'Invalid email or password' });
+    await usersCol.updateOne({ _id: user._id }, { $set: { lastLogin: new Date() } });
+    const JWT_SECRET = process.env.JWT_SECRET || SESSION_SECRET_VALUE;
+    const token = jwt.sign(
+      { userId: user._id.toString(), email: user.email, role: user.role, plan: user.plan, name: user.name, businessName: user.businessName },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    res.json({
+      token,
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        businessName: user.businessName,
+        email: user.email,
+        plan: user.plan,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Auth login error:', err.message);
+    res.status(500).json({ message: 'Login failed. Try again.' });
+  }
+});
+
+// Get current user profile
+app.get('/api/me', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+  try {
+    const JWT_SECRET = process.env.JWT_SECRET || SESSION_SECRET_VALUE;
+    const payload = jwt.verify(token, JWT_SECRET);
+    const user = await usersCol.findOne({ _id: new ObjectId(payload.userId) });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({
+      id: user._id.toString(),
+      name: user.name,
+      businessName: user.businessName,
+      email: user.email,
+      plan: user.plan,
+      role: user.role,
+      channels: user.channels || {}
+    });
+  } catch (err) {
+    res.status(401).json({ message: 'Session expired. Please login again.' });
+  }
+});
+// ========== END NEW ROUTES ==========
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
