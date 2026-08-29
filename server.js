@@ -95,7 +95,7 @@ async function seedDefaultBot() {
   if (count === 0) {
     await botsCol.insertOne({
       name: 'Afi',
-      model: 'llama-3.1-8b-instant',
+      model: 'llama3-8b-8192',
       description: 'GoGadAFI WhatsApp Assistant',
       systemPrompt: `You are Afi, GoGadAFI's WhatsApp assistant.
 
@@ -448,7 +448,7 @@ app.post('/api/bots', authCheck, async (req, res) => {
     const { name, model, description, systemPrompt, isDefault, contextMessages, messageWaitTime } = req.body;
     if (!name || !systemPrompt) return res.status(400).json({ error: 'name and systemPrompt required' });
     if (isDefault) await botsCol.updateMany({}, { $set: { isDefault: false } });
-    const result = await botsCol.insertOne({ name, model: model || 'llama-3.1-8b-instant', description: description || '', systemPrompt, isDefault: isDefault || false, active: true, contextMessages: contextMessages || 10, messageWaitTime: messageWaitTime || 0, createdAt: new Date() });
+    const result = await botsCol.insertOne({ name, model: model || 'llama3-8b-8192', description: description || '', systemPrompt, isDefault: isDefault || false, active: true, contextMessages: contextMessages || 10, messageWaitTime: messageWaitTime || 0, createdAt: new Date() });
     res.json({ success: true, id: result.insertedId });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -616,7 +616,7 @@ async function processAndReply(customerPhone, customerName, bot) {
 
     const contextLimit = bot?.contextMessages || 10;
     const history = await getHistory(customerPhone, contextLimit);
-    const model = bot?.model || 'llama-3.1-8b-instant';
+    const model = bot?.model || 'llama3-8b-8192';
 
     const groqResponse = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
