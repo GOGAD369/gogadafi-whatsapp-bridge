@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const {
   WHATSAPP_TOKEN,
   PHONE_NUMBER_ID,
-  GROQ_API_KEY,
+  GEMINI_API_KEY,
   VERIFY_TOKEN,
   MONGODB_URI,
   FIREBASE_SERVICE_ACCOUNT, // full JSON of the downloaded service account key, as a single-line string
@@ -618,22 +618,17 @@ async function processAndReply(customerPhone, customerName, bot) {
     const history = await getHistory(customerPhone, contextLimit);
     const model = bot?.model || 'llama3-8b-8192';
 
-    const groqResponse = await axios.post(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...history,
-          { role: 'user', content: latestMessage }
-        ],
-        temperature: 0.3,
-        max_tokens: 200
-      },
-      { headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' } }
-    );
+    const geminiResponse = await axios.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            contents: [
+              { role: 'user', parts: [{ text: systemPrompt + '\n\nUser: ' + latestMessage }] }
+            ]
+          },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
 
-    const reply = groqResponse.data.choices[0].message.content;
+        const reply = geminiResponse.data.candidates[0].content.parts[0].text;
     await saveMessage({ customerPhone, customerName, text: reply, direction: 'outgoing' });
     await sendWhatsApp(customerPhone, reply);
   } catch (err) {
