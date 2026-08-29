@@ -619,7 +619,7 @@ async function processAndReply(customerPhone, customerName, bot) {
     const model = bot?.model || 'llama3-8b-8192';
 
     const geminiResponse = await axios.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
             contents: [
               { role: 'user', parts: [{ text: systemPrompt + '\n\nUser: ' + latestMessage }] }
